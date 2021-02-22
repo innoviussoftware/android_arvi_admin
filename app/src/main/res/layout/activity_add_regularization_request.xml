@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    tools:context=".Activity.NewApp.AddRegularizationRequestActivity">
+
+    <RelativeLayout
+        android:id="@+id/rlHeaderARRA"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_40sdp">
+
+        <ImageView
+            android:id="@+id/imgVwBackARRA"
+            android:layout_width="@dimen/_30sdp"
+            android:layout_height="@dimen/_30sdp"
+            android:layout_centerVertical="true"
+            android:padding="@dimen/_8sdp"
+            android:src="@drawable/ic_back_black" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@+id/imgVwBackARRA"
+            android:fontFamily="@font/avenir_next_bold"
+            android:text="Add Regularization Request"
+            android:textColor="@color/black"
+            android:textSize="@dimen/_14ssp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_alignParentBottom="true"
+            android:background="@color/view_bg" />
+    </RelativeLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/rlHeaderARRA">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_10sdp"
+            android:layout_marginEnd="@dimen/_10sdp">
+
+            <RelativeLayout
+                android:id="@+id/rlEmpListARRA"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_10sdp">
+
+                <Spinner
+                    android:id="@+id/spEmpNameARRA"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_40sdp"
+                    android:background="@drawable/edit_left_border_bg"
+                    android:paddingEnd="@dimen/_30sdp" />
+
+                <ImageView
+                    android:layout_width="@dimen/_20sdp"
+                    android:layout_height="@dimen/_20sdp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="@dimen/_10sdp"
+                    android:padding="@dimen/_3sdp"
+                    android:src="@drawable/ic_down_arrow"
+
+                    />
+            </RelativeLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tILEmpIdARRA"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/rlEmpListARRA"
+                android:layout_marginTop="@dimen/_8sdp">
+
+                <EditText
+                    android:id="@+id/etEmpIdARRA"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:editable="false"
+                    android:fontFamily="@font/avenir_next_regular"
+                    android:hint="Employee Id"
+                    android:singleLine="true"
+                    android:textSize="@dimen/_12ssp" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <TextView
+                android:id="@+id/tvDateTitleARRA"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/tILEmpIdARRA"
+                android:layout_marginTop="@dimen/_8sdp"
+                android:fontFamily="@font/avenir_next_regular"
+                android:text="Date"
+                android:textColor="@color/black"
+                android:textSize="@dimen/_12ssp" />
+
+            <RelativeLayout
+                android:id="@+id/rlDateARRA"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_40sdp"
+                android:layout_below="@+id/tvDateTitleARRA"
+                android:layout_marginTop="@dimen/_5sdp"
+                android:background="@drawable/edit_left_border_bg">
+
+                <TextView
+                    android:id="@+id/tvDateARRA"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:fontFamily="@font/avenir_next_regular"
+                    android:gravity="center_vertical"
+                    android:hint="DD/MM/YYYY"
+                    android:paddingStart="@dimen/_10sdp"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_12ssp" />
+
+                <ImageView
+                    android:layout_width="@dimen/_20sdp"
+                    android:layout_height="@dimen/_20sdp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="@dimen/_10sdp"
+                    android:src="@drawable/ic_calendar_leave" />
+            </RelativeLayout>
+
+            <TextView
+                android:id="@+id/tvInTimeTitleARRA"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/rlDateARRA"
+                android:layout_marginTop="@dimen/_8sdp"
+                android:fontFamily="@font/avenir_next_regular"
+                android:text="Check-in Time"
+                android:textColor="@color/black"
+                android:textSize="@dimen/_12ssp" />
+
+            <RelativeLayout
+                android:id="@+id/rlInTimeARRA"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_40sdp"
+                android:layout_below="@+id/tvInTimeTitleARRA"
+                android:layout_marginTop="@dimen/_5sdp"
+                android:background="@drawable/edit_left_border_bg">
+
+                <TextView
+                    android:id="@+id/tvCheckInTimeARRA"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:fontFamily="@font/avenir_next_regular"
+                    android:gravity="center_vertical"
+                    android:hint="HH:MM A"
+                    android:paddingStart="@dimen/_10sdp"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_12ssp" />
+
+                <ImageView
+                    android:layout_width="@dimen/_20sdp"
+                    android:layout_height="@dimen/_20sdp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="@dimen/_10sdp"
+                    android:src="@drawable/ic_clock_black" />
+            </RelativeLayout>
+
+
+            <TextView
+                android:id="@+id/tvOutTimeTitleARRA"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/rlInTimeARRA"
+                android:layout_marginTop="@dimen/_8sdp"
+                android:fontFamily="@font/avenir_next_regular"
+                android:text="Check-out Time"
+                android:textColor="@color/black"
+                android:textSize="@dimen/_12ssp" />
+
+            <RelativeLayout
+                android:id="@+id/rlCheckOutARRA"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_40sdp"
+                android:layout_below="@+id/tvOutTimeTitleARRA"
+                android:layout_marginTop="@dimen/_5sdp"
+                android:background="@drawable/edit_left_border_bg">
+
+                <TextView
+                    android:id="@+id/tvCheckOutTimeARRA"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:fontFamily="@font/avenir_next_regular"
+                    android:gravity="center_vertical"
+                    android:hint="HH:MM A"
+                    android:paddingStart="@dimen/_10sdp"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_12ssp" />
+
+                <ImageView
+                    android:layout_width="@dimen/_20sdp"
+                    android:layout_height="@dimen/_20sdp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="@dimen/_10sdp"
+                    android:src="@drawable/ic_clock_black" />
+            </RelativeLayout>
+
+            <TextView
+                android:id="@+id/tvAddRequestARRA"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_40sdp"
+                android:layout_below="@+id/rlCheckOutARRA"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:layout_marginBottom="@dimen/_10sdp"
+                android:background="@drawable/btn_bg"
+                android:fontFamily="@font/avenir_next_bold"
+                android:gravity="center"
+                android:text="Add Request"
+                android:textAllCaps="true"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_14ssp" />
+
+
+        </RelativeLayout>
+    </ScrollView>
+
+</RelativeLayout>

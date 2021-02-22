@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#e6e6e6"
+    tools:context=".Activity.NewApp.RegularizationRequestListActivity">
+
+    <RelativeLayout
+        android:id="@+id/rlHeaderRRLA"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_40sdp">
+
+        <ImageView
+            android:id="@+id/imgVwBackRRLA"
+            android:layout_width="@dimen/_30sdp"
+            android:layout_height="@dimen/_30sdp"
+            android:layout_centerVertical="true"
+            android:padding="@dimen/_8sdp"
+            android:src="@drawable/ic_back_black" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@+id/imgVwBackRRLA"
+            android:fontFamily="@font/avenir_next_bold"
+            android:text="Regularization Request"
+            android:textColor="@color/black"
+            android:textSize="@dimen/_14ssp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_alignParentBottom="true"
+            android:background="@color/view_bg" />
+    </RelativeLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rVwRequestRRLA"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/rlHeaderRRLA"
+        />
+
+    <TextView
+        android:id="@+id/tvNoVisitorRRLA"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="Regularization request list is empty"
+        android:textSize="@dimen/_14ssp"
+        android:textColor="@color/app_bg"
+        android:fontFamily="@font/avenir_next_bold"
+        android:gravity="center"
+        android:visibility="gone"
+        />
+
+
+    <ImageView
+        android:id="@+id/imgVwAddRequestRRLA"
+        android:layout_width="@dimen/_50sdp"
+        android:layout_height="@dimen/_50sdp"
+        android:src="@mipmap/ic_add_round"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_margin="@dimen/_10sdp"
+        android:elevation="@dimen/_2sdp"
+        />
+</RelativeLayout>

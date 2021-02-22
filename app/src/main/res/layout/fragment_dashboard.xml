@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Fragment.DashboardFragment">
+
+    <RelativeLayout
+        android:id="@+id/rlMainDashboardData"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tlDashboardData"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#F7FBFD"
+            app:fontFamily="@font/avenir_next_regular"
+            app:tabGravity="fill"
+            app:tabIndicatorColor="@color/black"
+            app:tabIndicatorHeight="@dimen/_2sdp"
+            app:tabMode="fixed"
+            app:tabSelectedTextColor="@color/app_bg"
+            app:tabTextColor="@color/black"
+            app:tabTextAppearance="@style/CustomTextAppearanceTab"
+            ></com.google.android.material.tabs.TabLayout>
+
+        <androidx.viewpager.widget.ViewPager
+            android:id="@+id/vpDashboardData"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tlDashboardData" />
+    </RelativeLayout>
+
+</RelativeLayout>
