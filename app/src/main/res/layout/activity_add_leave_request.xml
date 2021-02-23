@@ -56,7 +56,7 @@
                 android:layout_marginTop="@dimen/_10sdp">
 
                 <Spinner
-                    android:id="@+id/spEmpNameARRA"
+                    android:id="@+id/spEmpNameALRA"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/_40sdp"
                     android:background="@drawable/edit_left_border_bg"

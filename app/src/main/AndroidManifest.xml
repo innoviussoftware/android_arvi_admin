@@ -47,7 +47,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".Activity.NewApp.EnterEmployeeDetailsActivity"></activity>
+        <activity android:name=".Activity.NewApp.TakeEmployeePicActivity"></activity>
+        <activity android:name=".Activity.NewApp.EnterEmployeeDetailsActivity" />
         <activity
             android:name=".Activity.NewApp.UserEmployeesListActivity"
             android:screenOrientation="portrait"

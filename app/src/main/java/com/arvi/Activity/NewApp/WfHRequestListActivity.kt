@@ -2,6 +2,7 @@ package com.arvi.Activity.NewApp
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
@@ -67,7 +68,8 @@ class WfHRequestListActivity : AppCompatActivity(), View.OnClickListener {
                 finish()
             }
             R.id.imgVwAddRequestWfhRA->{
-
+                var intent = Intent(context!!,AddWfHRequestActivity::class.java)
+                startActivity(intent)
             }
         }
     }

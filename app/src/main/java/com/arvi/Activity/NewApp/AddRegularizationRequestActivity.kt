@@ -30,32 +30,44 @@ class AddRegularizationRequestActivity : AppCompatActivity(), View.OnClickListen
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_regularization_request)
-        setIds()
-        setListeners()
+        try {
+            setIds()
+            setListeners()
 
-        val empList = resources.getStringArray(R.array.default_emp)
-        val adapter = ArrayAdapter(this,
-            android.R.layout.simple_spinner_dropdown_item,empList)
-        spEmpNameARRA!!.adapter = adapter
+            val empList = resources.getStringArray(R.array.default_emp)
+            val adapter = ArrayAdapter(this,
+                android.R.layout.simple_spinner_dropdown_item,empList)
+            spEmpNameARRA!!.adapter = adapter
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     private fun setListeners() {
-        imgVwBackARRA!!.setOnClickListener(this)
-        tvDateARRA!!.setOnClickListener(this)
-        tvCheckInTimeARRA!!.setOnClickListener(this)
-        tvCheckOutTimeARRA!!.setOnClickListener(this)
-        tvAddRequestARRA!!.setOnClickListener(this)
+        try {
+            imgVwBackARRA!!.setOnClickListener(this)
+            tvDateARRA!!.setOnClickListener(this)
+            tvCheckInTimeARRA!!.setOnClickListener(this)
+            tvCheckOutTimeARRA!!.setOnClickListener(this)
+            tvAddRequestARRA!!.setOnClickListener(this)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     private fun setIds() {
-        context = AddRegularizationRequestActivity@this
-         imgVwBackARRA = findViewById(R.id.imgVwBackARRA)
-         spEmpNameARRA = findViewById(R.id.spEmpNameARRA)
-         etEmpIdARRA = findViewById(R.id.etEmpIdARRA)
-         tvDateARRA = findViewById(R.id.tvDateARRA)
-         tvCheckInTimeARRA = findViewById(R.id.tvCheckInTimeARRA)
-         tvCheckOutTimeARRA = findViewById(R.id.tvCheckOutTimeARRA)
-         tvAddRequestARRA = findViewById(R.id.tvAddRequestARRA)
+        try {
+            context = AddRegularizationRequestActivity@this
+            imgVwBackARRA = findViewById(R.id.imgVwBackARRA)
+            spEmpNameARRA = findViewById(R.id.spEmpNameARRA)
+            etEmpIdARRA = findViewById(R.id.etEmpIdARRA)
+            tvDateARRA = findViewById(R.id.tvDateARRA)
+            tvCheckInTimeARRA = findViewById(R.id.tvCheckInTimeARRA)
+            tvCheckOutTimeARRA = findViewById(R.id.tvCheckOutTimeARRA)
+            tvAddRequestARRA = findViewById(R.id.tvAddRequestARRA)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
 
     }
 
@@ -64,24 +76,28 @@ class AddRegularizationRequestActivity : AppCompatActivity(), View.OnClickListen
     }
 
     override fun onClick(view: View?) {
-        when(view!!.id){
-            R.id.imgVwBackARRA->{
-                finish()
+        try {
+            when(view!!.id){
+                R.id.imgVwBackARRA->{
+                    finish()
+                }
+                R.id.tvDateARRA->{
+                    openDatePickerDialog()
+                }
+                R.id.tvCheckInTimeARRA->{
+                    var from = "checkIn"
+                    openTimePickerDialog(from)
+                }
+                R.id.tvCheckOutTimeARRA->{
+                    var from = "checkOut"
+                    openTimePickerDialog(from)
+                }
+                R.id.tvAddRequestARRA->{
+                    SnackBar.showInProgressError(context!!,tvAddRequestARRA!!)
+                }
             }
-            R.id.tvDateARRA->{
-                openDatePickerDialog()
-            }
-            R.id.tvCheckInTimeARRA->{
-                var from = "checkIn"
-                openTimePickerDialog(from)
-            }
-            R.id.tvCheckOutTimeARRA->{
-                var from = "checkOut"
-                openTimePickerDialog(from)
-            }
-            R.id.tvAddRequestARRA->{
-                SnackBar.showInProgressError(context!!,tvAddRequestARRA!!)
-            }
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 

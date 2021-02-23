@@ -2,6 +2,7 @@ package com.arvi.Activity.NewApp
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
@@ -67,7 +68,8 @@ class LeaveRequestListActivity : AppCompatActivity(), View.OnClickListener {
                 finish()
             }
             R.id.imgVwAddRequestLRLA->{
-
+                var intent = Intent(context!!,AddLeaveRequestActivity::class.java)
+                startActivity(intent)
             }
         }
     }

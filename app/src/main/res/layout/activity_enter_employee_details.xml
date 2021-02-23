@@ -13,12 +13,13 @@
         android:layout_height="@dimen/_40sdp">
 
         <ImageView
+            android:id="@+id/imgVwBackEEDA"
             android:layout_width="@dimen/_20sdp"
             android:layout_height="@dimen/_20sdp"
             android:layout_centerVertical="true"
             android:layout_marginStart="@dimen/_10sdp"
             android:background="@drawable/ic_back_black"
-            android:onClick="backAddEmpolyee" />
+            />
 
         <TextView
             android:layout_width="wrap_content"
@@ -55,7 +56,7 @@
                 android:layout_marginTop="@dimen/_8sdp">
 
                 <EditText
-                    android:id="@+id/etNameAEPD"
+                    android:id="@+id/etNameEEDA"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/avenir_next_regular"
@@ -72,7 +73,7 @@
                 android:layout_marginTop="@dimen/_8sdp">
 
                 <EditText
-                    android:id="@+id/etEmployeeIDAEED"
+                    android:id="@+id/etEmployeeIDEEDA"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/avenir_next_regular"
@@ -88,7 +89,7 @@
                 android:layout_marginTop="@dimen/_8sdp">
 
                 <EditText
-                    android:id="@+id/etDesignationAEED"
+                    android:id="@+id/etDesignationEEDA"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/avenir_next_regular"
@@ -105,12 +106,13 @@
                 android:layout_marginTop="@dimen/_8sdp">
 
                 <EditText
-                    android:id="@+id/etMobileAEED"
+                    android:id="@+id/etMobileEEDA"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/avenir_next_regular"
                     android:hint="@string/mobile_ttl"
                     android:singleLine="true"
+                    android:inputType="phone"
                     android:textColor="@color/black"
                     android:textSize="@dimen/_12ssp" />
             </com.google.android.material.textfield.TextInputLayout>
@@ -122,15 +124,32 @@
                 android:layout_marginTop="@dimen/_8sdp">
 
                 <EditText
-                    android:id="@+id/etMailAEED"
+                    android:id="@+id/etMailEEDA"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/avenir_next_regular"
                     android:hint="@string/mail_ttl"
                     android:singleLine="true"
+                    android:inputType="textEmailAddress"
                     android:textColor="@color/black"
                     android:textSize="@dimen/_12ssp" />
             </com.google.android.material.textfield.TextInputLayout>
+
+            <TextView
+                android:id="@+id/tvTakePicEEDA"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_40sdp"
+                android:layout_marginLeft="@dimen/_20sdp"
+                android:layout_marginTop="@dimen/_25sdp"
+                android:layout_marginRight="@dimen/_20sdp"
+                android:layout_marginBottom="@dimen/_10sdp"
+                android:background="@drawable/grey_rounded_bg"
+                android:fontFamily="@font/avenir_next_regular"
+                android:gravity="center"
+                android:text="Take Pic"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_14ssp"
+                android:textStyle="bold" />
 
         </LinearLayout>
 

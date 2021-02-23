@@ -129,7 +129,7 @@
     <string name="name_ttl">Name</string>
     <string name="designation_ttl">Designation</string>
     <string name="mobile_ttl">Mobile</string>
-    <string name="mail_ttl">Mail</string>
+    <string name="mail_ttl">Mail (Official)</string>
 
 
     <string-array name="default_emp">
@@ -137,5 +137,10 @@
         <item>Emp 2</item>
         <item>Emp 3</item>
         <item>Emp 4</item>
+    </string-array>
+
+    <string-array name="default_leave_type">
+        <item>All Day</item>
+        <item>Half Day</item>
     </string-array>
 </resources>
