@@ -4,6 +4,10 @@
     <color name="colorPrimaryDark">#2977DD</color>
     <color name="colorAccent">#8B2977DD</color>
 
+
+    <color name="inactive_status">#C60019</color>
+    <color name="active_status">#24C600</color>
+
     <color name="black">#383838</color>
     <color name="grey">#606060</color>
     <color name="light_grey">#CECECE</color>
@@ -15,7 +19,8 @@
     <color name="pink">#E92B81</color>
     <color name="switch_off_grey">#EEEEEF</color>
 
-
+    <color name="light_app_bg">#E0EFF6</color>
+    <color name="lght_gry_text">#A8A9A9AA</color>
 
     <color name="blue_grey_400">#78909C</color>
     <color name="light_grey_400">#E6E6E6</color>
@@ -25,4 +30,6 @@
     <color name="red">#C90F05</color>
     <color name="view_bg">#cccccc</color>
     <color name="yellow">#FDFF49</color>
+
+    <color name="gray_clr">#747474</color>
 </resources>

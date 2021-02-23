@@ -143,4 +143,8 @@ dependencies {
 
     //circle imageview
     implementation 'de.hdodenhof:circleimageview:3.0.0'
+
+    //Todo: croping image ,rotate, size reduced
+    implementation 'com.theartofdev.edmodo:android-image-cropper:2.7.0'
+
 }

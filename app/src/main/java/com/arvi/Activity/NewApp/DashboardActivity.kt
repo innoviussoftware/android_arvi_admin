@@ -194,7 +194,7 @@ class DashboardActivity : AppCompatActivity(), View.OnClickListener {
     private fun setProfilePage() {
         try {
             setProfileIconActive()
-            fragment = ProfileFragment.newInstance("", "")
+            fragment = ProfileFragment.newInstance()
             if (fragment != null) {
                 val fragmentManager: FragmentManager = supportFragmentManager
                 val fragmentTransaction: FragmentTransaction = fragmentManager.beginTransaction()
