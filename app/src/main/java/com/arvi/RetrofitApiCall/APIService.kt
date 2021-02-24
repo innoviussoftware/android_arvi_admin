@@ -87,5 +87,35 @@ interface APIService {
     ): Call<DetectFaceResponse>
 
 
+    //Todo: 23/2/2021... Add Arvi Admin Related API
 
+    @GET("v1/companies/roles")
+    fun getComaniesRolesList(
+        @Header("Authorization") auth: String,
+        @Header("Content-Type") ctype: String
+    ): Call<RoleListModel>
+
+    //visitors Related .. Start
+    @GET("v1/companies/visitor/entries")
+    fun getVisitorsList(
+        @Header("Content-Type") ctype: String,
+        @Header("Authorization") auth: String,
+        @Query("pageSize") pageSize:Int,
+        @Query("currentPage") currentPage:Int
+    ): Call<VisitorsListModel>
+
+    @POST("v1/companies/visitors")
+    fun addVisitorsEntry(
+        @Header("Authorization") auth: String,
+        @Header("Content-Type") ctype: String,
+        @Body detail: JsonObject
+    ): Call<VisitorsListModel>
+    //visitors Related .. End
+
+    @POST("v1/companies/visitors/entry")
+    fun updateVisitorsEntry(
+        @Header("Content-Type") ctype: String,
+        @Header("Authorization") auth: String,
+        @Body detail: JsonObject
+    ): Call<ResponseBody>
 }

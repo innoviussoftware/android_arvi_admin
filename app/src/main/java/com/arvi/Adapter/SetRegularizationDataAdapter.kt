@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.RelativeLayout
 import androidx.recyclerview.widget.RecyclerView
-import com.arvi.Activity.NewApp.AddVisitorDetailActivity
 import com.arvi.R
 
 class SetRegularizationDataAdapter(

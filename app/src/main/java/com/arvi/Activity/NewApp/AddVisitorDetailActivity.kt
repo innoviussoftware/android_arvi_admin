@@ -1,30 +1,35 @@
 package com.arvi.Activity.NewApp
 
+import android.app.Activity
 import android.app.DatePickerDialog
 import android.app.Dialog
 import android.app.TimePickerDialog
 import android.content.Context
 import android.content.Intent
-import android.media.Image
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.*
+import androidx.appcompat.app.AppCompatActivity
+import com.arvi.Model.Result
+import com.arvi.Model.VisitorsListModel
 import com.arvi.R
-import com.google.android.material.textfield.TextInputEditText
-import java.text.DateFormat
-import java.util.*
-import javax.xml.datatype.DatatypeConstants.MONTHS
+import com.arvi.RetrofitApiCall.APIService
+import com.arvi.RetrofitApiCall.ApiUtils
+import com.arvi.SessionManager.SessionManager
+import com.arvi.Utils.*
 import com.crashlytics.android.Crashlytics
-import androidx.core.content.ContextCompat.getSystemService
-import com.arvi.Utils.KeyboardUtility
-import com.arvi.Utils.SnackBar
+import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
+import com.google.gson.Gson
+import com.google.gson.JsonObject
 import kotlinx.android.synthetic.main.activity_add_visitor_detail.view.*
-import java.security.Key
-
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.text.ParseException
 import java.text.SimpleDateFormat
+import java.util.*
 
 
 class AddVisitorDetailActivity : AppCompatActivity(), View.OnClickListener {
@@ -49,7 +54,7 @@ class AddVisitorDetailActivity : AppCompatActivity(), View.OnClickListener {
     var context: Context? = null
     var snackbarView: View? = null
     var from: String = "add"
-
+    lateinit var visitorDetails: Result
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_visitor_detail)
@@ -58,9 +63,15 @@ class AddVisitorDetailActivity : AppCompatActivity(), View.OnClickListener {
             setListeners()
             if (intent.extras != null) {
                 from = intent.getStringExtra("from")
-                if (from.equals("list")) {
+                if (from == "list") {
                     tvSaveAVDA!!.visibility = View.GONE
                     llRegisterBtnAVDA!!.visibility = View.VISIBLE
+
+                    val gson = Gson()
+                    visitorDetails = gson.fromJson(intent.getStringExtra("visitorData"), Result::class.java)
+
+                    Log.e("visitorDetails","-----===---> "+visitorDetails)
+                    setVisitorData(visitorDetails)
                 } else {
                     tvSaveAVDA!!.visibility = View.VISIBLE
                     llRegisterBtnAVDA!!.visibility = View.GONE
@@ -69,6 +80,16 @@ class AddVisitorDetailActivity : AppCompatActivity(), View.OnClickListener {
         } catch (e: Exception) {
             e.printStackTrace()
         }
+    }
+
+    fun setVisitorData(visitorDetails: Result) {
+        etNameAVDA!!.setText(visitorDetails.name)
+        aTvToMeetAVDA!!.setText(visitorDetails.data!!.visitingTo!!.name)
+        etVisitDateAVDA!!.setText(visitorDetails.data!!.actualEntry!!.dateOn!!)
+        etVisitTimeAVDA!!.setText(visitorDetails.data!!.actualEntry!!.timeOn!!)
+        etComingFromAVDA!!.setText(visitorDetails.visitor!!.data!!.company)
+        etMobileAVDA!!.setText(visitorDetails.visitor!!.mobile)
+        etPurposeAVDA!!.setText(visitorDetails.visitor!!.data!!.purpose)
     }
 
     private fun openDatePickerDialog() {
@@ -95,7 +116,7 @@ class AddVisitorDetailActivity : AppCompatActivity(), View.OnClickListener {
                     } else {
                         showMonth = monthOfYear.toString()
                     }
-                    etVisitDateAVDA!!.setText(showDay + "/" + showMonth + "/" + year.toString())
+                    etVisitDateAVDA!!.setText(year.toString()+"-"+showMonth+"-"+showDay)
                 },
                 year,
                 month,
@@ -129,7 +150,7 @@ class AddVisitorDetailActivity : AppCompatActivity(), View.OnClickListener {
                         Crashlytics.log(e.toString())
                     }
 
-                    val fmtOut = SimpleDateFormat("hh:mm aa")
+                    val fmtOut = SimpleDateFormat("hh:mm")
 
                     val formattedTime = fmtOut.format(date)
                     etVisitTimeAVDA!!.setText(formattedTime)
@@ -167,7 +188,14 @@ class AddVisitorDetailActivity : AppCompatActivity(), View.OnClickListener {
                     finish()
                 }
                 R.id.tvSaveAVDA -> {
-                    finish()
+                    if (isValidation()) {
+
+                        if (ConnectivityDetector.isConnectingToInternet(context!!)) {
+                            callAddVisitorDetailsApi()
+                        } else {
+                            SnackBar.showInternetError(context!!, snackbarView!!)
+                        }
+                    }
                 }
                 R.id.tILVisitDateAVDA -> {
                     openDatePickerDialog()
@@ -192,6 +220,137 @@ class AddVisitorDetailActivity : AppCompatActivity(), View.OnClickListener {
         } catch (e: Exception) {
             e.printStackTrace()
         }
+    }
+
+    private fun callAddVisitorDetailsApi() {
+        try{
+            var jsonObjectMain = JsonObject()
+
+
+            var jsonObjectData = JsonObject()
+           // var jsonObjectDataMain = JsonObject()
+            jsonObjectData.addProperty("purpose", purpose)
+            jsonObjectData.addProperty("company", comingFrom)
+
+
+         //   var jsonObjectentryMain = JsonObject()
+            var jsonObjectentry = JsonObject()
+            jsonObjectentry.addProperty("actualEntryTime", visitDate+" "+visitTime)
+
+            var jsonObjectEmployee = JsonObject()
+            jsonObjectEmployee.addProperty("name", tomeet)
+            jsonObjectentry.add("employee",jsonObjectEmployee)
+
+            //jsonObjectentry.addProperty("time_of_visit", visitTime)
+
+
+            jsonObjectMain.addProperty("name", name)
+            jsonObjectMain.addProperty("mobile", mobile)
+            jsonObjectMain.add("data",jsonObjectData)
+            jsonObjectMain.add("entry",jsonObjectentry)
+
+
+            Log.e("jsonObjectentry","-----==---->"+jsonObjectentry)
+            Log.e("jsonObjectData","-----==---->"+jsonObjectData)
+            Log.e("jsonObjectMain","-----==---->"+jsonObjectMain)
+
+            var mAPIService: APIService? = null
+            mAPIService = ApiUtils.apiService
+            MyProgressDialog.showProgressDialog(context!!)
+            mAPIService!!.addVisitorsEntry(
+                AppConstants.BEARER_TOKEN + SessionManager.getToken(context!!),
+                "application/json",
+                jsonObjectMain
+            )
+                .enqueue(object : Callback<VisitorsListModel> {
+
+                    override fun onResponse(
+                        call: Call<VisitorsListModel>,
+                        response: Response<VisitorsListModel>
+                    ) {
+                        MyProgressDialog.hideProgressDialog()
+                        try {
+                            if (response.code() == 200) {
+                                val returnIntent = Intent()
+                                //returnIntent.putExtra("result", result)
+                                setResult(Activity.RESULT_OK, returnIntent)
+                                finish()
+                            } else {
+                                SnackBar.showError(
+                                    context!!,
+                                    snackbarView!!,
+                                    "Something went wrong"
+                                )
+                            }
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+
+                        }
+                    }
+
+                    override fun onFailure(
+                        call: Call<VisitorsListModel>,
+                        t: Throwable
+                    ) {
+                        MyProgressDialog.hideProgressDialog()
+                    }
+                })
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+            MyProgressDialog.hideProgressDialog()
+
+        }
+    }
+
+    lateinit var name: String
+    lateinit var tomeet: String
+    lateinit var visitDate: String
+    lateinit var visitTime: String
+    lateinit var comingFrom: String
+    lateinit var mobile: String
+    lateinit var purpose: String
+
+    private fun isValidation(): Boolean {
+        name = etNameAVDA!!.text.toString()
+        tomeet = aTvToMeetAVDA!!.text.toString()
+        visitDate = etVisitDateAVDA!!.text.toString()
+        visitTime = etVisitTimeAVDA!!.text.toString()
+        comingFrom = etComingFromAVDA!!.text.toString()
+        mobile = etMobileAVDA!!.text.toString()
+        purpose = etPurposeAVDA!!.text.toString()
+
+        if (name.isNullOrEmpty()) {
+            SnackBar.showError(context!!, snackbarView!!, "Please enter name.")
+            etNameAVDA!!.requestFocus()
+            return false
+        } else if (tomeet.isNullOrEmpty()) {
+            SnackBar.showError(context!!, snackbarView!!, "Please enter meet person name.")
+            aTvToMeetAVDA!!.requestFocus()
+            return false
+        } else if (visitDate.isNullOrEmpty()) {
+            SnackBar.showError(context!!, snackbarView!!, "Please select date of visit.")
+            etVisitDateAVDA!!.requestFocus()
+            return false
+        } else if (comingFrom.isNullOrEmpty()) {
+            SnackBar.showError(context!!, snackbarView!!, "Please enter coming from.")
+            etComingFromAVDA!!.requestFocus()
+            return false
+        } else if (mobile.isNullOrEmpty()) {
+            SnackBar.showError(context!!, snackbarView!!, "Please enter mobile number.")
+            etMobileAVDA!!.requestFocus()
+            return false
+        } else if (mobile.length < 10) {
+            SnackBar.showError(context!!, snackbarView!!, "Please enter valid mobile number.")
+            etMobileAVDA!!.requestFocus()
+            return false
+        } else if (purpose.isNullOrEmpty()) {
+            SnackBar.showError(context!!, snackbarView!!, "Please enter purpose.")
+            etPurposeAVDA!!.requestFocus()
+            return false
+        }
+
+        return true
     }
 
     private fun openPersionVerifyDialog() {

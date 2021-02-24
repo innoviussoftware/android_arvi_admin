@@ -1,22 +1,40 @@
 package com.arvi.Adapter
 
 import android.content.Context
-import android.content.Intent
+import android.text.format.DateFormat
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.RelativeLayout
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.arvi.Activity.NewApp.AddVisitorDetailActivity
+import com.arvi.Model.Result
 import com.arvi.R
+import com.arvi.Utils.GlobalMethods
+import kotlinx.android.synthetic.main.row_visitors.view.*
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
 
 class SetVisitorDataAdapter(
-    var context: Context
+    var context: Context, var alVisitorList: ArrayList<Result>, var btnlistener: BtnClickListener
 ) : RecyclerView.Adapter<SetVisitorDataAdapter.ViewHolder>() {
 
-    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        var rlVisitorRV = itemView.findViewById(R.id.rlVisitorRV) as RelativeLayout
+     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+         var tvNameRV = itemView.tvNameRV!!
+         var tvMeetPersNameRV=itemView.tvMeetPersNameRV!!
+         var tvVisitorDaysRV=itemView.tvVisitorDaysRV!!
+         var tvVisitorTimeRV=itemView.tvVisitorTimeRV!!
+
+         var rlVisitorRV=itemView.rlVisitorRV!!
+    }
+
+
+
+    companion object {
+        var mClickListener: BtnClickListener? = null
+    }
+
+    open interface BtnClickListener {
+        fun onVisitorDetailsBtnClick(position: Int)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -30,19 +48,46 @@ class SetVisitorDataAdapter(
     }
 
     override fun getItemCount(): Int {
-        return 10
+        return alVisitorList.size
     }
 
+    var lastSelectedPosition: Int = -1
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         try {
+
+            var itemData=alVisitorList[position]
+
+            holder.tvNameRV.text=itemData.name+"("+itemData.visitor!!.data!!.company+")"
+            holder.tvMeetPersNameRV.text="To Meet "+itemData.data!!.visitingTo!!.name
+
+            holder.tvVisitorTimeRV.text=GlobalMethods.convertOnlyDate(itemData.data!!.actualEntry!!.dateOn!!) + ", " + itemData.data!!.actualEntry!!.timeOn
+            //GlobalMethods.convertOnlyDate(itemData.data.actualEntry.timeOn)
+
+            mClickListener = btnlistener
             holder.rlVisitorRV.setOnClickListener {
-                var intent = Intent(context, AddVisitorDetailActivity::class.java)
-                intent.putExtra("from", "list")
-                context.startActivity(intent)
+                if (mClickListener != null) {
+                    mClickListener?.onVisitorDetailsBtnClick(position)
+                    lastSelectedPosition = position
+                    notifyDataSetChanged()
+                }
             }
         } catch (e: Exception) {
             e.printStackTrace()
         }
+
+        try{
+            val format1 = SimpleDateFormat("yyyy-MM-DD")
+            val dt1: Date = format1.parse(alVisitorList[position].data!!.actualEntry!!.dateOn)
+            val format2 = SimpleDateFormat("EEEE")
+            val finalDay: String = format2.format(dt1)
+
+            holder.tvVisitorDaysRV.text=finalDay
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
+
+
 
 }

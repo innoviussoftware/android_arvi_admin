@@ -154,6 +154,9 @@
                     android:hint="Mobile"
                     android:inputType="phone"
                     android:maxLines="1"
+                    android:ems="12"
+                    android:maxEms="12"
+                    android:maxLength="12"
                     android:singleLine="true"
                     android:textColor="@color/black"
                     android:textSize="@dimen/_12ssp" />
@@ -170,6 +173,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/avenir_next_regular"
                     android:hint="Purpose"
+                    android:imeOptions="actionDone"
                     android:textColor="@color/black"
                     android:textSize="@dimen/_12ssp" />
             </com.google.android.material.textfield.TextInputLayout>

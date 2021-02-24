@@ -1,26 +1,33 @@
 package com.arvi.Fragment
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.arvi.Activity.NewApp.AddVisitorDetailActivity
+
 import com.arvi.Adapter.SetVisitorDataAdapter
-
+import com.arvi.Model.VisitorsListModel
 import com.arvi.R
+import com.arvi.RetrofitApiCall.APIService
+import com.arvi.RetrofitApiCall.ApiUtils
+import com.arvi.SessionManager.SessionManager
+import com.arvi.Utils.AppConstants
+import com.arvi.Utils.ConnectivityDetector
+import com.arvi.Utils.MyProgressDialog
 import com.arvi.Utils.SnackBar
-import com.google.android.material.snackbar.Snackbar
-
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import com.arvi.Activity.NewApp.AddVisitorDetailActivity
+import com.arvi.Model.Result
+import com.google.gson.Gson
 
 class VisitorListFragment : Fragment(), View.OnClickListener {
 
@@ -48,20 +55,98 @@ class VisitorListFragment : Fragment(), View.OnClickListener {
         try {
             setIds(view)
             setListeners()
-            setVisitorData()
+
+
+            if (ConnectivityDetector.isConnectingToInternet(appContext!!)) {
+                callGetVisitorListAPI()
+                //callLoginAPI(strKioskId)
+            } else {
+                SnackBar.showInternetError(appContext!!, snackbarView!!)
+            }
         } catch (e: Exception) {
             e.printStackTrace()
         }
         return view
     }
 
-    @SuppressLint("WrongConstant")
-    private fun setVisitorData() {
+
+    var totalPageSize: Int = 0
+    var currentPage: Int = 1
+
+    lateinit var alVisitorList: ArrayList<Result>
+
+    private fun callGetVisitorListAPI() {
         try {
-            var setVisitorDataAdapter = SetVisitorDataAdapter(appContext!!)
-            rVwVisitorVLF!!.layoutManager =
-                LinearLayoutManager(appContext, LinearLayout.VERTICAL, false)
-            rVwVisitorVLF!!.setAdapter(setVisitorDataAdapter)
+
+            var token = AppConstants.BEARER_TOKEN + SessionManager.getToken(appContext!!)
+
+            var mAPIService: APIService? = null
+            mAPIService = ApiUtils.apiService
+            MyProgressDialog.showProgressDialog(appContext!!)
+
+            mAPIService!!.getVisitorsList("application/json", token, totalPageSize, currentPage)
+                .enqueue(object : Callback<VisitorsListModel> {
+                    override fun onResponse(
+                        call: Call<VisitorsListModel>,
+                        response: Response<VisitorsListModel>
+                    ) {
+                        MyProgressDialog.hideProgressDialog()
+                        try {
+                            if (response.code() == 200) {
+                                alVisitorList = ArrayList()
+                                alVisitorList.addAll(response.body().result!!)
+                                setVisitorData(alVisitorList)
+                            } else {
+                                SnackBar.showError(
+                                    context!!,
+                                    snackbarView!!,
+                                    "Something went wrong"
+                                )
+                            }
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+
+                        }
+                    }
+
+                    override fun onFailure(
+                        call: Call<VisitorsListModel>,
+                        t: Throwable
+                    ) {
+                        MyProgressDialog.hideProgressDialog()
+                    }
+                })
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+            MyProgressDialog.hideProgressDialog()
+
+        }
+    }
+
+
+    public  val REQUEST_VISITOR=1577
+    private fun setVisitorData(alVisitorList: ArrayList<Result>) {
+        try {
+
+            if (alVisitorList.size > 0) {
+                var setVisitorDataAdapter = SetVisitorDataAdapter(appContext!!, alVisitorList,
+                    object : SetVisitorDataAdapter.BtnClickListener {
+                        override fun onVisitorDetailsBtnClick(position: Int) {
+                            val gson = Gson()
+                            var myJson = gson.toJson(alVisitorList[position])
+
+                            var intent = Intent(context, AddVisitorDetailActivity::class.java)
+                            intent.putExtra("from", "list")
+                            intent.putExtra("visitorData",myJson)
+                            startActivityForResult(intent,REQUEST_VISITOR)
+                        }
+                    })
+
+                rVwVisitorVLF!!.layoutManager =
+                    LinearLayoutManager(appContext, RecyclerView.VERTICAL, false)
+                rVwVisitorVLF!!.adapter = setVisitorDataAdapter
+            }
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -92,13 +177,27 @@ class VisitorListFragment : Fragment(), View.OnClickListener {
             when (v!!.id) {
                 R.id.imgVwAddVisitorVLF -> {
                     var intent = Intent(appContext, AddVisitorDetailActivity::class.java)
-                    startActivity(intent)
+                    startActivityForResult(intent,REQUEST_VISITOR)
                 }
             }
         } catch (e: Exception) {
             e.printStackTrace()
         }
     }
+
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode==REQUEST_VISITOR){
+            if (ConnectivityDetector.isConnectingToInternet(appContext!!)) {
+                callGetVisitorListAPI()
+            } else {
+                SnackBar.showInternetError(appContext!!, snackbarView!!)
+            }
+        }
+    }
+
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
