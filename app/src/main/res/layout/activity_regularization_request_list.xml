@@ -25,7 +25,7 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_toEndOf="@+id/imgVwBackRRLA"
-            android:fontFamily="@font/avenir_next_bold"
+            android:fontFamily="@font/gotham_bold"
             android:text="Regularization Request"
             android:textColor="@color/black"
             android:textSize="@dimen/_14ssp" />

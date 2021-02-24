@@ -96,6 +96,7 @@ interface APIService {
     ): Call<RoleListModel>
 
     //visitors Related .. Start
+    //get visitors list
     @GET("v1/companies/visitor/entries")
     fun getVisitorsList(
         @Header("Content-Type") ctype: String,
@@ -104,6 +105,7 @@ interface APIService {
         @Query("currentPage") currentPage:Int
     ): Call<VisitorsListModel>
 
+    //add visitor list
     @POST("v1/companies/visitors")
     fun addVisitorsEntry(
         @Header("Authorization") auth: String,
@@ -118,4 +120,11 @@ interface APIService {
         @Header("Authorization") auth: String,
         @Body detail: JsonObject
     ): Call<ResponseBody>
+
+
+    @GET("v1/companies/roles")
+    fun getDesignationList(
+        @Header("Authorization") auth: String
+    ):Call<GetDesignationListResponse>
+
 }

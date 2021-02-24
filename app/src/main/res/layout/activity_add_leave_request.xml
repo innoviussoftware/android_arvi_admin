@@ -25,7 +25,7 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_toEndOf="@+id/imgVwBackALRA"
-            android:fontFamily="@font/avenir_next_bold"
+            android:fontFamily="@font/gotham_bold"
             android:text="Add Leave Request"
             android:textColor="@color/black"
             android:textSize="@dimen/_14ssp" />
@@ -86,7 +86,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:editable="false"
-                    android:fontFamily="@font/avenir_next_regular"
+                    android:fontFamily="@font/gotham_book_regular"
                     android:hint="Employee Id"
                     android:singleLine="true"
                     android:textSize="@dimen/_12ssp" />
@@ -97,7 +97,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/_8sdp"
-                android:fontFamily="@font/avenir_next_regular"
+                android:fontFamily="@font/gotham_book_regular"
                 android:text="Start Date"
                 android:textColor="@color/black"
                 android:textSize="@dimen/_12ssp" />
@@ -113,7 +113,7 @@
                     android:id="@+id/tvStartDateALRA"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:fontFamily="@font/avenir_next_regular"
+                    android:fontFamily="@font/gotham_book_regular"
                     android:gravity="center_vertical"
                     android:paddingStart="@dimen/_10sdp"
                     android:textColor="@color/black"
@@ -133,7 +133,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/_8sdp"
-                android:fontFamily="@font/avenir_next_regular"
+                android:fontFamily="@font/gotham_book_regular"
                 android:text="End Date"
                 android:textColor="@color/black"
                 android:textSize="@dimen/_12ssp" />
@@ -149,7 +149,7 @@
                     android:id="@+id/tvEndDateALRA"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:fontFamily="@font/avenir_next_regular"
+                    android:fontFamily="@font/gotham_book_regular"
                     android:gravity="center_vertical"
                     android:paddingStart="@dimen/_10sdp"
                     android:hint="DD/MM/YYYY"
@@ -202,7 +202,7 @@
                     android:minLines="4"
                     android:hint="Reason for leave"
                     android:textSize="@dimen/_12ssp"
-                    android:fontFamily="@font/avenir_next_regular"
+                    android:fontFamily="@font/gotham_book_regular"
                     android:gravity="top"
                     android:textColor="@color/black"
                     />
@@ -218,7 +218,7 @@
                 android:textColor="@color/white"
                 android:textSize="@dimen/_14ssp"
                 android:textAllCaps="true"
-                android:fontFamily="@font/avenir_next_bold"
+                android:fontFamily="@font/gotham_bold"
                 android:gravity="center"
                 android:text="Add Request" />
 

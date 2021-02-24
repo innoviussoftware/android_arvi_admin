@@ -112,9 +112,9 @@ class AddVisitorDetailActivity : AppCompatActivity(), View.OnClickListener {
                     }
 
                     if (monthOfYear < 10) {
-                        showMonth = "0" + monthOfYear
+                        showMonth = "0" + (monthOfYear+1)
                     } else {
-                        showMonth = monthOfYear.toString()
+                        showMonth = (monthOfYear+1).toString()
                     }
                     etVisitDateAVDA!!.setText(year.toString()+"-"+showMonth+"-"+showDay)
                 },

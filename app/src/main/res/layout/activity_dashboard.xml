@@ -52,7 +52,7 @@
                     android:textAllCaps="true"
                     android:textSize="@dimen/_10ssp"
                     android:textColor="@color/app_bg"
-                    android:fontFamily="@font/avenir_next_regular"
+                    android:fontFamily="@font/gotham_book_regular"
                     android:layout_below="@+id/imgVwDashboardDA"
                     />
             </RelativeLayout>
@@ -82,7 +82,7 @@
                     android:textAllCaps="true"
                     android:textSize="@dimen/_10ssp"
                     android:textColor="@color/black"
-                    android:fontFamily="@font/avenir_next_regular"
+                    android:fontFamily="@font/gotham_book_regular"
                     android:layout_below="@+id/imgVwSelfiCheckInDA"
                     />
             </RelativeLayout>
@@ -112,7 +112,7 @@
                     android:textAllCaps="true"
                     android:textSize="@dimen/_10ssp"
                     android:textColor="@color/black"
-                    android:fontFamily="@font/avenir_next_regular"
+                    android:fontFamily="@font/gotham_book_regular"
                     android:layout_below="@+id/imgVwVisitorDA"
                     />
             </RelativeLayout>
@@ -142,7 +142,7 @@
                     android:textAllCaps="true"
                     android:textSize="@dimen/_10ssp"
                     android:textColor="@color/black"
-                    android:fontFamily="@font/avenir_next_regular"
+                    android:fontFamily="@font/gotham_book_regular"
                     android:layout_below="@+id/imgVwRequestDA"
                     />
             </RelativeLayout>
@@ -173,7 +173,7 @@
                     android:textAllCaps="true"
                     android:textSize="@dimen/_10ssp"
                     android:textColor="@color/black"
-                    android:fontFamily="@font/avenir_next_regular"
+                    android:fontFamily="@font/gotham_book_regular"
                     android:layout_below="@+id/imgVwProfileDA"
                     />
             </RelativeLayout>

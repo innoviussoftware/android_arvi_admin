@@ -47,7 +47,7 @@
                     android:hint="Enter Company Name"
                     android:text=""
                     android:textColor="@color/black"
-                    android:fontFamily="@font/avenir_next_regular"
+                    android:fontFamily="@font/gotham_book_regular"
                     />
             </RelativeLayout>
             <RelativeLayout
@@ -72,7 +72,7 @@
                     android:hint="Name of Admin"
                     android:text=""
                     android:textColor="@color/black"
-                    android:fontFamily="@font/avenir_next_regular"
+                    android:fontFamily="@font/gotham_book_regular"
                     />
             </RelativeLayout>
             <RelativeLayout
@@ -97,7 +97,7 @@
                     android:hint="Designation"
                     android:text=""
                     android:textColor="@color/black"
-                    android:fontFamily="@font/avenir_next_regular"
+                    android:fontFamily="@font/gotham_book_regular"
                     />
             </RelativeLayout>
 
@@ -124,7 +124,7 @@
                     android:inputType="phone"
                     android:text=""
                     android:textColor="@color/black"
-                    android:fontFamily="@font/avenir_next_regular"
+                    android:fontFamily="@font/gotham_book_regular"
                     />
             </RelativeLayout>
 
@@ -151,7 +151,7 @@
                     android:maxLines="1"
                     android:text=""
                     android:textColor="@color/black"
-                    android:fontFamily="@font/avenir_next_regular"
+                    android:fontFamily="@font/gotham_book_regular"
                     />
             </RelativeLayout>
 
@@ -178,7 +178,7 @@
                     android:text="Submit"
                     android:textColor="@color/white"
                     android:textStyle="bold"
-                    android:fontFamily="@font/avenir_next_regular"
+                    android:fontFamily="@font/gotham_bold"
                     />
 
             </RelativeLayout>

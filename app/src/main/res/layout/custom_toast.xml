@@ -27,7 +27,7 @@
 				android:gravity="center"
 				android:textSize="@dimen/_18ssp"
 				android:textColor="@color/white"
-				android:fontFamily="@font/avenir_next_regular"
+				android:fontFamily="@font/gotham_book_regular"
 				/>
 
 			<TextView
@@ -51,7 +51,7 @@
 				android:gravity="center"
 				android:textSize="@dimen/_18ssp"
 				android:textColor="@color/white"
-				android:fontFamily="@font/avenir_next_regular"
+				android:fontFamily="@font/gotham_book_regular"
 				/>
 
 			<TextView
@@ -64,7 +64,7 @@
 				android:textColor="@color/white"
 				android:layout_marginTop="@dimen/_25sdp"
 				android:visibility="gone"
-				android:fontFamily="@font/avenir_next_regular"
+				android:fontFamily="@font/gotham_book_regular"
 				/>
 			<RelativeLayout
 				android:id="@+id/rlSanitizer"
@@ -87,7 +87,7 @@
 					android:textSize="@dimen/_20ssp"
 					android:layout_marginLeft="@dimen/_45sdp"
 					android:textColor="@color/white"
-					android:fontFamily="@font/avenir_next_regular"
+					android:fontFamily="@font/gotham_book_regular"
 					/>
 			</RelativeLayout>
 
