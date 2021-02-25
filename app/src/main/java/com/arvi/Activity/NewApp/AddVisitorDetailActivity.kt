@@ -363,8 +363,8 @@ class AddVisitorDetailActivity : AppCompatActivity(), View.OnClickListener {
             var tvLastVisitedDVV = dialog.findViewById(R.id.tvLastVisitedDVV) as TextView
             var tvSamePersonDVV = dialog.findViewById(R.id.tvSamePersonDVV) as TextView
             var tvChangeDVV = dialog.findViewById(R.id.tvChangeDVV) as TextView
-            var tvYesDVV = dialog.findViewById(R.id.tvYesDVV) as TextView
-            var tvNoDVV = dialog.findViewById(R.id.tvNoDVV) as TextView
+            /*var tvYesDVV = dialog.findViewById(R.id.tvYesDVV) as TextView
+            var tvNoDVV = dialog.findViewById(R.id.tvNoDVV) as TextView*/
             tvSamePersonDVV.setOnClickListener {
                 dialog.dismiss()
                 openVisitorRegisterSuccessDialog()
@@ -373,7 +373,7 @@ class AddVisitorDetailActivity : AppCompatActivity(), View.OnClickListener {
                 var intent = Intent(context!!, AddVisitorPhotoActivity::class.java)
                 startActivity(intent)
             }
-            tvYesDVV.setOnClickListener {
+           /* tvYesDVV.setOnClickListener {
                 etMobileAVDA!!.setText("")
                 etMobileAVDA!!.requestFocus()
                 dialog.dismiss()
@@ -381,7 +381,7 @@ class AddVisitorDetailActivity : AppCompatActivity(), View.OnClickListener {
             tvNoDVV.setOnClickListener {
                 dialog.dismiss()
                 finish()
-            }
+            }*/
             dialog.show()
         } catch (e: Exception) {
             e.printStackTrace()

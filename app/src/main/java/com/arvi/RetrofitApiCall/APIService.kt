@@ -114,7 +114,7 @@ interface APIService {
     ): Call<VisitorsListModel>
     //visitors Related .. End
 
-    @POST("v1/companies/visitors/entry")
+    @POST("v1/companies/visitor/entries")
     fun updateVisitorsEntry(
         @Header("Content-Type") ctype: String,
         @Header("Authorization") auth: String,
