@@ -57,10 +57,10 @@ class SetVisitorDataAdapter(
 
             var itemData=alVisitorList[position]
 
-            holder.tvNameRV.text=itemData.name+"("+itemData.visitor!!.data!!.company+")"
-            holder.tvMeetPersNameRV.text="To Meet "+itemData.data!!.visitingTo!!.name
+            holder.tvNameRV.text=itemData.name+"("+itemData.data!!.employee!!.company+")"
+            holder.tvMeetPersNameRV.text="To Meet "+itemData.data!!.employee!!.name
 
-            holder.tvVisitorTimeRV.text=GlobalMethods.convertOnlyDate(itemData.data!!.actualEntry!!.dateOn!!) + ", " + itemData.data!!.actualEntry!!.timeOn
+            holder.tvVisitorTimeRV.text=GlobalMethods.convertOnlyDate(itemData.data!!.actualEntryTime!!)
             //GlobalMethods.convertOnlyDate(itemData.data.actualEntry.timeOn)
 
             mClickListener = btnlistener
@@ -76,8 +76,8 @@ class SetVisitorDataAdapter(
         }
 
         try{
-            val format1 = SimpleDateFormat("yyyy-MM-DD")
-            val dt1: Date = format1.parse(alVisitorList[position].data!!.actualEntry!!.dateOn)
+            val format1 = SimpleDateFormat("yyyy-MM-DD hh:mm")
+            val dt1: Date = format1.parse(alVisitorList[position].data!!.actualEntryTime)
             val format2 = SimpleDateFormat("EEEE")
             val finalDay: String = format2.format(dt1)
 

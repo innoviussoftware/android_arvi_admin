@@ -50,7 +50,10 @@
             android:layout_height="wrap_content"/>
 
         <TextView
-            android:text=""
+            android:textSize="@dimen/_12ssp"
+            android:layout_centerInParent="true"
+            android:textColor="@color/gray_clr"
+            android:text="No employees list found."
             android:id="@+id/tvNoEmplyoeeListFound"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>

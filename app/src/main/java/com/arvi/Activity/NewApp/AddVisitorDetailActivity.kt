@@ -84,12 +84,12 @@ class AddVisitorDetailActivity : AppCompatActivity(), View.OnClickListener {
 
     fun setVisitorData(visitorDetails: Result) {
         etNameAVDA!!.setText(visitorDetails.name)
-        aTvToMeetAVDA!!.setText(visitorDetails.data!!.visitingTo!!.name)
-        etVisitDateAVDA!!.setText(visitorDetails.data!!.actualEntry!!.dateOn!!)
-        etVisitTimeAVDA!!.setText(visitorDetails.data!!.actualEntry!!.timeOn!!)
-        etComingFromAVDA!!.setText(visitorDetails.visitor!!.data!!.company)
-        etMobileAVDA!!.setText(visitorDetails.visitor!!.mobile)
-        etPurposeAVDA!!.setText(visitorDetails.visitor!!.data!!.purpose)
+        aTvToMeetAVDA!!.setText(visitorDetails.data!!.employee!!.name)
+        etVisitDateAVDA!!.setText(visitorDetails.data!!.actualEntryTime)
+        etVisitTimeAVDA!!.setText(visitorDetails.data!!.actualEntryTime)
+        etComingFromAVDA!!.setText(visitorDetails.data!!.employee!!.company)
+        etMobileAVDA!!.setText(visitorDetails.mobile)
+        etPurposeAVDA!!.setText(visitorDetails.data!!.purpose)
     }
 
     private fun openDatePickerDialog() {
@@ -225,32 +225,21 @@ class AddVisitorDetailActivity : AppCompatActivity(), View.OnClickListener {
     private fun callAddVisitorDetailsApi() {
         try{
             var jsonObjectMain = JsonObject()
-
-
-            var jsonObjectData = JsonObject()
-           // var jsonObjectDataMain = JsonObject()
-            jsonObjectData.addProperty("purpose", purpose)
-            jsonObjectData.addProperty("company", comingFrom)
-
-
-         //   var jsonObjectentryMain = JsonObject()
-            var jsonObjectentry = JsonObject()
-            jsonObjectentry.addProperty("actualEntryTime", visitDate+" "+visitTime)
-
-            var jsonObjectEmployee = JsonObject()
-            jsonObjectEmployee.addProperty("name", tomeet)
-            jsonObjectentry.add("employee",jsonObjectEmployee)
-
-            //jsonObjectentry.addProperty("time_of_visit", visitTime)
-
-
             jsonObjectMain.addProperty("name", name)
             jsonObjectMain.addProperty("mobile", mobile)
+
+            var jsonObjectData = JsonObject()
+            var jsonObjectEmployee = JsonObject()
+
+            jsonObjectEmployee.addProperty("company", comingFrom)
+            jsonObjectEmployee.addProperty("name", tomeet)
+
+            jsonObjectData.add("employee",jsonObjectEmployee)
+            jsonObjectData.addProperty("purpose", purpose)
+            jsonObjectData.addProperty("actualEntryTime", visitDate+" "+visitTime)
+
             jsonObjectMain.add("data",jsonObjectData)
-            jsonObjectMain.add("entry",jsonObjectentry)
 
-
-            Log.e("jsonObjectentry","-----==---->"+jsonObjectentry)
             Log.e("jsonObjectData","-----==---->"+jsonObjectData)
             Log.e("jsonObjectMain","-----==---->"+jsonObjectMain)
 
@@ -365,13 +354,20 @@ class AddVisitorDetailActivity : AppCompatActivity(), View.OnClickListener {
             var tvChangeDVV = dialog.findViewById(R.id.tvChangeDVV) as TextView
             /*var tvYesDVV = dialog.findViewById(R.id.tvYesDVV) as TextView
             var tvNoDVV = dialog.findViewById(R.id.tvNoDVV) as TextView*/
+
+            tvNameDVV.text=visitorDetails.name
+            tvCompanyDVV.text=visitorDetails.data!!.employee!!.company
+            tvLastVisitedDVV.text=GlobalMethods.convertOnlyDate(visitorDetails.data!!.actualEntryTime!!)
+
             tvSamePersonDVV.setOnClickListener {
                 dialog.dismiss()
-                openVisitorRegisterSuccessDialog()
+                SnackBar.showInProgressError(context!!, snackbarView!!/*, "Working IN Progress"*/)
+                //openVisitorRegisterSuccessDialog()
             }
             tvChangeDVV.setOnClickListener {
-                var intent = Intent(context!!, AddVisitorPhotoActivity::class.java)
-                startActivity(intent)
+                SnackBar.showInProgressError(context!!, snackbarView!!/*, "Working IN Progress"*/)
+            /*var intent = Intent(context!!, AddVisitorPhotoActivity::class.java)
+                startActivity(intent)*/
             }
            /* tvYesDVV.setOnClickListener {
                 etMobileAVDA!!.setText("")

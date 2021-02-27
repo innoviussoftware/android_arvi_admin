@@ -3,36 +3,37 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="#e6e6e6"
     tools:context=".Fragment.VisitorListFragment">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rVwVisitorVLF"
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tbLytVisitorTabFVL"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="@dimen/_40sdp"
+        android:layout_marginStart="@dimen/_15sdp"
+        android:layout_marginTop="@dimen/_5sdp"
+        android:layout_marginEnd="@dimen/_15sdp"
+        app:tabGravity="fill"
+        app:tabIndicatorColor="@color/app_bg"
+        app:tabIndicatorHeight="2dp"
+        app:tabMode="fixed"
+        app:tabPaddingEnd="0dp"
+        app:tabPaddingStart="0dp"
+        app:tabRippleColor="@null"
+        app:tabSelectedTextColor="@color/app_bg"
+        app:tabTextColor="@color/gray_clr" />
 
-    <TextView
-        android:id="@+id/tvNoVisitorVLF"
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/vwPgrVisitorFVL"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="Visitor list is empty"
-        android:textSize="@dimen/_14ssp"
-        android:textColor="@color/app_bg"
-        android:fontFamily="@font/avenir_next_bold"
-        android:gravity="center"
-        android:visibility="gone"
-        />
+        android:layout_below="@+id/tbLytVisitorTabFVL"
+        android:layout_marginStart="@dimen/_5sdp"
+        android:layout_marginTop="@dimen/_5sdp"
+        android:layout_marginEnd="@dimen/_5sdp"
+        android:layout_marginBottom="@dimen/_1sdp" />
 
 
-    <ImageView
-        android:id="@+id/imgVwAddVisitorVLF"
-        android:layout_width="@dimen/_50sdp"
-        android:layout_height="@dimen/_50sdp"
-        android:src="@mipmap/ic_add_round"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"
-        android:layout_margin="@dimen/_10sdp"
-        android:elevation="@dimen/_2sdp"
-        />
 
 </RelativeLayout>

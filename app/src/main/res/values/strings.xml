@@ -130,6 +130,12 @@
     <string name="designation_ttl">Designation</string>
     <string name="mobile_ttl">Mobile</string>
     <string name="mail_ttl">Mail (Official)</string>
+    <string name="logout_ttl">Logout</string>
+
+    <string name="logout_message">Are you sure you want to Logout?</string>
+    <string name="cancel">Cancel</string>
+    <string name="expected_ttl">Expected</string>
+    <string name="screened_ttl">Screened</string>
 
 
     <string-array name="default_emp">

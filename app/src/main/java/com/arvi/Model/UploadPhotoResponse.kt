@@ -1,7 +1,7 @@
 package com.arvi.Model
 
 data class UploadPhotoResponse(
-    val `data`: List<UploadPhotoData>
+    val `data`: ArrayList<UploadPhotoData>?=null
 )
 
 data class UploadPhotoData(

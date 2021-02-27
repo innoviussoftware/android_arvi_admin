@@ -33,7 +33,7 @@ class EnterEmployeeDetailsActivity : AppCompatActivity(), View.OnClickListener {
 
     var context: Context? = null
     var snackbarView: View? = null
-    var alDesignationList :ArrayList<GetDesignationListResponseItem> = ArrayList()
+    var alDesignationList: ArrayList<GetDesignationListResponseItem> = ArrayList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,12 +66,17 @@ class EnterEmployeeDetailsActivity : AppCompatActivity(), View.OnClickListener {
                     MyProgressDialog.hideProgressDialog()
                     try {
                         if (response.code() == 200) {
-                           if(response.body()!=null){
-                               alDesignationList = ArrayList()
-                               alDesignationList.addAll(response.body())
-                               setDesignation()
-                           }
-                        } else {
+                            if (response.body() != null) {
+                                alDesignationList = ArrayList()
+                                alDesignationList.addAll(response.body())
+                                setDesignation()
+                            }
+                        } else if(response.code() == 401){
+                            var intent = Intent(context!!, EnterCompanyDetailActivity::class.java)
+                            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+                            startActivity(intent)
+                            SessionManager.clearAppSession(context!!)
+                        }else {
                             SnackBar.showError(
                                 context!!,
                                 snackbarView!!,
@@ -129,16 +134,58 @@ class EnterEmployeeDetailsActivity : AppCompatActivity(), View.OnClickListener {
         finish()
     }
 
+    private var strEmpId: String? = null
+    private var strPhone: String? = null
+    var strName: String? = null
+
     override fun onClick(view: View?) {
         when (view!!.id) {
             R.id.imgVwBackEEDA -> {
                 finish()
             }
             R.id.tvTakePicEEDA -> {
-                var intent = Intent(context!!, TakeEmployeePicActivity::class.java)
-                startActivity(intent)
+                if (isValidInput()) {
+                    var intent = Intent(context!!, TakeEmployeePicActivity::class.java)
+                    intent.putExtra("name", strName)
+                    intent.putExtra("mobile", strPhone)
+                    intent.putExtra("employeeId", strEmpId)
+                    startActivity(intent)
+                }
             }
         }
+    }
+
+    private fun isValidInput(): Boolean {
+        strName = etNameEEDA!!.text.toString()
+        strEmpId = etEmployeeIDEEDA!!.text.toString()
+        strPhone = etMobileEEDA!!.text.toString()
+
+        if (strName!!.isEmpty()) {
+            SnackBar.showValidationError(context!!, snackbarView!!, "Please enter person's name")
+            etNameEEDA!!.requestFocus()
+            return false
+        } else if (strEmpId!!.isEmpty()) {
+            SnackBar.showValidationError(context!!, snackbarView!!, "Please enter employee id")
+            etEmployeeIDEEDA!!.requestFocus()
+            return false
+        } else if (strPhone!!.isEmpty()) {
+            SnackBar.showValidationError(
+                context!!,
+                snackbarView!!,
+                "Please enter person's mobile number"
+            )
+            etMobileEEDA!!.requestFocus()
+            return false
+        } else if (strPhone!!.length < 10) {
+            SnackBar.showValidationError(
+                context!!,
+                snackbarView!!,
+                "Please enter valid mobile number"
+            )
+            etMobileEEDA!!.requestFocus()
+            return false
+        }
+        return true
     }
 
 }

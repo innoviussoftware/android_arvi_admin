@@ -1,19 +1,20 @@
 package com.arvi.Adapter
 
 import android.content.Context
-import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.arvi.Model.CompaniesUsersResult
 import com.arvi.R
-import de.hdodenhof.circleimageview.CircleImageView
+import com.makeramen.roundedimageview.RoundedTransformationBuilder
+import com.squareup.picasso.Picasso
 
 class UserEmployeesListAdapter(
-    var context: Context
+    var context: Context,
+    var alComapniesUserList: ArrayList<CompaniesUsersResult>
 ) : RecyclerView.Adapter<UserEmployeesListAdapter.ViewHolder>() {
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -34,18 +35,42 @@ class UserEmployeesListAdapter(
     }
 
     override fun getItemCount(): Int {
-        return 4
+        return alComapniesUserList.size
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         try {
-            if(position / 2 == 0) {
+            var itemData = alComapniesUserList[position]
+
+            if (position / 2 == 0) {
                 holder.tvActiveStatusRUED.setText(context.resources.getString(R.string.active_ttl))
                 holder.tvActiveStatusRUED.setTextColor(context.resources.getColor(R.color.active_status))
             } else/* if (position / 2 == 0)*/ {
                 holder.tvActiveStatusRUED.setText(context.resources.getString(R.string.inactive_ttl))
                 holder.tvActiveStatusRUED.setTextColor(context.resources.getColor(R.color.inactive_status))
             }
+
+
+
+
+            holder.tvEmployeeNameRUED.text = itemData!!.name
+
+
+            val transformation = RoundedTransformationBuilder()
+                .cornerRadiusDp(1f)
+                .oval(true)
+                .build()
+
+            if(itemData.picture !=null) {
+                Picasso.with(context)
+                    .load(itemData.picture)
+                    .fit()
+                    .transform(transformation)
+                    .into(holder.ivProfileRUED)
+            }else{
+                holder.ivProfileRUED.setImageDrawable(context.resources.getDrawable(R.drawable.user))
+            }
+
         } catch (e: Exception) {
             e.printStackTrace()
         }

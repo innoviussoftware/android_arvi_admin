@@ -3,6 +3,7 @@ package com.arvi.Fragment
 import android.Manifest
 import android.annotation.TargetApi
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -18,9 +19,11 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.arvi.Activity.NewApp.EnterCompanyDetailActivity
 import com.arvi.Activity.NewApp.UserEmployeesListActivity
 
 import com.arvi.R
+import com.arvi.SessionManager.SessionManager
 import com.arvi.Utils.KeyboardUtility
 import com.societyguard.Utils.FileUtil
 import com.theartofdev.edmodo.cropper.CropImage
@@ -75,6 +78,7 @@ class ProfileFragment : Fragment(), View.OnClickListener {
         ivChooseProfilePicFP.setOnClickListener(this)
         tvUpdateFP.setOnClickListener(this)
         tvTotalEmployeesFP.setOnClickListener(this)
+        ivLogoutFP.setOnClickListener(this)
         ivProfilePicFP.setImageDrawable(mContext.resources.getDrawable(R.drawable.user))
 
         notUpdateDetails()
@@ -86,6 +90,34 @@ class ProfileFragment : Fragment(), View.OnClickListener {
 
         var i = p0!!.id
         when (i) {
+            R.id.ivLogoutFP->{
+                val builder = AlertDialog.Builder(mContext!!)
+                builder.setCancelable(false)
+                builder.setTitle(mContext.resources.getString(R.string.app_name))
+                builder.setMessage(mContext.resources.getString(R.string.logout_message))
+                builder.setIcon(mContext.resources.getDrawable(R.drawable.ic_logout))
+
+                builder.setPositiveButton(
+                    mContext.resources.getString(R.string.logout_ttl)
+                ) { dialog, which ->
+
+                    var intent = Intent(mContext!!, EnterCompanyDetailActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+                    startActivity(intent)
+                    SessionManager.clearAppSession(mContext!!)
+
+                    dialog.dismiss()
+                }
+                builder.setNegativeButton(
+                    mContext.resources.getString(R.string.cancel)
+                ) { dialog, which ->
+                    dialog.dismiss()
+
+                }
+                val dialog = builder.create()
+                dialog.show()
+                // GlobalMethods.logOutApp(mContext)
+            }
             R.id.tvTotalEmployeesFP -> {
                 var intent=Intent(mContext, UserEmployeesListActivity::class.java)
                 startActivity(intent)

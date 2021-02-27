@@ -8,7 +8,6 @@ import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.hardware.Camera
 import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.IBinder
 import android.provider.MediaStore
@@ -16,9 +15,18 @@ import android.util.Log
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.arvi.Model.GetAddEmployeeResponse
+import com.arvi.Model.UploadPhotoData
+import com.arvi.Model.UploadPhotoResponse
 import com.arvi.R
+import com.arvi.RetrofitApiCall.APIService
+import com.arvi.RetrofitApiCall.ApiUtils.apiService
+import com.arvi.SessionManager.SessionManager.getToken
+import com.arvi.Utils.AppConstants.BEARER_TOKEN
+import com.arvi.Utils.MyProgressDialog.hideProgressDialog
 import com.arvi.btScan.common.CameraSource
 import com.arvi.btScan.common.CameraSourcePreview
 import com.arvi.btScan.common.GraphicOverlay
@@ -27,17 +35,25 @@ import com.arvi.btScan.java.arvi.ArviFaceDetectionProcessor
 import com.arvi.btScan.java.arvi.FaceDetectionListener
 import com.arvi.btScan.java.services.SlaveListener
 import com.arvi.btScan.java.services.SlaveService
+import com.google.gson.JsonArray
+import com.google.gson.JsonObject
 import com.societyguard.Utils.FileUtil
+import okhttp3.MediaType
 import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.io.ByteArrayOutputStream
+import java.io.File
 import java.io.IOException
-import java.util.ArrayList
+import java.util.*
 
-class TakeEmployeePicActivity : AppCompatActivity() , CompoundButton.OnCheckedChangeListener,
-    SlaveListener, View.OnClickListener{
+class TakeEmployeePicActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener,
+    SlaveListener, View.OnClickListener {
 
 
-    internal var tvInstruction: TextView?=null
+    internal var tvInstruction: TextView? = null
     private val TAG = "Add Visitor Photo"
     private val PERMISSION_REQUESTS = 1
     private var cameraSource: CameraSource? = null
@@ -49,7 +65,7 @@ class TakeEmployeePicActivity : AppCompatActivity() , CompoundButton.OnCheckedCh
     private var token: String? = null
     private var newFace: Bitmap? = null
     private var strEmpId: String? = null
-    private var strPhone:String? = null
+    private var strPhone: String? = null
 
 
     private enum class STATE {
@@ -65,7 +81,7 @@ class TakeEmployeePicActivity : AppCompatActivity() , CompoundButton.OnCheckedCh
     private var previousState = STATE.UNKNOWN
 
 
-    internal var facingSwitch: ToggleButton?=null
+    internal var facingSwitch: ToggleButton? = null
     internal var facePreviewOverlay: GraphicOverlay? = null
     internal var faceCapturePreview: CameraSourcePreview? = null
     internal var img1: ImageView? = null
@@ -113,6 +129,24 @@ class TakeEmployeePicActivity : AppCompatActivity() , CompoundButton.OnCheckedCh
 
             isServiceBound = false
             serviceIntent = Intent(applicationContext, SlaveService::class.java)
+
+            if (intent.extras != null) {
+                name = intent.getStringExtra("name")
+                token = getToken(context!!)
+                // getIntent().getStringExtra("token");
+                strPhone = intent.getStringExtra("mobile")
+                strEmpId = intent.getStringExtra("employeeId")
+//                String msg = "Please put your face inside border";
+                //todo:: priyanka 27-10
+                /*if (name != null) {
+                    if (!name.isEmpty()) {
+                        msg = "Hi " + name + "!\n" + msg;
+                        tvInstruction.setText(msg);
+                    } else {
+                        tvInstruction.setText(msg);
+                    }
+                }*/
+            }
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -179,9 +213,10 @@ class TakeEmployeePicActivity : AppCompatActivity() , CompoundButton.OnCheckedCh
 
                         img1!!.setImageBitmap(newFace)
                         isDoneCapture = "front"
-                        if(newFace == null) {
-                            Toast.makeText(context!!,"Face not detected",Toast.LENGTH_SHORT).show()
-                        }else{
+                        if (newFace == null) {
+                            Toast.makeText(context!!, "Face not detected", Toast.LENGTH_SHORT)
+                                .show()
+                        } else {
                             isImg1Seted = true
                             photoCount = photoCount + 1
                             Toast.makeText(
@@ -200,9 +235,10 @@ class TakeEmployeePicActivity : AppCompatActivity() , CompoundButton.OnCheckedCh
                         img2!!.setImageBitmap(newFace)
                         isDoneCapture = "front,right"
 
-                        if(newFace == null) {
-                            Toast.makeText(context!!,"Face not detected",Toast.LENGTH_SHORT).show()
-                        }else{
+                        if (newFace == null) {
+                            Toast.makeText(context!!, "Face not detected", Toast.LENGTH_SHORT)
+                                .show()
+                        } else {
                             isImg2Seted = true
                             photoCount = photoCount + 1
                             Toast.makeText(
@@ -221,9 +257,10 @@ class TakeEmployeePicActivity : AppCompatActivity() , CompoundButton.OnCheckedCh
                         img3!!.setImageBitmap(newFace)
                         isDoneCapture = "front,left"
 
-                        if(newFace == null) {
-                            Toast.makeText(context!!,"Face not detected",Toast.LENGTH_SHORT).show()
-                        }else{
+                        if (newFace == null) {
+                            Toast.makeText(context!!, "Face not detected", Toast.LENGTH_SHORT)
+                                .show()
+                        } else {
                             isImg3Seted = true
                             photoCount = photoCount + 1
                             Toast.makeText(
@@ -241,9 +278,10 @@ class TakeEmployeePicActivity : AppCompatActivity() , CompoundButton.OnCheckedCh
 
                         img4!!.setImageBitmap(newFace)
 
-                        if(newFace == null) {
-                            Toast.makeText(context!!,"Face not detected",Toast.LENGTH_SHORT).show()
-                        }else{
+                        if (newFace == null) {
+                            Toast.makeText(context!!, "Face not detected", Toast.LENGTH_SHORT)
+                                .show()
+                        } else {
                             isImg4Seted = true
                             photoCount = photoCount + 1
                             Toast.makeText(
@@ -259,6 +297,7 @@ class TakeEmployeePicActivity : AppCompatActivity() , CompoundButton.OnCheckedCh
                 }
         }
     }
+
     private fun getImageUri(inContext: Context, inImage: Bitmap): Uri {
         val bytes = ByteArrayOutputStream()
         inImage.compress(Bitmap.CompressFormat.JPEG, 0, bytes)
@@ -278,11 +317,12 @@ class TakeEmployeePicActivity : AppCompatActivity() , CompoundButton.OnCheckedCh
             val tempUri = getImageUri(context!!, face)
             val profilePath = FileUtil.getPath(context!!, tempUri)
             Log.e("path ", profilePath!!)
-//            callStorePersonPicApi(profilePath)
+            callStorePersonPicApi(profilePath)
             if (imgCount == 4) {
+                var message= "Welcome "+ name+" , Your onboarding is complete"
                 val builder = AlertDialog.Builder(this)
                 builder.setCancelable(false)
-                builder.setMessage("Welcome Username, Your onboarding is complete")
+                builder.setMessage(message)
                 builder.setPositiveButton("Ok") { dialog, which ->
                     try {
                         dialog.dismiss()
@@ -301,6 +341,98 @@ class TakeEmployeePicActivity : AppCompatActivity() , CompoundButton.OnCheckedCh
         } catch (e: Exception) {
             e.printStackTrace()
         }
+
+    }
+
+    private fun callStorePersonPicApi(profilePath: String) {
+        try {
+            file1 = if (profilePath.isEmpty()) {
+                MultipartBody.Part.createFormData(
+                    "file1", "",
+                    RequestBody.create(MediaType.parse("multipart/form-data"), "")
+                )
+            } else {
+                val file = File(profilePath)
+                MultipartBody.Part.createFormData(
+                    "file1", file.name,
+                    RequestBody.create(MediaType.parse("multipart/form-data"), file)
+                )
+            }
+            var mAPIService: APIService? = null
+            mAPIService = apiService
+            val call = mAPIService.uploadUserPhoto(BEARER_TOKEN + token, file1!!)
+            call.enqueue(object : Callback<UploadPhotoResponse> {
+                override fun onResponse(
+                    call: Call<UploadPhotoResponse>,
+                    response: Response<UploadPhotoResponse>
+                ) {
+                    Log.e("Upload", "success")
+                    try {
+                        val alPhotoDetail = ArrayList<UploadPhotoData>()
+                        if (response.body().data != null)
+                            alPhotoDetail.addAll(response.body().data!!)
+                        callStoreWithId(alPhotoDetail)
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                }
+
+                override fun onFailure(call: Call<UploadPhotoResponse>, t: Throwable) {
+                    Log.e("Upload", "failure")
+                }
+            })
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun callStoreWithId(response: ArrayList<UploadPhotoData>) {
+        try {
+            if (response.size > 0) {
+                val jsonObject = JsonObject()
+                val jsonArray = JsonArray()
+                val jsonImgObject = JsonObject()
+                val path = response[0].path
+                val mimetype = response[0].mimetype
+                val filename = response[0].filename
+                jsonImgObject.addProperty("path", path)
+                jsonImgObject.addProperty("mimetype", mimetype)
+                jsonImgObject.addProperty("filename", filename)
+                jsonObject.addProperty("mobile", strPhone)
+                jsonObject.addProperty("email", "")
+                jsonObject.addProperty("employeeId", strEmpId)
+                jsonObject.addProperty("name", name)
+
+//            jsonArray.add("images",jsonImgObject);
+                jsonArray.add(jsonImgObject)
+                jsonObject.add("images", jsonArray)
+                var mAPIService: APIService? = null
+                mAPIService = apiService
+                val context: Context = this@TakeEmployeePicActivity
+                val call = mAPIService.addEmployee(
+                    "application/json",
+                    "Bearer " + getToken(context),
+                    jsonObject
+                )
+                call.enqueue(object : Callback<GetAddEmployeeResponse?> {
+                    override fun onResponse(
+                        call: Call<GetAddEmployeeResponse?>,
+                        response: Response<GetAddEmployeeResponse?>
+                    ) {
+                        Log.e("Upload", "success")
+                    }
+
+                    override fun onFailure(call: Call<GetAddEmployeeResponse?>, t: Throwable) {
+                        Log.e("Upload", "failure")
+                    }
+                })
+
+            }
+            } catch (e: java.lang.Exception) {
+                e.printStackTrace()
+                hideProgressDialog()
+
+            }
 
     }
 

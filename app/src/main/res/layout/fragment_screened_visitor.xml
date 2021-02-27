@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Fragment.ScreenedVisitorFragment">
+
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rVwVisitorVLF"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:visibility="gone"
+        android:id="@+id/tvNoVisitorVLF"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="Screened list is empty"
+        android:textSize="@dimen/_14ssp"
+        android:textColor="@color/app_bg"
+        android:fontFamily="@font/avenir_next_bold"
+        android:gravity="center"
+        />
+
+
+    <ImageView
+        android:id="@+id/imgVwAddVisitorVLF"
+        android:layout_width="@dimen/_50sdp"
+        android:layout_height="@dimen/_50sdp"
+        android:src="@mipmap/ic_add_round"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_margin="@dimen/_10sdp"
+        android:elevation="@dimen/_2sdp"
+        />
+
+</RelativeLayout>

@@ -97,12 +97,12 @@ interface APIService {
 
     //visitors Related .. Start
     //get visitors list
-    @GET("v1/companies/visitor/entries")
+    @GET("v1/companies/visitors")
     fun getVisitorsList(
         @Header("Content-Type") ctype: String,
-        @Header("Authorization") auth: String,
+        @Header("Authorization") auth: String/*,
         @Query("pageSize") pageSize:Int,
-        @Query("currentPage") currentPage:Int
+        @Query("currentPage") currentPage:Int*/
     ): Call<VisitorsListModel>
 
     //add visitor list
@@ -126,5 +126,10 @@ interface APIService {
     fun getDesignationList(
         @Header("Authorization") auth: String
     ):Call<GetDesignationListResponse>
+
+    @GET("v1/companies/users")
+    fun getComaniesUsersList(
+        @Header("Authorization") auth: String
+    ):Call<ResponseBody>
 
 }

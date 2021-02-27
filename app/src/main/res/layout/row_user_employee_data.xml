@@ -5,6 +5,7 @@
     android:layout_height="wrap_content">
 
     <RelativeLayout
+        android:id="@+id/rlMain"
         android:layout_marginEnd="@dimen/_2sdp"
         android:layout_marginStart="@dimen/_2sdp"
         android:layout_marginTop="@dimen/_5sdp"
@@ -13,7 +14,6 @@
         android:layout_height="wrap_content">
 
         <ImageView
-            android:background="@drawable/user"
             android:layout_centerVertical="true"
             android:id="@+id/ivProfileRUED"
             android:layout_width="@dimen/_40sdp"
@@ -45,4 +45,12 @@
 
     </RelativeLayout>
 
+
+    <View
+        android:layout_marginBottom="@dimen/_2sdp"
+        android:layout_marginTop="@dimen/_2sdp"
+        android:layout_below="@+id/rlMain"
+        android:background="@color/light_grey"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"/>
 </RelativeLayout>

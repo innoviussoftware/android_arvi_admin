@@ -85,15 +85,15 @@ class RequestTypeFragment : Fragment(), View.OnClickListener {
     override fun onClick(view: View) {
         when (view.id) {
             R.id.llRegularizationRTF -> {
-                var intent = Intent(appContext,RegularizationRequestListActivity::class.java)
+                var intent = Intent(appContext, RegularizationRequestListActivity::class.java)
                 startActivity(intent)
             }
             R.id.llLeaveRequestRTF -> {
-                var intent = Intent(appContext,LeaveRequestListActivity::class.java)
+                var intent = Intent(appContext, LeaveRequestListActivity::class.java)
                 startActivity(intent)
             }
             R.id.llWfHRTF -> {
-                var intent = Intent(appContext,WfHRequestListActivity::class.java)
+                var intent = Intent(appContext, WfHRequestListActivity::class.java)
                 startActivity(intent)
             }
         }

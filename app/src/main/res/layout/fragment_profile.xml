@@ -11,6 +11,16 @@
         android:layout_width="match_parent"
         android:layout_height="@dimen/_40sdp">
 
+        <ImageView
+            android:id="@+id/ivLogoutFP"
+            android:layout_width="@dimen/_20sdp"
+            android:layout_height="@dimen/_20sdp"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="@dimen/_10sdp"
+            android:background="@drawable/ic_logout"
+            android:elevation="@dimen/_8sdp" />
+
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -219,8 +229,7 @@
                         android:fontFamily="@font/gotham_book_regular"
                         android:text="@string/total_employees_ttl"
                         android:textColor="@color/gray_clr"
-                        android:textSize="@dimen/_12ssp"
-                         />
+                        android:textSize="@dimen/_12ssp" />
 
                     <TextView
                         android:id="@+id/tvTotalEmployeesFP"

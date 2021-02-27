@@ -98,7 +98,7 @@ class GlobalMethods {
 
 
         fun convertOnlyDate(sendDate: String): String {
-            var format = SimpleDateFormat("yyyy-MM-dd")
+            var format = SimpleDateFormat("yyyy-MM-dd hh:mm")
             val newsDate = sendDate
             var formatedDate: String? = ""
             if (newsDate != null) {
