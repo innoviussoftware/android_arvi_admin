@@ -115,7 +115,7 @@ interface APIService {
     //visitors Related .. End
 
     @POST("v1/companies/visitor/entries")
-    fun updateVisitorsEntry(
+    fun sameVisitorsEntryRegister(
         @Header("Content-Type") ctype: String,
         @Header("Authorization") auth: String,
         @Body detail: JsonObject

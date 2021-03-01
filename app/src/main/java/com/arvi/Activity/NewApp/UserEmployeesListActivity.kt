@@ -3,13 +3,14 @@ package com.arvi.Activity.NewApp
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.arvi.Adapter.UserEmployeesListAdapter
+import com.arvi.Model.CompaniesUsersList
 import com.arvi.Model.CompaniesUsersResponse
-import com.arvi.Model.CompaniesUsersResult
 import com.arvi.R
 import com.arvi.RetrofitApiCall.APIService
 import com.arvi.RetrofitApiCall.ApiUtils
@@ -17,10 +18,12 @@ import com.arvi.SessionManager.SessionManager
 import com.arvi.Utils.AppConstants
 import com.arvi.Utils.MyProgressDialog
 import com.arvi.Utils.SnackBar
-import com.google.firebase.ml.common.modeldownload.BaseModel
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.activity_user_employees_list.*
 import okhttp3.ResponseBody
+import org.json.JSONArray
+import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -44,14 +47,16 @@ class UserEmployeesListActivity : AppCompatActivity() {
     }
 
 
-    lateinit var alComapniesUserList:ArrayList<CompaniesUsersResult>
+    lateinit var alComapniesUserList:ArrayList<CompaniesUsersList>
     private fun CallGetComapniesUserListApi() {
 
         var mAPIService: APIService? = null
         mAPIService = ApiUtils.apiService
         MyProgressDialog.showProgressDialog(mContext!!)
         mAPIService!!.getComaniesUsersList(
-            AppConstants.BEARER_TOKEN + SessionManager.getToken(mContext!!)
+            AppConstants.BEARER_TOKEN + SessionManager.getToken(
+                mContext!!
+            )
         )
             .enqueue(object : Callback<ResponseBody> {
 
@@ -64,10 +69,61 @@ class UserEmployeesListActivity : AppCompatActivity() {
                         if (response.code() == 200) {
                             if (response.body() != null) {
 
-                                val gson = Gson()
-                                val responseModel = gson.fromJson(response.body().toString(), CompaniesUsersResponse::class.java)
-                                alComapniesUserList = ArrayList()
-                                alComapniesUserList.addAll(responseModel.result!!)
+                                try {
+                                    val data = response.body().string()
+
+                                    //println("Uniapp :----===-> $data")
+                                    Log.e("data----==->", "" + data)
+                                    alComapniesUserList = ArrayList()
+
+                                    val jObjData = JSONObject(data)
+                                    Log.e(
+                                        "total data----==->",
+                                        "" + jObjData.get("total").toString()
+                                    )
+                                    var jsonArrayMain = JSONArray(jObjData.get("result").toString())
+                                    Log.e("jsonArrayMain----==->", "" + jsonArrayMain)
+
+                                    //Log.e("jsonArrayMain----==->",""+jsonArrayMain.get(""))
+                                    for (i in 0 until jsonArrayMain.length()) {
+                                     //   var id = jsonArrayMain.getJSONObject(i).getString("id")
+                                        var companiesUsersList = CompaniesUsersList(
+                                            jsonArrayMain.getJSONObject(i).getString("id"),
+                                            jsonArrayMain.getJSONObject(i).getString("employeeId"),
+                                            jsonArrayMain.getJSONObject(i).getString("mobile"),
+                                            jsonArrayMain.getJSONObject(i).getString("name"),
+                                            jsonArrayMain.getJSONObject(i).getString("picture"),
+                                            jsonArrayMain.getJSONObject(i).getString("status")
+                                        )
+                                        alComapniesUserList.add(companiesUsersList)
+                                    }
+
+
+
+
+                                    /*val gson = Gson()
+                                        val responseModel = gson.fromJson(
+                                            response.body().toString(),
+                                            CompaniesUsersResponse::class.java
+                                        )*/
+
+
+                                } catch (e: Exception) {
+                                    e.printStackTrace()
+                                }
+
+                                try {
+                                    val gson = Gson()
+                                    val type = object : TypeToken<CompaniesUsersResponse>() {}.type
+                                    var responseData: CompaniesUsersResponse? = gson.fromJson(
+                                        response.errorBody()!!.charStream(),
+                                        type
+                                    )
+                                    Log.e("responseData----==->", "" + responseData)
+                                } catch (e: Exception) {
+                                    e.printStackTrace()
+                                }
+
                                 setComapniesUserData()
                             }
                         } else if (response.code() == 401) {

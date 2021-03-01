@@ -24,6 +24,7 @@ import com.google.android.material.textfield.TextInputLayout
 import com.google.gson.Gson
 import com.google.gson.JsonObject
 import kotlinx.android.synthetic.main.activity_add_visitor_detail.view.*
+import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -68,9 +69,10 @@ class AddVisitorDetailActivity : AppCompatActivity(), View.OnClickListener {
                     llRegisterBtnAVDA!!.visibility = View.VISIBLE
 
                     val gson = Gson()
-                    visitorDetails = gson.fromJson(intent.getStringExtra("visitorData"), Result::class.java)
+                    visitorDetails =
+                        gson.fromJson(intent.getStringExtra("visitorData"), Result::class.java)
 
-                    Log.e("visitorDetails","-----===---> "+visitorDetails)
+                    Log.e("visitorDetails", "-----===---> " + visitorDetails)
                     setVisitorData(visitorDetails)
                 } else {
                     tvSaveAVDA!!.visibility = View.VISIBLE
@@ -112,11 +114,11 @@ class AddVisitorDetailActivity : AppCompatActivity(), View.OnClickListener {
                     }
 
                     if (monthOfYear < 10) {
-                        showMonth = "0" + (monthOfYear+1)
+                        showMonth = "0" + (monthOfYear + 1)
                     } else {
-                        showMonth = (monthOfYear+1).toString()
+                        showMonth = (monthOfYear + 1).toString()
                     }
-                    etVisitDateAVDA!!.setText(year.toString()+"-"+showMonth+"-"+showDay)
+                    etVisitDateAVDA!!.setText(year.toString() + "-" + showMonth + "-" + showDay)
                 },
                 year,
                 month,
@@ -223,7 +225,7 @@ class AddVisitorDetailActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun callAddVisitorDetailsApi() {
-        try{
+        try {
             var jsonObjectMain = JsonObject()
             jsonObjectMain.addProperty("name", name)
             jsonObjectMain.addProperty("mobile", mobile)
@@ -234,14 +236,14 @@ class AddVisitorDetailActivity : AppCompatActivity(), View.OnClickListener {
             jsonObjectEmployee.addProperty("company", comingFrom)
             jsonObjectEmployee.addProperty("name", tomeet)
 
-            jsonObjectData.add("employee",jsonObjectEmployee)
+            jsonObjectData.add("employee", jsonObjectEmployee)
             jsonObjectData.addProperty("purpose", purpose)
-            jsonObjectData.addProperty("actualEntryTime", visitDate+" "+visitTime)
+            jsonObjectData.addProperty("actualEntryTime", visitDate + " " + visitTime)
 
-            jsonObjectMain.add("data",jsonObjectData)
+            jsonObjectMain.add("data", jsonObjectData)
 
-            Log.e("jsonObjectData","-----==---->"+jsonObjectData)
-            Log.e("jsonObjectMain","-----==---->"+jsonObjectMain)
+            Log.e("jsonObjectData", "-----==---->" + jsonObjectData)
+            Log.e("jsonObjectMain", "-----==---->" + jsonObjectMain)
 
             var mAPIService: APIService? = null
             mAPIService = ApiUtils.apiService
@@ -355,36 +357,123 @@ class AddVisitorDetailActivity : AppCompatActivity(), View.OnClickListener {
             /*var tvYesDVV = dialog.findViewById(R.id.tvYesDVV) as TextView
             var tvNoDVV = dialog.findViewById(R.id.tvNoDVV) as TextView*/
 
-            tvNameDVV.text=visitorDetails.name
-            tvCompanyDVV.text=visitorDetails.data!!.employee!!.company
-            tvLastVisitedDVV.text=GlobalMethods.convertOnlyDate(visitorDetails.data!!.actualEntryTime!!)
+            tvNameDVV.text = visitorDetails.name
+            tvCompanyDVV.text = visitorDetails.data!!.employee!!.company
+            tvLastVisitedDVV.text =
+                GlobalMethods.convertOnlyDate(visitorDetails.data!!.actualEntryTime!!)
 
             tvSamePersonDVV.setOnClickListener {
                 dialog.dismiss()
-                SnackBar.showInProgressError(context!!, snackbarView!!/*, "Working IN Progress"*/)
-                //openVisitorRegisterSuccessDialog()
+
+                if (ConnectivityDetector.isConnectingToInternet(context!!)) {
+                    callSameVisitorAddDetailsApi()
+                } else {
+                    SnackBar.showInternetError(context!!, snackbarView!!)
+                }
+
             }
             tvChangeDVV.setOnClickListener {
                 SnackBar.showInProgressError(context!!, snackbarView!!/*, "Working IN Progress"*/)
-            /*var intent = Intent(context!!, AddVisitorPhotoActivity::class.java)
-                startActivity(intent)*/
+                /*var intent = Intent(context!!, AddVisitorPhotoActivity::class.java)
+                    startActivity(intent)*/
             }
-           /* tvYesDVV.setOnClickListener {
-                etMobileAVDA!!.setText("")
-                etMobileAVDA!!.requestFocus()
-                dialog.dismiss()
-            }
-            tvNoDVV.setOnClickListener {
-                dialog.dismiss()
-                finish()
-            }*/
+            /* tvYesDVV.setOnClickListener {
+                 etMobileAVDA!!.setText("")
+                 etMobileAVDA!!.requestFocus()
+                 dialog.dismiss()
+             }
+             tvNoDVV.setOnClickListener {
+                 dialog.dismiss()
+                 finish()
+             }*/
             dialog.show()
         } catch (e: Exception) {
             e.printStackTrace()
         }
     }
 
-    private fun openVisitorRegisterSuccessDialog() {
+    private fun callSameVisitorAddDetailsApi() {
+        try {
+            var c = Calendar.getInstance().time
+            System.out.println("Current time => " + c);
+
+            var  df =  SimpleDateFormat("yyyy-MM-dd hh:mm", Locale.getDefault())
+
+
+var formattedDate:String  = df.format(c)
+
+
+            var jsonObjectMain = JsonObject()
+
+            //var jsonObjectVisitorMain = JsonObject()
+            var jsonObjectVisitor = JsonObject()
+            var visitor_id:String=visitorDetails.id.toString()
+            jsonObjectVisitor.addProperty("id", visitor_id)
+            jsonObjectMain.add("visitor",jsonObjectVisitor)
+
+            //Data Object..Start
+            var jsonObjectData = JsonObject()
+            jsonObjectData.addProperty("actualEntryTime", formattedDate)
+            //Employee Object..Start
+            var jsonObjectEmployee = JsonObject()
+            jsonObjectEmployee.addProperty("name", visitorDetails.name)
+            jsonObjectData.add("employee", jsonObjectEmployee)
+            //Employee Object..End
+            jsonObjectMain.add("data", jsonObjectData)
+            //Data Object..End
+
+
+
+            Log.e("jsonObjectData", "-----==---->" + jsonObjectData)
+            Log.e("jsonObjectMain", "-----==---->" + jsonObjectMain)
+
+            var mAPIService: APIService? = null
+            mAPIService = ApiUtils.apiService
+            MyProgressDialog.showProgressDialog(context!!)
+            mAPIService!!.sameVisitorsEntryRegister(
+                "application/json",
+                AppConstants.BEARER_TOKEN + SessionManager.getToken(context!!),
+                jsonObjectMain
+            )
+                .enqueue(object : Callback<ResponseBody> {
+
+                    override fun onResponse(
+                        call: Call<ResponseBody>,
+                        response: Response<ResponseBody>
+                    ) {
+                        MyProgressDialog.hideProgressDialog()
+                        try {
+                            if (response.code() == 200) {
+                                openVisitorRegisterSuccessDialog(visitorDetails.name!!)
+                            } else {
+                                SnackBar.showError(
+                                    context!!,
+                                    snackbarView!!,
+                                    "Something went wrong"
+                                )
+                            }
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+
+                        }
+                    }
+
+                    override fun onFailure(
+                        call: Call<ResponseBody>,
+                        t: Throwable
+                    ) {
+                        MyProgressDialog.hideProgressDialog()
+                    }
+                })
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+            MyProgressDialog.hideProgressDialog()
+
+        }
+    }
+
+    private fun openVisitorRegisterSuccessDialog(name: String) {
         try {
             var dialog = Dialog(context!!)
             dialog.setContentView(R.layout.dialog_visitor_register_success)
@@ -392,6 +481,7 @@ class AddVisitorDetailActivity : AppCompatActivity(), View.OnClickListener {
             var imgVwPhotoDVRS = dialog.findViewById(R.id.imgVwPhotoDVRS) as ImageView
             var tvNameDVRS = dialog.findViewById(R.id.tvNameDVRS) as TextView
             var tvOkDVRS = dialog.findViewById(R.id.tvOkDVRS) as TextView
+            tvNameDVRS.text = name
             tvOkDVRS.setOnClickListener {
                 dialog.dismiss()
                 finish()

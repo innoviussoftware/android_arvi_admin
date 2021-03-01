@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.arvi.Model.CompaniesUsersList
 import com.arvi.Model.CompaniesUsersResult
 import com.arvi.R
 import com.makeramen.roundedimageview.RoundedTransformationBuilder
@@ -14,7 +15,7 @@ import com.squareup.picasso.Picasso
 
 class UserEmployeesListAdapter(
     var context: Context,
-    var alComapniesUserList: ArrayList<CompaniesUsersResult>
+    var alComapniesUserList: ArrayList<CompaniesUsersList>
 ) : RecyclerView.Adapter<UserEmployeesListAdapter.ViewHolder>() {
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -42,7 +43,7 @@ class UserEmployeesListAdapter(
         try {
             var itemData = alComapniesUserList[position]
 
-            if (position / 2 == 0) {
+            if (itemData.status=="1") {
                 holder.tvActiveStatusRUED.setText(context.resources.getString(R.string.active_ttl))
                 holder.tvActiveStatusRUED.setTextColor(context.resources.getColor(R.color.active_status))
             } else/* if (position / 2 == 0)*/ {
