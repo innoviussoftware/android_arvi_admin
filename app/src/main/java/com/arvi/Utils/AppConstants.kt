@@ -4,6 +4,7 @@ object AppConstants {
 
 
     val BASE_URL = "https://kiosk-api-qa.arvi.in/"
+    val IMAGE_URL= "https://kiosk-api-qa.arvi.in/v1/s3/cache/"
 
     public var BEARER_TOKEN: String = "Bearer "
 

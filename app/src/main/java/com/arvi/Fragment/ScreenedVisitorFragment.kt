@@ -51,7 +51,9 @@ var imgVwAddVisitorVLF: ImageView? = null
         setListeners()
 
         if (ConnectivityDetector.isConnectingToInternet(appContext!!)) {
-            callGetVisitorListAPI()
+            //callGetVisitorListAPI()
+            rVwVisitorVLF!!.visibility=View.GONE
+            tvNoVisitorVLF!!.visibility=View.VISIBLE
         } else {
             SnackBar.showInternetError(appContext!!, snackbarView!!)
         }
@@ -203,7 +205,9 @@ var imgVwAddVisitorVLF: ImageView? = null
 
         if (requestCode==REQUEST_VISITOR){
             if (ConnectivityDetector.isConnectingToInternet(appContext!!)) {
-                callGetVisitorListAPI()
+                //callGetVisitorListAPI()
+                rVwVisitorVLF!!.visibility=View.GONE
+                tvNoVisitorVLF!!.visibility=View.VISIBLE
             } else {
                 SnackBar.showInternetError(appContext!!, snackbarView!!)
             }

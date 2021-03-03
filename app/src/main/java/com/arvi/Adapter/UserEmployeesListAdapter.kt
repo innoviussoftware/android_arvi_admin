@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.arvi.Model.CompaniesUsersList
 import com.arvi.Model.CompaniesUsersResult
 import com.arvi.R
+import com.arvi.Utils.AppConstants
 import com.makeramen.roundedimageview.RoundedTransformationBuilder
 import com.squareup.picasso.Picasso
 
@@ -64,7 +65,7 @@ class UserEmployeesListAdapter(
 
             if(itemData.picture !=null) {
                 Picasso.with(context)
-                    .load(itemData.picture)
+                    .load(AppConstants.IMAGE_URL+itemData.picture)
                     .fit()
                     .transform(transformation)
                     .into(holder.ivProfileRUED)

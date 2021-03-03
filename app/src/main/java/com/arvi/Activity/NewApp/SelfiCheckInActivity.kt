@@ -670,7 +670,7 @@ class SelfiCheckInActivity : AppCompatActivity(), CompoundButton.OnCheckedChange
             if (fullname != null) {
                 if (fullname != "") {
                     tvUserName.visibility = View.VISIBLE
-                    tvUserName.text = "Hi, $fullname your temperature is:"
+                    tvUserName.text = "Hi, $fullname"
                 } else {
                     tvUserName.visibility = View.GONE
                 }
