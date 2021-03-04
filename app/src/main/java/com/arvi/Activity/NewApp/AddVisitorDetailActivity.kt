@@ -11,8 +11,7 @@ import android.util.Log
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
-import com.arvi.Model.Result
-import com.arvi.Model.VisitorsListModel
+import com.arvi.Model.*
 import com.arvi.R
 import com.arvi.RetrofitApiCall.APIService
 import com.arvi.RetrofitApiCall.ApiUtils
@@ -23,6 +22,8 @@ import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.google.gson.Gson
 import com.google.gson.JsonObject
+import com.makeramen.roundedimageview.RoundedTransformationBuilder
+import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_add_visitor_detail.view.*
 import okhttp3.ResponseBody
 import retrofit2.Call
@@ -31,6 +32,7 @@ import retrofit2.Response
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.ArrayList
 
 
 class AddVisitorDetailActivity : AppCompatActivity(), View.OnClickListener {
@@ -55,7 +57,7 @@ class AddVisitorDetailActivity : AppCompatActivity(), View.OnClickListener {
     var context: Context? = null
     var snackbarView: View? = null
     var from: String = "add"
-    lateinit var visitorDetails: Result
+    lateinit var visitorDetails: GetVisitorListResult
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_visitor_detail)
@@ -70,7 +72,7 @@ class AddVisitorDetailActivity : AppCompatActivity(), View.OnClickListener {
 
                     val gson = Gson()
                     visitorDetails =
-                        gson.fromJson(intent.getStringExtra("visitorData"), Result::class.java)
+                        gson.fromJson(intent.getStringExtra("visitorData"), GetVisitorListResult::class.java)
 
                     Log.e("visitorDetails", "-----===---> " + visitorDetails)
                     setVisitorData(visitorDetails)
@@ -84,13 +86,13 @@ class AddVisitorDetailActivity : AppCompatActivity(), View.OnClickListener {
         }
     }
 
-    fun setVisitorData(visitorDetails: Result) {
+    fun setVisitorData(visitorDetails: GetVisitorListResult) {
         etNameAVDA!!.setText(visitorDetails.name)
-        aTvToMeetAVDA!!.setText(visitorDetails.data!!.employee!!.name)
-        etVisitDateAVDA!!.setText(visitorDetails.data!!.actualEntryTime)
-        etVisitTimeAVDA!!.setText(visitorDetails.data!!.actualEntryTime)
-        etComingFromAVDA!!.setText(visitorDetails.data!!.employee!!.company)
-        etMobileAVDA!!.setText(visitorDetails.mobile)
+        aTvToMeetAVDA!!.setText(visitorDetails.data!!.visitingTo!!.name)
+        etVisitDateAVDA!!.setText(visitorDetails.data!!.expectedEntry.dateOn)
+        etVisitTimeAVDA!!.setText(visitorDetails.data!!.expectedEntry.timeOn)
+        etComingFromAVDA!!.setText(visitorDetails.data!!.company)
+        etMobileAVDA!!.setText(visitorDetails.data.visitor.mobile)
         etPurposeAVDA!!.setText(visitorDetails.data!!.purpose)
     }
 
@@ -212,7 +214,14 @@ class AddVisitorDetailActivity : AppCompatActivity(), View.OnClickListener {
                     openTimePickerDialog()
                 }
                 R.id.tvRegisterAVDA -> {
-                    openPersionVerifyDialog()
+                    if (ConnectivityDetector.isConnectingToInternet(context!!)) {
+                        callGetCheckMobileNoApi(visitorDetails.data.visitor.mobile)
+                    } else {
+                        SnackBar.showInternetError(context!!, snackbarView!!)
+                    }
+
+                    //MM Close- 3/3/2021
+                    //openPersionVerifyDialog()
 
                 }
                 R.id.tvDeleteAVDA -> {
@@ -224,22 +233,170 @@ class AddVisitorDetailActivity : AppCompatActivity(), View.OnClickListener {
         }
     }
 
+    lateinit var alVisitorResultData: ArrayList<CheckMobileNoResult>
+    private fun callGetCheckMobileNoApi(mobile: String?) {
+        try {
+            var mobileData=""
+            if (mobile!!.contains("+")){
+                mobileData =mobile.substring(0, 1)
+            }else{
+                mobileData=mobile
+            }
+
+            var mAPIService: APIService? = null
+            mAPIService = ApiUtils.apiService
+            MyProgressDialog.showProgressDialog(context!!)
+            mAPIService!!.checkVisitorMobileNo(
+                AppConstants.BEARER_TOKEN + SessionManager.getToken(context!!), mobileData!!
+            )
+                .enqueue(object : Callback<CheckMobileNoResponse> {
+
+                    override fun onResponse(
+                        call: Call<CheckMobileNoResponse>,
+                        response: Response<CheckMobileNoResponse>
+                    ) {
+                        MyProgressDialog.hideProgressDialog()
+                        try {
+                            if (response.code() == 200) {
+                                alVisitorResultData = ArrayList()
+                                alVisitorResultData.addAll(response.body().result)
+
+                                if (alVisitorResultData.size == 0) {
+                                    var intent = Intent(context!!, AddVisitorPhotoActivity::class.java)
+                                    intent.putExtra("","")
+                                    intent.putExtra("","")
+                                    intent.putExtra("","")
+                                    intent.putExtra("","")
+                                    intent.putExtra("","")
+                                    startActivity(intent)
+                                } else {
+                                    openPersionVerifyDialog(alVisitorResultData)
+                                }
+                            } else {
+                                SnackBar.showError(
+                                    context!!,
+                                    snackbarView!!,
+                                    "Something went wrong"
+                                )
+                            }
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+
+                        }
+                    }
+
+                    override fun onFailure(
+                        call: Call<CheckMobileNoResponse>,
+                        t: Throwable
+                    ) {
+                        MyProgressDialog.hideProgressDialog()
+                    }
+                })
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+            MyProgressDialog.hideProgressDialog()
+
+        }
+    }
+
+    private fun callSameVisitorAddDetailsApi(checkMobileNoResult: CheckMobileNoResult) {
+        try {
+            var c = Calendar.getInstance().time
+            System.out.println("Current time => " + c);
+
+            var  df =  SimpleDateFormat("yyyy-MM-dd hh:mm", Locale.getDefault())
+
+
+            var formattedDate:String  = df.format(c)
+
+
+            var jsonObjectMain = JsonObject()
+
+            //var jsonObjectVisitorMain = JsonObject()
+            var jsonObjectVisitor = JsonObject()
+            var visitor_id:String=checkMobileNoResult.id.toString()
+            jsonObjectVisitor.addProperty("id", visitor_id)
+            jsonObjectMain.add("visitor", jsonObjectVisitor)
+
+            //Data Object..Start
+            var jsonObjectData = JsonObject()
+            jsonObjectData.addProperty("actualEntryTime", formattedDate)
+            //Employee Object..Start
+            var jsonObjectEmployee = JsonObject()
+            jsonObjectEmployee.addProperty("name", visitorDetails.name)
+            jsonObjectData.add("employee", jsonObjectEmployee)
+            //Employee Object..End
+            jsonObjectMain.add("data", jsonObjectData)
+            //Data Object..End
+
+            var mAPIService: APIService? = null
+            mAPIService = ApiUtils.apiService
+            MyProgressDialog.showProgressDialog(context!!)
+            mAPIService!!.visitorEntryRegister(
+                AppConstants.BEARER_TOKEN + SessionManager.getToken(context!!),
+                "application/json",
+                visitorDetails.id!!,
+                jsonObjectMain
+            )
+                .enqueue(object : Callback<ResponseBody> {
+
+                    override fun onResponse(
+                        call: Call<ResponseBody>,
+                        response: Response<ResponseBody>
+                    ) {
+                        MyProgressDialog.hideProgressDialog()
+                        try {
+                            if (response.code() == 200) {
+                                finish()
+                            } else {
+                                SnackBar.showError(
+                                    context!!,
+                                    snackbarView!!,
+                                    "Something went wrong"
+                                )
+                            }
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+
+                        }
+                    }
+
+                    override fun onFailure(
+                        call: Call<ResponseBody>,
+                        t: Throwable
+                    ) {
+                        MyProgressDialog.hideProgressDialog()
+                    }
+                })
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+            MyProgressDialog.hideProgressDialog()
+
+        }
+    }
+
     private fun callAddVisitorDetailsApi() {
         try {
             var jsonObjectMain = JsonObject()
-            jsonObjectMain.addProperty("name", name)
-            jsonObjectMain.addProperty("mobile", mobile)
 
-            var jsonObjectData = JsonObject()
+            var jsonObjectVisitor = JsonObject()
+            jsonObjectVisitor.addProperty("name", name)
+            jsonObjectVisitor.addProperty("mobile", mobile)
+
             var jsonObjectEmployee = JsonObject()
-
-            jsonObjectEmployee.addProperty("company", comingFrom)
             jsonObjectEmployee.addProperty("name", tomeet)
 
-            jsonObjectData.add("employee", jsonObjectEmployee)
-            jsonObjectData.addProperty("purpose", purpose)
-            jsonObjectData.addProperty("actualEntryTime", visitDate + " " + visitTime)
 
+            var jsonObjectData = JsonObject()
+            jsonObjectData.addProperty("company", comingFrom)
+            jsonObjectData.addProperty("purpose", purpose)
+            jsonObjectData.addProperty("expectedEntryTime", visitDate + " " + visitTime)
+
+
+            jsonObjectMain.add("visitor", jsonObjectVisitor)
+            jsonObjectMain.add("employee", jsonObjectEmployee)
             jsonObjectMain.add("data", jsonObjectData)
 
             Log.e("jsonObjectData", "-----==---->" + jsonObjectData)
@@ -344,7 +501,7 @@ class AddVisitorDetailActivity : AppCompatActivity(), View.OnClickListener {
         return true
     }
 
-    private fun openPersionVerifyDialog() {
+    private fun openPersionVerifyDialog(alVisitorResultData: ArrayList<CheckMobileNoResult>) {
         try {
             var dialog = Dialog(context!!)
             dialog.setContentView(R.layout.dialog_verify_visitor)
@@ -358,24 +515,48 @@ class AddVisitorDetailActivity : AppCompatActivity(), View.OnClickListener {
             var tvNoDVV = dialog.findViewById(R.id.tvNoDVV) as TextView*/
 
             tvNameDVV.text = visitorDetails.name
-            tvCompanyDVV.text = visitorDetails.data!!.employee!!.company
-            tvLastVisitedDVV.text =
-                GlobalMethods.convertOnlyDate(visitorDetails.data!!.actualEntryTime!!)
+            tvCompanyDVV.text = visitorDetails.data!!.company
+
+            try {
+                tvLastVisitedDVV.text = GlobalMethods.convertOnlyDate(visitorDetails.data!!.expectedEntryTime!!)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+
+            val transformation = RoundedTransformationBuilder()
+                .cornerRadiusDp(1f)
+                .oval(true)
+                .build()
+
+            if(visitorDetails.addedBy.picture !=null) {
+                Picasso.with(context)
+                    .load(AppConstants.IMAGE_URL+visitorDetails.addedBy.picture)
+                    .fit()
+                    .transform(transformation)
+                    .into(imgVwPhotoDVV)
+            }else{
+                imgVwPhotoDVV.setImageDrawable(resources.getDrawable(R.drawable.user))
+            }
 
             tvSamePersonDVV.setOnClickListener {
                 dialog.dismiss()
-
                 if (ConnectivityDetector.isConnectingToInternet(context!!)) {
-                    callSameVisitorAddDetailsApi()
+                    callSameVisitorAddDetailsApi(alVisitorResultData[0])
                 } else {
                     SnackBar.showInternetError(context!!, snackbarView!!)
                 }
-
             }
             tvChangeDVV.setOnClickListener {
-                SnackBar.showInProgressError(context!!, snackbarView!!/*, "Working IN Progress"*/)
-                /*var intent = Intent(context!!, AddVisitorPhotoActivity::class.java)
-                    startActivity(intent)*/
+                var intent = Intent(context!!, AddVisitorPhotoActivity::class.java)
+                intent.putExtra("entryId",visitorDetails.id)
+                intent.putExtra("name",visitorDetails.name)
+                intent.putExtra("visitorName",visitorDetails.data!!.visitingTo!!.name)
+                intent.putExtra("expectDate",visitorDetails.data!!.expectedEntry.dateOn)
+                intent.putExtra("expectTime",visitorDetails.data!!.expectedEntry.timeOn)
+                intent.putExtra("company",visitorDetails.data!!.company)
+                intent.putExtra("purpose",visitorDetails.data!!.purpose)
+                intent.putExtra("mobile",visitorDetails.data!!.visitor.mobile)
+                startActivity(intent)
             }
             /* tvYesDVV.setOnClickListener {
                  etMobileAVDA!!.setText("")
@@ -392,24 +573,25 @@ class AddVisitorDetailActivity : AppCompatActivity(), View.OnClickListener {
         }
     }
 
+/*
     private fun callSameVisitorAddDetailsApi() {
         try {
             var c = Calendar.getInstance().time
             System.out.println("Current time => " + c);
 
-            var  df =  SimpleDateFormat("yyyy-MM-dd hh:mm", Locale.getDefault())
+            var df = SimpleDateFormat("yyyy-MM-dd hh:mm", Locale.getDefault())
 
 
-var formattedDate:String  = df.format(c)
+            var formattedDate: String = df.format(c)
 
 
             var jsonObjectMain = JsonObject()
 
             //var jsonObjectVisitorMain = JsonObject()
             var jsonObjectVisitor = JsonObject()
-            var visitor_id:String=visitorDetails.id.toString()
+            var visitor_id: String = visitorDetails.id.toString()
             jsonObjectVisitor.addProperty("id", visitor_id)
-            jsonObjectMain.add("visitor",jsonObjectVisitor)
+            jsonObjectMain.add("visitor", jsonObjectVisitor)
 
             //Data Object..Start
             var jsonObjectData = JsonObject()
@@ -421,7 +603,6 @@ var formattedDate:String  = df.format(c)
             //Employee Object..End
             jsonObjectMain.add("data", jsonObjectData)
             //Data Object..End
-
 
 
             Log.e("jsonObjectData", "-----==---->" + jsonObjectData)
@@ -472,6 +653,7 @@ var formattedDate:String  = df.format(c)
 
         }
     }
+*/
 
     private fun openVisitorRegisterSuccessDialog(name: String) {
         try {

@@ -89,38 +89,58 @@ interface APIService {
 
     //Todo: 23/2/2021... Add Arvi Admin Related API
 
-    @GET("v1/companies/roles")
-    fun getComaniesRolesList(
-        @Header("Authorization") auth: String,
-        @Header("Content-Type") ctype: String
-    ): Call<RoleListModel>
+    //Todo: visitors Related Flow.. Start...............................
 
-    //visitors Related .. Start
-    //get visitors list
-    @GET("v1/companies/visitors")
-    fun getVisitorsList(
-        @Header("Content-Type") ctype: String,
-        @Header("Authorization") auth: String/*,
-        @Query("pageSize") pageSize:Int,
-        @Query("currentPage") currentPage:Int*/
-    ): Call<VisitorsListModel>
-
-    //add visitor list
-    @POST("v1/companies/visitors")
+    //1. add new visitor list
+    @POST("v1/companies/visitor/entries")
     fun addVisitorsEntry(
         @Header("Authorization") auth: String,
         @Header("Content-Type") ctype: String,
         @Body detail: JsonObject
     ): Call<VisitorsListModel>
-    //visitors Related .. End
 
-    @POST("v1/companies/visitor/entries")
-    fun sameVisitorsEntryRegister(
+    //2. get visitors list : open=actuled, closed=screned
+    @GET("v1/companies/visitor/entries")
+    fun getVisitorsList(
         @Header("Content-Type") ctype: String,
         @Header("Authorization") auth: String,
+        @Query("status") status:String
+    ): Call<GetVisitorListResponse>
+
+    //Check come visitor mobile number register or not in visitor list
+    @GET("v1/companies/visitors")
+    fun checkVisitorMobileNo(
+        @Header("Authorization") auth: String,
+        @Query("mobile") mobile:String
+    ):Call<CheckMobileNoResponse>
+
+    //id means entriesID,
+    @POST("v1/companies/visitor/entries/{id}")
+    fun visitorEntryRegister(
+        @Header("Authorization") auth: String,
+        @Header("Content-Type") ctype: String,
+        @Path("id") id: Int,
         @Body detail: JsonObject
     ): Call<ResponseBody>
 
+
+    @POST("v1/companies/visitor")
+    fun newVisitorsEntryRegister(
+        @Header("Content-Type") ctype: String,
+        @Header("Authorization") auth: String,
+        @Body detail: JsonObject
+    ): Call<NewVisitorRegisterResponse>
+
+
+//Todo: visitors Related Flow.. End...............................
+
+
+
+    @GET("v1/companies/roles")
+    fun getComaniesRolesList(
+        @Header("Authorization") auth: String,
+        @Header("Content-Type") ctype: String
+    ): Call<RoleListModel>
 
     @GET("v1/companies/roles")
     fun getDesignationList(
@@ -131,5 +151,8 @@ interface APIService {
     fun getComaniesUsersList(
         @Header("Authorization") auth: String
     ):Call<ResponseBody>
+
+    //CHeck Mobile number thru VIsitor mobile no Register or not
+
 
 }

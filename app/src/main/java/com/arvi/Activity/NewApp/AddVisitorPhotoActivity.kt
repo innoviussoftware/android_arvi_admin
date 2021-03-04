@@ -15,26 +15,41 @@ import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import com.arvi.Model.NewVisitorRegisterResponse
+import com.arvi.Model.UploadPhotoData
+import com.arvi.Model.UploadPhotoResponse
 import com.arvi.R
+import com.arvi.RetrofitApiCall.APIService
+import com.arvi.RetrofitApiCall.ApiUtils
+import com.arvi.SessionManager.SessionManager
+import com.arvi.Utils.AppConstants
+import com.arvi.Utils.ConnectivityDetector
+import com.arvi.Utils.MyProgressDialog
 import com.arvi.btScan.common.CameraSource
 import com.arvi.btScan.common.CameraSourcePreview
 import com.arvi.btScan.common.GraphicOverlay
 import com.arvi.btScan.java.arvi.ArviAudioPlaybacks
 import com.arvi.btScan.java.arvi.ArviFaceDetectionProcessor
 import com.arvi.btScan.java.arvi.FaceDetectionListener
-import com.arvi.btScan.java.arvi.Settings_Activity_organised
 import com.arvi.btScan.java.services.SlaveListener
 import com.arvi.btScan.java.services.SlaveService
+import com.google.gson.JsonArray
+import com.google.gson.JsonObject
 import com.societyguard.Utils.FileUtil
-import okhttp3.MultipartBody
+import okhttp3.*
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.io.ByteArrayOutputStream
+import java.io.File
 import java.io.IOException
-import java.util.ArrayList
+import java.text.SimpleDateFormat
+import java.util.*
 
-class AddVisitorPhotoActivity : AppCompatActivity() , CompoundButton.OnCheckedChangeListener,
-    SlaveListener, View.OnClickListener{
+class AddVisitorPhotoActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener,
+    SlaveListener, View.OnClickListener {
 
-    internal var tvInstruction: TextView?=null
+    internal var tvInstruction: TextView? = null
     private val TAG = "Add Visitor Photo"
     private val PERMISSION_REQUESTS = 1
     private var cameraSource: CameraSource? = null
@@ -46,7 +61,7 @@ class AddVisitorPhotoActivity : AppCompatActivity() , CompoundButton.OnCheckedCh
     private var token: String? = null
     private var newFace: Bitmap? = null
     private var strEmpId: String? = null
-    private var strPhone:String? = null
+    private var strPhone: String? = null
 
 
     private enum class STATE {
@@ -62,14 +77,14 @@ class AddVisitorPhotoActivity : AppCompatActivity() , CompoundButton.OnCheckedCh
     private var previousState = STATE.UNKNOWN
 
 
-    internal var facingSwitch: ToggleButton?=null
+    internal var facingSwitch: ToggleButton? = null
     internal var facePreviewOverlay: GraphicOverlay? = null
     internal var faceCapturePreview: CameraSourcePreview? = null
     internal var img1: ImageView? = null
-    internal var img2:ImageView? = null
-     internal var img3:ImageView? = null
-    internal var img4:ImageView? = null
-    internal var img5:ImageView? = null
+    internal var img2: ImageView? = null
+    internal var img3: ImageView? = null
+    internal var img4: ImageView? = null
+    internal var img5: ImageView? = null
     internal var isImg1Seted: Boolean? = false
     internal var isImg2Seted: Boolean? = false
     internal var isImg3Seted: Boolean? = false
@@ -78,6 +93,7 @@ class AddVisitorPhotoActivity : AppCompatActivity() , CompoundButton.OnCheckedCh
     internal var imgCount = 0
     internal var name: String? = ""
     internal var context: Context? = null
+    var entryId:Int=0
 
     override fun onCheckedChanged(buttonView: CompoundButton?, isChecked: Boolean) {
         try {
@@ -251,6 +267,13 @@ class AddVisitorPhotoActivity : AppCompatActivity() , CompoundButton.OnCheckedCh
     }
 
 
+    lateinit var visitorName: String
+    lateinit var expectDate: String
+    lateinit var expectTime: String
+    lateinit var company: String
+    lateinit var purpose: String
+    lateinit var mobile: String
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_visitor_photo)
@@ -281,6 +304,19 @@ class AddVisitorPhotoActivity : AppCompatActivity() , CompoundButton.OnCheckedCh
 
             isServiceBound = false
             serviceIntent = Intent(applicationContext, SlaveService::class.java)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+        try {
+            name = intent.getStringExtra("name")
+            visitorName = intent.getStringExtra("visitorName")
+            expectDate = intent.getStringExtra("expectDate")
+            expectTime = intent.getStringExtra("expectTime")
+            company = intent.getStringExtra("company")
+            purpose = intent.getStringExtra("purpose")
+            mobile = intent.getStringExtra("mobile")
+            entryId=intent.getIntExtra("entryId",0)
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -337,6 +373,7 @@ class AddVisitorPhotoActivity : AppCompatActivity() , CompoundButton.OnCheckedCh
                 }
         }
     }
+
     private fun getImageUri(inContext: Context, inImage: Bitmap): Uri {
         val bytes = ByteArrayOutputStream()
         inImage.compress(Bitmap.CompressFormat.JPEG, 0, bytes)
@@ -356,19 +393,21 @@ class AddVisitorPhotoActivity : AppCompatActivity() , CompoundButton.OnCheckedCh
             val tempUri = getImageUri(context!!, face)
             val profilePath = FileUtil.getPath(context!!, tempUri)
             Log.e("path ", profilePath!!)
-//            callStorePersonPicApi(profilePath)
+            callStorePersonPicApi(profilePath)
             if (imgCount == 4) {
                 val builder = AlertDialog.Builder(this)
                 builder.setCancelable(false)
-                builder.setMessage("Welcome Username, You have been registered")
+                var message = "Welcome " + name + ", You have been registered"
+                builder.setMessage(message)
                 builder.setPositiveButton("Ok") { dialog, which ->
                     try {
                         dialog.dismiss()
-                        val intent =
-                            Intent(applicationContext, DashboardActivity::class.java)
-                        intent.flags =
-                            Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
-                        startActivity(intent)
+                        callAddNewEntriesApi()
+                        /* val intent =
+                             Intent(applicationContext, DashboardActivity::class.java)
+                         intent.flags =
+                             Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+                         startActivity(intent)*/
                     } catch (e: Exception) {
                         e.printStackTrace()
                     }
@@ -380,6 +419,213 @@ class AddVisitorPhotoActivity : AppCompatActivity() , CompoundButton.OnCheckedCh
             e.printStackTrace()
         }
 
+    }
+
+    private fun callStorePersonPicApi(profilePath: String) {
+        try {
+            file1 = if (profilePath.isEmpty()) {
+                MultipartBody.Part.createFormData(
+                    "file1", "",
+                    RequestBody.create(MediaType.parse("multipart/form-data"), "")
+                )
+            } else {
+                val file = File(profilePath)
+                MultipartBody.Part.createFormData(
+                    "file1", file.name,
+                    RequestBody.create(MediaType.parse("multipart/form-data"), file)
+                )
+            }
+            var mAPIService: APIService? = null
+            mAPIService = ApiUtils.apiService
+            val call = mAPIService.uploadUserPhoto(AppConstants.BEARER_TOKEN + token, file1!!)
+            call.enqueue(object : Callback<UploadPhotoResponse> {
+                override fun onResponse(
+                    call: Call<UploadPhotoResponse>,
+                    response: Response<UploadPhotoResponse>
+                ) {
+                    Log.e("Upload", "success")
+                    try {
+                        val alPhotoDetail = ArrayList<UploadPhotoData>()
+                        if (response.body().data != null)
+                            alPhotoDetail.addAll(response.body().data!!)
+                        callStoreWithId(alPhotoDetail)
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                }
+
+                override fun onFailure(call: Call<UploadPhotoResponse>, t: Throwable) {
+                    Log.e("Upload", "failure")
+                }
+            })
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    var jsonUserPicObject = JsonObject()
+    private fun callStoreWithId(response: ArrayList<UploadPhotoData>) {
+        try {
+            if (response.size > 0) {
+//                val jsonObject = JsonObject()
+                val jsonArray = JsonArray()
+                val jsonImgObject = JsonObject()
+                val path = response[0].path
+                val mimetype = response[0].mimetype
+                val filename = response[0].filename
+                jsonImgObject.addProperty("path", path)
+                jsonImgObject.addProperty("mimetype", mimetype)
+                jsonImgObject.addProperty("filename", filename)
+                /*   jsonObject.addProperty("mobile", strPhone)
+                   jsonObject.addProperty("email", "")
+                   jsonObject.addProperty("employeeId", strEmpId)
+                   jsonObject.addProperty("name", name)
+   */
+//            jsonArray.add("images",jsonImgObject);
+                jsonArray.add(jsonImgObject)
+                jsonUserPicObject.addProperty("name", name!!)
+                jsonUserPicObject.addProperty("mobile", mobile!!)
+                jsonUserPicObject.addProperty("type", "static personal")
+
+            }
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+            MyProgressDialog.hideProgressDialog()
+
+        }
+
+    }
+
+
+    private fun callAddNewEntriesApi() {
+        try {
+            var mAPIService: APIService? = null
+            mAPIService = ApiUtils.apiService
+            MyProgressDialog.showProgressDialog(context!!)
+            mAPIService!!.newVisitorsEntryRegister(
+                AppConstants.BEARER_TOKEN + SessionManager.getToken(context!!),
+                "application/json",
+                jsonUserPicObject
+            )
+                .enqueue(object : Callback<NewVisitorRegisterResponse> {
+
+                    override fun onResponse(
+                        call: Call<NewVisitorRegisterResponse>,
+                        response: Response<NewVisitorRegisterResponse>
+                    ) {
+                        MyProgressDialog.hideProgressDialog()
+                        try {
+                            if (response.code() == 200) {
+                                var visitorID = response.body().visitor.id
+                                if (ConnectivityDetector.isConnectingToInternet(context!!)) {
+                                    callSameVisitorAddDetailsApi(visitorID)
+                                } else {
+                                    // SnackBar.showInternetError(context!!, snackbarView!!)
+                                }
+                            } else {
+                                /*SnackBar.showError(
+                                    context!!,
+                                    snackbarView!!,
+                                    "Something went wrong"
+                                )*/
+                            }
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+
+                        }
+                    }
+
+                    override fun onFailure(
+                        call: Call<NewVisitorRegisterResponse>,
+                        t: Throwable
+                    ) {
+                        MyProgressDialog.hideProgressDialog()
+                    }
+                })
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+            MyProgressDialog.hideProgressDialog()
+
+        }
+    }
+
+
+    private fun callSameVisitorAddDetailsApi(visitorID: Int) {
+        try {
+            var c = Calendar.getInstance().time
+            System.out.println("Current time => " + c);
+
+            var  df =  SimpleDateFormat("yyyy-MM-dd hh:mm", Locale.getDefault())
+
+
+            var formattedDate:String  = df.format(c)
+
+
+            var jsonObjectMain = JsonObject()
+
+            //var jsonObjectVisitorMain = JsonObject()
+            var jsonObjectVisitor = JsonObject()
+            var visitor_id:String=visitorID.toString()
+            jsonObjectVisitor.addProperty("id", visitor_id)
+            jsonObjectMain.add("visitor", jsonObjectVisitor)
+
+            //Data Object..Start
+            var jsonObjectData = JsonObject()
+            jsonObjectData.addProperty("actualEntryTime", formattedDate)
+
+            //Employee Object..Start
+            var jsonObjectEmployee = JsonObject()
+            jsonObjectEmployee.addProperty("name", name)
+            jsonObjectData.add("employee", jsonObjectEmployee)
+
+            jsonObjectMain.add("data", jsonObjectData)
+
+            var mAPIService: APIService? = null
+            mAPIService = ApiUtils.apiService
+            MyProgressDialog.showProgressDialog(context!!)
+            mAPIService!!.visitorEntryRegister(
+                AppConstants.BEARER_TOKEN + SessionManager.getToken(context!!),
+                "application/json",
+                entryId,
+                jsonObjectMain
+            )
+                .enqueue(object : Callback<ResponseBody> {
+
+                    override fun onResponse(
+                        call: Call<ResponseBody>,
+                        response: Response<ResponseBody>
+                    ) {
+                        MyProgressDialog.hideProgressDialog()
+                        try {
+                            if (response.code() == 200) {
+                                finish()
+                            } else {
+                             /*   SnackBar.showError(
+                                    context!!,
+                                    snackbarView!!,
+                                    "Something went wrong"
+                                )*/
+                            }
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+
+                        }
+                    }
+
+                    override fun onFailure(
+                        call: Call<ResponseBody>,
+                        t: Throwable
+                    ) {
+                        MyProgressDialog.hideProgressDialog()
+                    }
+                })
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+            MyProgressDialog.hideProgressDialog()
+
+        }
     }
 
     private fun startCameraSource() {

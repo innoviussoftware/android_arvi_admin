@@ -109,6 +109,18 @@ class GlobalMethods {
             return formatedDate!!
         }
 
+        fun convertUTCDateformate(sendDate: String): String {
+            var format = SimpleDateFormat("yyyy-MM-dd HH:mm:ss z")
+            val newsDate = sendDate
+            var formatedDate: String? = ""
+            if (newsDate != null) {
+                val newDate = format.parse(newsDate)
+                format = SimpleDateFormat("MMM dd")
+                formatedDate = format.format(newDate)
+            }
+            return formatedDate!!
+        }
+
         fun convertOnlySendDate(sendDate: String): String {
             var format = SimpleDateFormat("yyyy-MM-dd")
             val newsDate = sendDate

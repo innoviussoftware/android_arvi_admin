@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.arvi.Model.GetVisitorListResult
 import com.arvi.Model.Result
 import com.arvi.R
 import com.arvi.Utils.GlobalMethods
@@ -15,18 +16,19 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 class SetVisitorDataAdapter(
-    var context: Context, var alVisitorList: ArrayList<Result>, var btnlistener: BtnClickListener
+    var context: Context,
+    var alVisitorList: ArrayList<GetVisitorListResult>,
+    var btnlistener: BtnClickListener
 ) : RecyclerView.Adapter<SetVisitorDataAdapter.ViewHolder>() {
 
-     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-         var tvNameRV = itemView.tvNameRV!!
-         var tvMeetPersNameRV=itemView.tvMeetPersNameRV!!
-         var tvVisitorDaysRV=itemView.tvVisitorDaysRV!!
-         var tvVisitorTimeRV=itemView.tvVisitorTimeRV!!
+    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        var tvNameRV = itemView.tvNameRV!!
+        var tvMeetPersNameRV = itemView.tvMeetPersNameRV!!
+        var tvVisitorDaysRV = itemView.tvVisitorDaysRV!!
+        var tvVisitorTimeRV = itemView.tvVisitorTimeRV!!
 
-         var rlVisitorRV=itemView.rlVisitorRV!!
+        var rlVisitorRV = itemView.rlVisitorRV!!
     }
-
 
 
     companion object {
@@ -55,14 +57,21 @@ class SetVisitorDataAdapter(
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         try {
 
-            var itemData=alVisitorList[position]
+            var itemData = alVisitorList[position]
 
-            holder.tvNameRV.text=itemData.name+"("+itemData.data!!.employee!!.company+")"
-            holder.tvMeetPersNameRV.text="To Meet "+itemData.data!!.employee!!.name
+            holder.tvNameRV.text = itemData.name + "(" + itemData.data!!.company + ")"
+            holder.tvMeetPersNameRV.text = "To Meet " + itemData.data!!.visitingTo!!.name
 
-            holder.tvVisitorTimeRV.text=GlobalMethods.convertOnlyDate(itemData.data!!.actualEntryTime!!)
+            holder.tvVisitorTimeRV.text =
+                GlobalMethods.convertOnlyDate(itemData.data!!.expectedEntryTime!!)
             //GlobalMethods.convertOnlyDate(itemData.data.actualEntry.timeOn)
 
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+        try {
             mClickListener = btnlistener
             holder.rlVisitorRV.setOnClickListener {
                 if (mClickListener != null) {
@@ -75,19 +84,18 @@ class SetVisitorDataAdapter(
             e.printStackTrace()
         }
 
-        try{
+        try {
             val format1 = SimpleDateFormat("yyyy-MM-DD hh:mm")
-            val dt1: Date = format1.parse(alVisitorList[position].data!!.actualEntryTime)
+            val dt1: Date = format1.parse(alVisitorList[position].data!!.expectedEntryTime)
             val format2 = SimpleDateFormat("EEEE")
             val finalDay: String = format2.format(dt1)
 
-            holder.tvVisitorDaysRV.text=finalDay
+            holder.tvVisitorDaysRV.text = finalDay
 
         } catch (e: Exception) {
             e.printStackTrace()
         }
     }
-
 
 
 }

@@ -15,7 +15,8 @@ import com.arvi.Activity.NewApp.AddVisitorDetailActivity
 import com.arvi.Activity.NewApp.EnterCompanyDetailActivity
 import com.arvi.Adapter.SetVisitorDataAdapter
 import com.arvi.Model.Result
-import com.arvi.Model.VisitorsListModel
+import com.arvi.Model.GetVisitorListResponse
+import com.arvi.Model.GetVisitorListResult
 import com.arvi.R
 import com.arvi.RetrofitApiCall.APIService
 import com.arvi.RetrofitApiCall.ApiUtils
@@ -109,7 +110,7 @@ class ExpectedVisitorFragment : Fragment(), View.OnClickListener {
     var totalPageSize: Int = 0
     var currentPage: Int = 1
 
-    lateinit var alVisitorList: ArrayList<Result>
+    lateinit var alVisitorList: ArrayList<GetVisitorListResult>
 
     private fun callGetVisitorListAPI() {
         try {
@@ -118,12 +119,12 @@ class ExpectedVisitorFragment : Fragment(), View.OnClickListener {
 
             var mAPIService: APIService? = null
             mAPIService = ApiUtils.apiService
-
-            mAPIService!!.getVisitorsList("application/json", token/*, totalPageSize, currentPage*/)
-                .enqueue(object : Callback<VisitorsListModel> {
+//{{hostname}}/v1/companies/visitor/entries?status=open
+            mAPIService!!.getVisitorsList("application/json",token,"open")
+                .enqueue(object : Callback<GetVisitorListResponse> {
                     override fun onResponse(
-                        call: Call<VisitorsListModel>,
-                        response: Response<VisitorsListModel>
+                        call: Call<GetVisitorListResponse>,
+                        response: Response<GetVisitorListResponse>
                     ) {
                         MyProgressDialog.hideProgressDialog()
                         try {
@@ -151,7 +152,7 @@ class ExpectedVisitorFragment : Fragment(), View.OnClickListener {
                     }
 
                     override fun onFailure(
-                        call: Call<VisitorsListModel>,
+                        call: Call<GetVisitorListResponse>,
                         t: Throwable
                     ) {
                         MyProgressDialog.hideProgressDialog()
@@ -167,7 +168,7 @@ class ExpectedVisitorFragment : Fragment(), View.OnClickListener {
 
 
     public val REQUEST_VISITOR = 1555
-    private fun setVisitorData(alVisitorList: ArrayList<Result>) {
+    private fun setVisitorData(alVisitorList: ArrayList<GetVisitorListResult>) {
         try {
 
             if (alVisitorList.size > 0) {

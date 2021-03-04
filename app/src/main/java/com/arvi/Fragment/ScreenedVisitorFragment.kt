@@ -14,6 +14,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.arvi.Activity.NewApp.AddVisitorDetailActivity
 import com.arvi.Activity.NewApp.EnterCompanyDetailActivity
 import com.arvi.Adapter.SetVisitorDataAdapter
+import com.arvi.Model.GetVisitorListResponse
+import com.arvi.Model.GetVisitorListResult
 import com.arvi.Model.Result
 import com.arvi.Model.VisitorsListModel
 import com.arvi.R
@@ -51,9 +53,9 @@ var imgVwAddVisitorVLF: ImageView? = null
         setListeners()
 
         if (ConnectivityDetector.isConnectingToInternet(appContext!!)) {
-            //callGetVisitorListAPI()
-            rVwVisitorVLF!!.visibility=View.GONE
-            tvNoVisitorVLF!!.visibility=View.VISIBLE
+            callGetVisitorListAPI()
+            /*rVwVisitorVLF!!.visibility=View.GONE
+            tvNoVisitorVLF!!.visibility=View.VISIBLE*/
         } else {
             SnackBar.showInternetError(appContext!!, snackbarView!!)
         }
@@ -85,6 +87,7 @@ var imgVwAddVisitorVLF: ImageView? = null
     private fun setListeners() {
         try {
             imgVwAddVisitorVLF!!.setOnClickListener(this)
+            imgVwAddVisitorVLF!!.visibility=View.GONE
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -107,7 +110,7 @@ var imgVwAddVisitorVLF: ImageView? = null
     var totalPageSize: Int = 0
     var currentPage: Int = 1
 
-    lateinit var alVisitorList: ArrayList<Result>
+    lateinit var alVisitorList: ArrayList<GetVisitorListResult>
 
     private fun callGetVisitorListAPI() {
         try {
@@ -117,12 +120,12 @@ var imgVwAddVisitorVLF: ImageView? = null
             var mAPIService: APIService? = null
             mAPIService = ApiUtils.apiService
             MyProgressDialog.showProgressDialog(appContext!!)
-
-            mAPIService!!.getVisitorsList("application/json", token/*, totalPageSize, currentPage*/)
-                .enqueue(object : Callback<VisitorsListModel> {
+//{{hostname}}/v1/companies/visitor/entries?status=closed
+            mAPIService!!.getVisitorsList("application/json",token, "closed")
+                .enqueue(object : Callback<GetVisitorListResponse> {
                     override fun onResponse(
-                        call: Call<VisitorsListModel>,
-                        response: Response<VisitorsListModel>
+                        call: Call<GetVisitorListResponse>,
+                        response: Response<GetVisitorListResponse>
                     ) {
                         MyProgressDialog.hideProgressDialog()
                         try {
@@ -150,7 +153,7 @@ var imgVwAddVisitorVLF: ImageView? = null
                     }
 
                     override fun onFailure(
-                        call: Call<VisitorsListModel>,
+                        call: Call<GetVisitorListResponse>,
                         t: Throwable
                     ) {
                         MyProgressDialog.hideProgressDialog()
@@ -166,7 +169,7 @@ var imgVwAddVisitorVLF: ImageView? = null
 
 
     public  val REQUEST_VISITOR=1577
-    private fun setVisitorData(alVisitorList: ArrayList<Result>) {
+    private fun setVisitorData(alVisitorList: ArrayList<GetVisitorListResult>) {
         try {
 
             if (alVisitorList.size > 0) {
@@ -177,13 +180,13 @@ var imgVwAddVisitorVLF: ImageView? = null
                 var setVisitorDataAdapter = SetVisitorDataAdapter(appContext!!, alVisitorList,
                     object : SetVisitorDataAdapter.BtnClickListener {
                         override fun onVisitorDetailsBtnClick(position: Int) {
-                            val gson = Gson()
+                          /*  val gson = Gson()
                             var myJson = gson.toJson(alVisitorList[position])
 
                             var intent = Intent(context, AddVisitorDetailActivity::class.java)
                             intent.putExtra("from", "list")
                             intent.putExtra("visitorData",myJson)
-                            startActivityForResult(intent,REQUEST_VISITOR)
+                            startActivityForResult(intent,REQUEST_VISITOR)*/
                         }
                     })
 
