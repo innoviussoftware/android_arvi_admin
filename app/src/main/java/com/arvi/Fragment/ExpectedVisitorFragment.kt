@@ -175,7 +175,7 @@ class ExpectedVisitorFragment : Fragment(), View.OnClickListener {
                 tvNoVisitorFEV!!.visibility=View.GONE
                 rVwVisitorFEV!!.visibility=View.VISIBLE
 
-                var setVisitorDataAdapter = SetVisitorDataAdapter(appContext!!, alVisitorList,
+                var setVisitorDataAdapter = SetVisitorDataAdapter(appContext!!, alVisitorList,0,
                     object : SetVisitorDataAdapter.BtnClickListener {
                         override fun onVisitorDetailsBtnClick(position: Int) {
                             val gson = Gson()
@@ -184,6 +184,7 @@ class ExpectedVisitorFragment : Fragment(), View.OnClickListener {
                             var intent = Intent(context, AddVisitorDetailActivity::class.java)
                             intent.putExtra("from", "list")
                             intent.putExtra("visitorData", myJson)
+                            intent.putExtra("className","expected")
                             startActivityForResult(intent, REQUEST_VISITOR)
                         }
                     })

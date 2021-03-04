@@ -15,11 +15,11 @@ import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
-class SetVisitorDataAdapter(
+class SetScrennedVisitorDataAdapter(
     var context: Context,
     var alVisitorList: ArrayList<GetVisitorListResult>, var isScreenedExpected: Int,
     var btnlistener: BtnClickListener
-) : RecyclerView.Adapter<SetVisitorDataAdapter.ViewHolder>() {
+) : RecyclerView.Adapter<SetScrennedVisitorDataAdapter.ViewHolder>() {
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var tvNameRV = itemView.tvNameRV!!
@@ -61,8 +61,7 @@ class SetVisitorDataAdapter(
 
             holder.tvNameRV.text = itemData.name + "(" + itemData.data!!.company + ")"
 
-            holder.tvMeetPersNameRV.text = "To Meet " + itemData.data!!.visitingTo!!.name
-
+            holder.tvMeetPersNameRV.text = "To Meet " + itemData.data!!.employee!!.name
             //GlobalMethods.convertOnlyDate(itemData.data.actualEntry.timeOn)
 
 
@@ -86,7 +85,7 @@ class SetVisitorDataAdapter(
 
         try {
             if (alVisitorList[position].data!!.expectedEntryTime != null) {
-                if (alVisitorList[position].data!!.expectedEntryTime!!.contains("Z")) {
+                if (alVisitorList[position].data!!.expectedEntryTime.contains("Z")) {
                     holder.tvVisitorTimeRV.text =
                         GlobalMethods.convertUTCDateformate(alVisitorList[position].data!!.expectedEntryTime!!)
                 } else {
@@ -98,34 +97,19 @@ class SetVisitorDataAdapter(
             e.printStackTrace()
         }
 
-       /* try {
-            val format1 = SimpleDateFormat("yyyy-MM-DD'T'hh:mm:ssz")
-            val dt1: Date = format1.parse(alVisitorList[position].data!!.expectedEntryTime!!)
-            val format2 = SimpleDateFormat("MMM dd")
-            val finalDay: String = format2.format(dt1)
-
-            holder.tvVisitorTimeRV.text = finalDay
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-*/
         try {
             if (alVisitorList[position].data!!.expectedEntryTime != null) {
-
-                if (alVisitorList[position].data!!.expectedEntryTime!!.contains("Z")) {
-
+                if (alVisitorList[position].data!!.expectedEntryTime.contains("Z")) {
                     val format1 = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
                     val dt1: Date = format1.parse(alVisitorList[position].data!!.expectedEntryTime)
                     val format2 = SimpleDateFormat("EEEE")
                     val finalDay: String = format2.format(dt1)
-
                     holder.tvVisitorDaysRV.text = finalDay
                 } else {
                     val format1 = SimpleDateFormat("yyyy-MM-dd HH:mm")
                     val dt1: Date = format1.parse(alVisitorList[position].data!!.expectedEntryTime)
                     val format2 = SimpleDateFormat("EEEE")
                     val finalDay: String = format2.format(dt1)
-
                     holder.tvVisitorDaysRV.text = finalDay
                 }
             }

@@ -124,10 +124,10 @@ interface APIService {
     ): Call<ResponseBody>
 
 
-    @POST("v1/companies/visitor")
+    @POST("v1/companies/visitors")
     fun newVisitorsEntryRegister(
-        @Header("Content-Type") ctype: String,
         @Header("Authorization") auth: String,
+        @Header("Content-Type") ctype: String,
         @Body detail: JsonObject
     ): Call<NewVisitorRegisterResponse>
 

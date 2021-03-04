@@ -21,7 +21,14 @@ data class GetVisitorListResult(
     val timezone: String,
     val updatedAt: String,
     val visitingTo: Any,
-    val visitor: Any
+    val visitor: GetVisitorData?=null
+)
+
+data class GetVisitorData(
+    val id: Int,
+    val mobile: String,
+    val name: String,
+    val status: Int
 )
 
 data class AddedBy(
@@ -47,8 +54,13 @@ data class GetVisitorListData(
     val expectedEntryTime: String,
     val visitingTo: VisitingTo,
     val visitor: Visitor,
-    val purpose:String,
-    val company:String
+    val employee: GetVisitorEmployee,
+    val purpose:String?=null,
+    val company:String?=null
+)
+
+data class GetVisitorEmployee(
+    var name:String?=null
 )
 
 data class AddedByX(

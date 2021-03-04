@@ -58,7 +58,7 @@ class AddVisitorPhotoActivity : AppCompatActivity(), CompoundButton.OnCheckedCha
     private var isDoneCapture: String? = null
     private var photoCount = 0
     private var file1: MultipartBody.Part? = null
-    private var token: String? = null
+    //private var token: String? = null
     private var newFace: Bitmap? = null
     private var strEmpId: String? = null
     private var strPhone: String? = null
@@ -93,7 +93,9 @@ class AddVisitorPhotoActivity : AppCompatActivity(), CompoundButton.OnCheckedCha
     internal var imgCount = 0
     internal var name: String? = ""
     internal var context: Context? = null
-    var entryId:Int=0
+    var entryId: Int = 0
+
+    var snackbarView: View? = null
 
     override fun onCheckedChanged(buttonView: CompoundButton?, isChecked: Boolean) {
         try {
@@ -291,6 +293,7 @@ class AddVisitorPhotoActivity : AppCompatActivity(), CompoundButton.OnCheckedCha
             img3 = findViewById(R.id.img3)
             img4 = findViewById(R.id.img4)
             img5 = findViewById(R.id.img5)
+            snackbarView = findViewById(android.R.id.content)
 
             if (Camera.getNumberOfCameras() == 1) {
                 //facingSwitch.setVisibility(View.GONE);
@@ -309,14 +312,17 @@ class AddVisitorPhotoActivity : AppCompatActivity(), CompoundButton.OnCheckedCha
         }
 
         try {
+            jsonUserPicObject = JsonObject()
+            jsonArray= JsonArray()
             name = intent.getStringExtra("name")
-            visitorName = intent.getStringExtra("visitorName")
-            expectDate = intent.getStringExtra("expectDate")
-            expectTime = intent.getStringExtra("expectTime")
-            company = intent.getStringExtra("company")
-            purpose = intent.getStringExtra("purpose")
-            mobile = intent.getStringExtra("mobile")
-            entryId=intent.getIntExtra("entryId",0)
+            visitorName = intent.getStringExtra("visitorName")!!
+            expectDate = intent.getStringExtra("expectDate")!!
+            expectTime = intent.getStringExtra("expectTime")!!
+            mobile = intent.getStringExtra("mobile")!!
+            entryId = intent.getIntExtra("entryId", 0)
+            //           company = intent.getStringExtra("company")!!
+            //        purpose = intent.getStringExtra("purpose")!!
+
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -437,7 +443,7 @@ class AddVisitorPhotoActivity : AppCompatActivity(), CompoundButton.OnCheckedCha
             }
             var mAPIService: APIService? = null
             mAPIService = ApiUtils.apiService
-            val call = mAPIService.uploadUserPhoto(AppConstants.BEARER_TOKEN + token, file1!!)
+            val call = mAPIService.uploadUserPhoto(AppConstants.BEARER_TOKEN + SessionManager.getToken(this), file1!!)
             call.enqueue(object : Callback<UploadPhotoResponse> {
                 override fun onResponse(
                     call: Call<UploadPhotoResponse>,
@@ -446,9 +452,13 @@ class AddVisitorPhotoActivity : AppCompatActivity(), CompoundButton.OnCheckedCha
                     Log.e("Upload", "success")
                     try {
                         val alPhotoDetail = ArrayList<UploadPhotoData>()
-                        if (response.body().data != null)
-                            alPhotoDetail.addAll(response.body().data!!)
-                        callStoreWithId(alPhotoDetail)
+                        if(response.code()==200) {
+                            if (response.body().data != null)
+                                alPhotoDetail.addAll(response.body().data!!)
+                            callStoreWithId(alPhotoDetail)
+                        }else if(response.code()==401){
+
+                        }
                     } catch (e: Exception) {
                         e.printStackTrace()
                     }
@@ -463,12 +473,14 @@ class AddVisitorPhotoActivity : AppCompatActivity(), CompoundButton.OnCheckedCha
         }
     }
 
-    var jsonUserPicObject = JsonObject()
+    lateinit var jsonUserPicObject: JsonObject
+    lateinit var jsonArray: JsonArray
     private fun callStoreWithId(response: ArrayList<UploadPhotoData>) {
         try {
             if (response.size > 0) {
+
 //                val jsonObject = JsonObject()
-                val jsonArray = JsonArray()
+
                 val jsonImgObject = JsonObject()
                 val path = response[0].path
                 val mimetype = response[0].mimetype
@@ -476,15 +488,19 @@ class AddVisitorPhotoActivity : AppCompatActivity(), CompoundButton.OnCheckedCha
                 jsonImgObject.addProperty("path", path)
                 jsonImgObject.addProperty("mimetype", mimetype)
                 jsonImgObject.addProperty("filename", filename)
+                jsonArray.add(jsonImgObject)
+
                 /*   jsonObject.addProperty("mobile", strPhone)
                    jsonObject.addProperty("email", "")
                    jsonObject.addProperty("employeeId", strEmpId)
                    jsonObject.addProperty("name", name)
    */
-//            jsonArray.add("images",jsonImgObject);
-                jsonArray.add(jsonImgObject)
+//                jsonArray.add("images", jsonImgObject);
+
+
                 jsonUserPicObject.addProperty("name", name!!)
                 jsonUserPicObject.addProperty("mobile", mobile!!)
+                jsonUserPicObject.add("images", jsonArray)
                 jsonUserPicObject.addProperty("type", "static personal")
 
             }
@@ -556,17 +572,17 @@ class AddVisitorPhotoActivity : AppCompatActivity(), CompoundButton.OnCheckedCha
             var c = Calendar.getInstance().time
             System.out.println("Current time => " + c);
 
-            var  df =  SimpleDateFormat("yyyy-MM-dd hh:mm", Locale.getDefault())
+            var df = SimpleDateFormat("yyyy-MM-dd hh:mm", Locale.getDefault())
 
 
-            var formattedDate:String  = df.format(c)
+            var formattedDate: String = df.format(c)
 
 
             var jsonObjectMain = JsonObject()
 
             //var jsonObjectVisitorMain = JsonObject()
             var jsonObjectVisitor = JsonObject()
-            var visitor_id:String=visitorID.toString()
+            var visitor_id: String = visitorID.toString()
             jsonObjectVisitor.addProperty("id", visitor_id)
             jsonObjectMain.add("visitor", jsonObjectVisitor)
 
@@ -576,7 +592,7 @@ class AddVisitorPhotoActivity : AppCompatActivity(), CompoundButton.OnCheckedCha
 
             //Employee Object..Start
             var jsonObjectEmployee = JsonObject()
-            jsonObjectEmployee.addProperty("name", name)
+            jsonObjectEmployee.addProperty("name", visitorName)
             jsonObjectData.add("employee", jsonObjectEmployee)
 
             jsonObjectMain.add("data", jsonObjectData)
@@ -599,13 +615,14 @@ class AddVisitorPhotoActivity : AppCompatActivity(), CompoundButton.OnCheckedCha
                         MyProgressDialog.hideProgressDialog()
                         try {
                             if (response.code() == 200) {
-                                finish()
+                                var intent=Intent(this@AddVisitorPhotoActivity,DashboardActivity::class.java)
+                                startActivity(intent)
                             } else {
-                             /*   SnackBar.showError(
-                                    context!!,
-                                    snackbarView!!,
-                                    "Something went wrong"
-                                )*/
+                                /*   SnackBar.showError(
+                                       context!!,
+                                       snackbarView!!,
+                                       "Something went wrong"
+                                   )*/
                             }
                         } catch (e: Exception) {
                             e.printStackTrace()

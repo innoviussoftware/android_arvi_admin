@@ -13,7 +13,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.arvi.Activity.NewApp.AddVisitorDetailActivity
 import com.arvi.Activity.NewApp.EnterCompanyDetailActivity
-import com.arvi.Adapter.SetVisitorDataAdapter
+import com.arvi.Adapter.SetScrennedVisitorDataAdapter
 import com.arvi.Model.GetVisitorListResponse
 import com.arvi.Model.GetVisitorListResult
 import com.arvi.Model.Result
@@ -177,16 +177,17 @@ var imgVwAddVisitorVLF: ImageView? = null
                 tvNoVisitorVLF!!.visibility=View.GONE
 
 
-                var setVisitorDataAdapter = SetVisitorDataAdapter(appContext!!, alVisitorList,
-                    object : SetVisitorDataAdapter.BtnClickListener {
+                var setVisitorDataAdapter = SetScrennedVisitorDataAdapter(appContext!!, alVisitorList,1,
+                    object : SetScrennedVisitorDataAdapter.BtnClickListener {
                         override fun onVisitorDetailsBtnClick(position: Int) {
-                          /*  val gson = Gson()
+                            val gson = Gson()
                             var myJson = gson.toJson(alVisitorList[position])
 
                             var intent = Intent(context, AddVisitorDetailActivity::class.java)
                             intent.putExtra("from", "list")
                             intent.putExtra("visitorData",myJson)
-                            startActivityForResult(intent,REQUEST_VISITOR)*/
+                            intent.putExtra("className","screended")
+                            startActivityForResult(intent,REQUEST_VISITOR)
                         }
                     })
 
@@ -208,9 +209,9 @@ var imgVwAddVisitorVLF: ImageView? = null
 
         if (requestCode==REQUEST_VISITOR){
             if (ConnectivityDetector.isConnectingToInternet(appContext!!)) {
-                //callGetVisitorListAPI()
-                rVwVisitorVLF!!.visibility=View.GONE
-                tvNoVisitorVLF!!.visibility=View.VISIBLE
+                callGetVisitorListAPI()
+                /*rVwVisitorVLF!!.visibility=View.GONE
+                tvNoVisitorVLF!!.visibility=View.VISIBLE*/
             } else {
                 SnackBar.showInternetError(appContext!!, snackbarView!!)
             }

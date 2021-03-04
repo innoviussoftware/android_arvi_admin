@@ -58,21 +58,29 @@ class AddVisitorDetailActivity : AppCompatActivity(), View.OnClickListener {
     var snackbarView: View? = null
     var from: String = "add"
     lateinit var visitorDetails: GetVisitorListResult
+
+    lateinit var className: String
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_visitor_detail)
         try {
             setIds()
+            ///test()
             setListeners()
             if (intent.extras != null) {
                 from = intent.getStringExtra("from")
+                className = intent.getStringExtra("className")
                 if (from == "list") {
                     tvSaveAVDA!!.visibility = View.GONE
                     llRegisterBtnAVDA!!.visibility = View.VISIBLE
 
                     val gson = Gson()
                     visitorDetails =
-                        gson.fromJson(intent.getStringExtra("visitorData"), GetVisitorListResult::class.java)
+                        gson.fromJson(
+                            intent.getStringExtra("visitorData"),
+                            GetVisitorListResult::class.java
+                        )
 
                     Log.e("visitorDetails", "-----===---> " + visitorDetails)
                     setVisitorData(visitorDetails)
@@ -81,19 +89,44 @@ class AddVisitorDetailActivity : AppCompatActivity(), View.OnClickListener {
                     llRegisterBtnAVDA!!.visibility = View.GONE
                 }
             }
+
         } catch (e: Exception) {
             e.printStackTrace()
         }
     }
 
+
     fun setVisitorData(visitorDetails: GetVisitorListResult) {
-        etNameAVDA!!.setText(visitorDetails.name)
-        aTvToMeetAVDA!!.setText(visitorDetails.data!!.visitingTo!!.name)
-        etVisitDateAVDA!!.setText(visitorDetails.data!!.expectedEntry.dateOn)
-        etVisitTimeAVDA!!.setText(visitorDetails.data!!.expectedEntry.timeOn)
-        etComingFromAVDA!!.setText(visitorDetails.data!!.company)
-        etMobileAVDA!!.setText(visitorDetails.data.visitor.mobile)
-        etPurposeAVDA!!.setText(visitorDetails.data!!.purpose)
+        try {
+            etNameAVDA!!.setText(visitorDetails.name)
+            var expectedEntryDateTime = visitorDetails.data!!.expectedEntryTime
+            etVisitDateAVDA!!.setText(expectedEntryDateTime.substring(0,expectedEntryDateTime.indexOf(" ")))
+            etVisitTimeAVDA!!.setText(expectedEntryDateTime.substring(expectedEntryDateTime.indexOf(" "),expectedEntryDateTime.length))
+            etComingFromAVDA!!.setText(visitorDetails.data!!.company)
+
+            etPurposeAVDA!!.setText(visitorDetails.data!!.purpose)
+            if (className == "screended") {
+                aTvToMeetAVDA!!.setText(visitorDetails.data!!.employee!!.name)
+                if (visitorDetails.visitor!=null)
+                etMobileAVDA!!.setText(visitorDetails.visitor.mobile)
+                llRegisterBtnAVDA!!.visibility = View.GONE
+                tvSaveAVDA!!.visibility = View.GONE
+
+                etNameAVDA!!.isEnabled = false
+                etVisitDateAVDA!!.isEnabled = false
+                etVisitTimeAVDA!!.isEnabled = false
+                etComingFromAVDA!!.isEnabled = false
+                etMobileAVDA!!.isEnabled = false
+                etPurposeAVDA!!.isEnabled = false
+
+            } else {
+                aTvToMeetAVDA!!.setText(visitorDetails.data!!.visitingTo!!.name)
+                etMobileAVDA!!.setText(visitorDetails.data.visitor.mobile)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
     }
 
     private fun openDatePickerDialog() {
@@ -121,12 +154,10 @@ class AddVisitorDetailActivity : AppCompatActivity(), View.OnClickListener {
                         showMonth = (monthOfYear + 1).toString()
                     }
                     etVisitDateAVDA!!.setText(year.toString() + "-" + showMonth + "-" + showDay)
-                },
-                year,
-                month,
-                day
-            )
+                }, year, month, day
 
+            )
+            dpd.datePicker.minDate = Calendar.getInstance().timeInMillis;
             dpd.show()
         } catch (e: Exception) {
             e.printStackTrace()
@@ -236,11 +267,11 @@ class AddVisitorDetailActivity : AppCompatActivity(), View.OnClickListener {
     lateinit var alVisitorResultData: ArrayList<CheckMobileNoResult>
     private fun callGetCheckMobileNoApi(mobile: String?) {
         try {
-            var mobileData=""
-            if (mobile!!.contains("+")){
-                mobileData =mobile.substring(0, 1)
-            }else{
-                mobileData=mobile
+            var mobileData = ""
+            if (mobile!!.contains("+")) {
+                mobileData = mobile.substring(0, 1)
+            } else {
+                mobileData = mobile
             }
 
             var mAPIService: APIService? = null
@@ -262,12 +293,25 @@ class AddVisitorDetailActivity : AppCompatActivity(), View.OnClickListener {
                                 alVisitorResultData.addAll(response.body().result)
 
                                 if (alVisitorResultData.size == 0) {
-                                    var intent = Intent(context!!, AddVisitorPhotoActivity::class.java)
-                                    intent.putExtra("","")
-                                    intent.putExtra("","")
-                                    intent.putExtra("","")
-                                    intent.putExtra("","")
-                                    intent.putExtra("","")
+                                    var intent =
+                                        Intent(context!!, AddVisitorPhotoActivity::class.java)
+                                    intent.putExtra("entryId", visitorDetails.id)
+                                    intent.putExtra("name", visitorDetails.name)
+                                    intent.putExtra(
+                                        "visitorName",
+                                        visitorDetails.data!!.visitingTo!!.name
+                                    )
+                                    intent.putExtra(
+                                        "expectDate",
+                                        visitorDetails.data!!.expectedEntry.dateOn
+                                    )
+                                    intent.putExtra(
+                                        "expectTime",
+                                        visitorDetails.data!!.expectedEntry.timeOn
+                                    )
+/*                                    intent.putExtra("company",visitorDetails.data!!.company!!)
+                                    intent.putExtra("purpose",visitorDetails.data!!.purpose!!)*/
+                                    intent.putExtra("mobile", visitorDetails.data!!.visitor.mobile)
                                     startActivity(intent)
                                 } else {
                                     openPersionVerifyDialog(alVisitorResultData)
@@ -305,17 +349,17 @@ class AddVisitorDetailActivity : AppCompatActivity(), View.OnClickListener {
             var c = Calendar.getInstance().time
             System.out.println("Current time => " + c);
 
-            var  df =  SimpleDateFormat("yyyy-MM-dd hh:mm", Locale.getDefault())
+            var df = SimpleDateFormat("yyyy-MM-dd hh:mm", Locale.getDefault())
 
 
-            var formattedDate:String  = df.format(c)
+            var formattedDate: String = df.format(c)
 
 
             var jsonObjectMain = JsonObject()
 
             //var jsonObjectVisitorMain = JsonObject()
             var jsonObjectVisitor = JsonObject()
-            var visitor_id:String=checkMobileNoResult.id.toString()
+            var visitor_id: String = checkMobileNoResult.id.toString()
             jsonObjectVisitor.addProperty("id", visitor_id)
             jsonObjectMain.add("visitor", jsonObjectVisitor)
 
@@ -324,7 +368,7 @@ class AddVisitorDetailActivity : AppCompatActivity(), View.OnClickListener {
             jsonObjectData.addProperty("actualEntryTime", formattedDate)
             //Employee Object..Start
             var jsonObjectEmployee = JsonObject()
-            jsonObjectEmployee.addProperty("name", visitorDetails.name)
+            jsonObjectEmployee.addProperty("name",  visitorDetails.data!!.visitingTo!!.name)
             jsonObjectData.add("employee", jsonObjectEmployee)
             //Employee Object..End
             jsonObjectMain.add("data", jsonObjectData)
@@ -518,7 +562,8 @@ class AddVisitorDetailActivity : AppCompatActivity(), View.OnClickListener {
             tvCompanyDVV.text = visitorDetails.data!!.company
 
             try {
-                tvLastVisitedDVV.text = GlobalMethods.convertOnlyDate(visitorDetails.data!!.expectedEntryTime!!)
+                tvLastVisitedDVV.text =
+                    GlobalMethods.convertOnlyDate(visitorDetails.data!!.expectedEntryTime!!)
             } catch (e: Exception) {
                 e.printStackTrace()
             }
@@ -528,13 +573,13 @@ class AddVisitorDetailActivity : AppCompatActivity(), View.OnClickListener {
                 .oval(true)
                 .build()
 
-            if(visitorDetails.addedBy.picture !=null) {
+            if (visitorDetails.addedBy.picture != null) {
                 Picasso.with(context)
-                    .load(AppConstants.IMAGE_URL+visitorDetails.addedBy.picture)
+                    .load(AppConstants.IMAGE_URL + visitorDetails.addedBy.picture)
                     .fit()
                     .transform(transformation)
                     .into(imgVwPhotoDVV)
-            }else{
+            } else {
                 imgVwPhotoDVV.setImageDrawable(resources.getDrawable(R.drawable.user))
             }
 
@@ -548,14 +593,14 @@ class AddVisitorDetailActivity : AppCompatActivity(), View.OnClickListener {
             }
             tvChangeDVV.setOnClickListener {
                 var intent = Intent(context!!, AddVisitorPhotoActivity::class.java)
-                intent.putExtra("entryId",visitorDetails.id)
-                intent.putExtra("name",visitorDetails.name)
-                intent.putExtra("visitorName",visitorDetails.data!!.visitingTo!!.name)
-                intent.putExtra("expectDate",visitorDetails.data!!.expectedEntry.dateOn)
-                intent.putExtra("expectTime",visitorDetails.data!!.expectedEntry.timeOn)
-                intent.putExtra("company",visitorDetails.data!!.company)
-                intent.putExtra("purpose",visitorDetails.data!!.purpose)
-                intent.putExtra("mobile",visitorDetails.data!!.visitor.mobile)
+                intent.putExtra("entryId", visitorDetails.id)
+                intent.putExtra("name", visitorDetails.name)
+                intent.putExtra("visitorName", visitorDetails.data!!.visitingTo!!.name)
+                intent.putExtra("expectDate", visitorDetails.data!!.expectedEntry.dateOn)
+                intent.putExtra("expectTime", visitorDetails.data!!.expectedEntry.timeOn)
+                intent.putExtra("mobile", visitorDetails.data!!.visitor.mobile)
+                /* intent.putExtra("company",visitorDetails.data!!.company!!)
+                 intent.putExtra("purpose",visitorDetails.data!!.purpose!!)*/
                 startActivity(intent)
             }
             /* tvYesDVV.setOnClickListener {

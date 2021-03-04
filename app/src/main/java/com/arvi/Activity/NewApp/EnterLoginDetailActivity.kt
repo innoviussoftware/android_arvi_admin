@@ -4,8 +4,11 @@ import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.method.HideReturnsTransformationMethod
+import android.text.method.PasswordTransformationMethod
 import android.view.View
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.RelativeLayout
 import com.arvi.Model.GetLoginResponse
 import com.arvi.R
@@ -34,6 +37,7 @@ class EnterLoginDetailActivity : AppCompatActivity(), View.OnClickListener {
     var empId: String? = null
     var password: String? = null
 
+    lateinit var ivPassWordShowAELD:ImageView
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_enter_login_detail)
@@ -46,6 +50,7 @@ class EnterLoginDetailActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun setListeners() {
         rlLoginLDA!!.setOnClickListener(this)
+        ivPassWordShowAELD!!.setOnClickListener(this)
     }
 
     private fun setIds() {
@@ -54,11 +59,15 @@ class EnterLoginDetailActivity : AppCompatActivity(), View.OnClickListener {
         etEmpIdLDA = findViewById(R.id.etEmpIdLDA)
         etPasswordLDA = findViewById(R.id.etPasswordLDA)
         rlLoginLDA = findViewById(R.id.rlLoginLDA)
+        ivPassWordShowAELD=findViewById(R.id.ivPassWordShowAELD)
+        ivPassWordShowAELD.setImageResource(R.drawable.ic_pw_show_blk)
     }
 
     override fun onBackPressed() {
         finish()
     }
+
+    var flag_pwd = 0
 
     override fun onClick(view: View?) {
         when (view!!.id) {
@@ -71,6 +80,25 @@ class EnterLoginDetailActivity : AppCompatActivity(), View.OnClickListener {
                         SnackBar.showInternetError(context!!, snackbarView!!)
                     }
 
+                }
+            }
+
+            R.id.ivPassWordShowAELD->{
+                try {
+                    if (flag_pwd == 1) {
+                        //show password
+                        etPasswordLDA!!.transformationMethod =
+                            PasswordTransformationMethod.getInstance()
+                        ivPassWordShowAELD.setImageResource(R.drawable.ic_pw_dont_show_blk)
+                        flag_pwd = 0
+                    } else {
+                        //hide password
+                        etPasswordLDA!!.transformationMethod = HideReturnsTransformationMethod.getInstance()
+                        ivPassWordShowAELD.setImageResource(R.drawable.ic_pw_show_blk)
+                        flag_pwd = 1
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
                 }
             }
         }
