@@ -54,6 +54,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import okhttp3.MediaType;
@@ -642,7 +643,7 @@ public class TakePersonPhotoActivity extends AppCompatActivity implements Compou
         String path = MediaStore.Images.Media.insertImage(
                 inContext.getContentResolver(),
                 inImage,
-                "title",
+                "IMG_" + Calendar.getInstance().getTime(),
                 null
         );
         return Uri.parse(path);

@@ -300,13 +300,8 @@ class TakeEmployeePicActivity : AppCompatActivity(), CompoundButton.OnCheckedCha
 
     private fun getImageUri(inContext: Context, inImage: Bitmap): Uri {
         val bytes = ByteArrayOutputStream()
-        inImage.compress(Bitmap.CompressFormat.JPEG, 0, bytes)
-        val path = MediaStore.Images.Media.insertImage(
-            inContext.contentResolver,
-            inImage,
-            "title",
-            null
-        )
+        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes)
+        val path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(), inImage, "IMG_" + Calendar.getInstance().getTime(), null)
         return Uri.parse(path)
     }
 

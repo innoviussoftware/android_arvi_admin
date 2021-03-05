@@ -294,7 +294,7 @@ class AddVisitorPhotoActivity : AppCompatActivity(), CompoundButton.OnCheckedCha
             img4 = findViewById(R.id.img4)
             img5 = findViewById(R.id.img5)
             snackbarView = findViewById(android.R.id.content)
-
+            newFace = null
             if (Camera.getNumberOfCameras() == 1) {
                 //facingSwitch.setVisibility(View.GONE);
             }
@@ -334,61 +334,64 @@ class AddVisitorPhotoActivity : AppCompatActivity(), CompoundButton.OnCheckedCha
             R.id.tvInstruction ->
 
                 if (!isImg1Seted!!) {
-                    isImg1Seted = true
-                    img1!!.setImageBitmap(newFace)
-                    isDoneCapture = "front"
-                    photoCount = photoCount + 1
-                    Toast.makeText(
-                        applicationContext,
-                        "Photo $photoCount is captured",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    openNextScreen(newFace!!)
+                    if(newFace!=null ) {
+                        isImg1Seted = true
+                        img1!!.setImageBitmap(newFace)
+                        isDoneCapture = "front"
+                        photoCount = photoCount + 1
+                        Toast.makeText(
+                            applicationContext,
+                            "Photo $photoCount is captured",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        openNextScreen(newFace!!)
+                    }
                 } else if (!isImg2Seted!!) {
-                    isImg2Seted = true
-                    img2!!.setImageBitmap(newFace)
-                    isDoneCapture = "front,right"
-                    photoCount = photoCount + 1
-                    Toast.makeText(
-                        applicationContext,
-                        "Photo $photoCount is captured",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    openNextScreen(newFace!!)
+                    if(newFace!=null) {
+                        isImg2Seted = true
+                        img2!!.setImageBitmap(newFace)
+                        isDoneCapture = "front,right"
+                        photoCount = photoCount + 1
+                        Toast.makeText(
+                            applicationContext,
+                            "Photo $photoCount is captured",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        openNextScreen(newFace!!)
+                    }
                 } else if (!isImg3Seted!!) {
-                    isImg3Seted = true
-                    img3!!.setImageBitmap(newFace)
-                    isDoneCapture = "front,left"
-                    photoCount = photoCount + 1
-                    Toast.makeText(
-                        applicationContext,
-                        "Photo $photoCount is captured",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    openNextScreen(newFace!!)
+                    if(newFace!=null) {
+                        isImg3Seted = true
+                        img3!!.setImageBitmap(newFace)
+                        isDoneCapture = "front,left"
+                        photoCount = photoCount + 1
+                        Toast.makeText(
+                            applicationContext,
+                            "Photo $photoCount is captured",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        openNextScreen(newFace!!)
+                    }
                 } else if (!isImg4Seted!!) {
-                    isImg4Seted = true
-                    img4!!.setImageBitmap(newFace)
-                    photoCount = photoCount + 1
-                    Toast.makeText(
-                        applicationContext,
-                        "Photo $photoCount is captured",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    openNextScreen(newFace!!)
+                    if(newFace!=null) {
+                        isImg4Seted = true
+                        img4!!.setImageBitmap(newFace)
+                        photoCount = photoCount + 1
+                        Toast.makeText(
+                            applicationContext,
+                            "Photo $photoCount is captured",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        openNextScreen(newFace!!)
+                    }
                 }
         }
     }
 
     private fun getImageUri(inContext: Context, inImage: Bitmap): Uri {
         val bytes = ByteArrayOutputStream()
-        inImage.compress(Bitmap.CompressFormat.JPEG, 0, bytes)
-        val path = MediaStore.Images.Media.insertImage(
-            inContext.contentResolver,
-            inImage,
-            "title",
-            null
-        )
+        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes)
+        val path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(), inImage, "IMG_" + Calendar.getInstance().getTime(), null)
         return Uri.parse(path)
     }
 
@@ -748,6 +751,7 @@ class AddVisitorPhotoActivity : AppCompatActivity(), CompoundButton.OnCheckedCha
                         override fun faceDetected(face: Bitmap) {
 
                             try {
+
                                 newFace = face
 
                             } catch (e: Exception) {

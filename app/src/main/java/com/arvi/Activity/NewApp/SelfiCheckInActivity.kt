@@ -51,6 +51,7 @@ import com.arvi.btScan.java.services.SlaveListener
 import com.arvi.btScan.java.services.SlaveService
 import com.arvi.btScan.java.services.SlaveService.MyServiceBinder
 import com.google.gson.JsonObject
+import com.societyguard.Utils.FileUtil.getImageUri
 import com.societyguard.Utils.FileUtil.getPath
 import okhttp3.MediaType
 import okhttp3.MultipartBody
@@ -325,20 +326,7 @@ class SelfiCheckInActivity : AppCompatActivity(), CompoundButton.OnCheckedChange
         }
     }
 
-    private fun getImageUri(
-        inContext: Context,
-        inImage: Bitmap
-    ): Uri? {
-        val bytes = ByteArrayOutputStream()
-        inImage.compress(Bitmap.CompressFormat.JPEG, 0, bytes)
-        val path = MediaStore.Images.Media.insertImage(
-            inContext.contentResolver,
-            inImage,
-            "title",
-            null
-        )
-        return Uri.parse(path)
-    }
+
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     private fun callDetectFaceAPI(face: Bitmap) {

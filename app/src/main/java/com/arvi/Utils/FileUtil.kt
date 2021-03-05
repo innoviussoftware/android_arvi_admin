@@ -3,13 +3,26 @@ package com.societyguard.Utils
 import android.content.ContentUris
 import android.content.Context
 import android.database.Cursor
+import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.provider.DocumentsContract
 import android.provider.MediaStore
+import java.io.ByteArrayOutputStream
+import java.util.*
 
 object FileUtil {
+
+    fun getImageUri(
+        inContext: Context,
+        inImage: Bitmap
+    ): Uri? {
+        val bytes = ByteArrayOutputStream()
+        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes)
+        val path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(), inImage, "IMG_" + Calendar.getInstance().getTime(), null)
+        return Uri.parse(path)
+    }
 
     fun getPath(context: Context, uri: Uri): String? {
 

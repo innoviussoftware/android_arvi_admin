@@ -11,7 +11,10 @@ import android.util.Log
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
-import com.arvi.Model.*
+import com.arvi.Model.CheckMobileNoResponse
+import com.arvi.Model.CheckMobileNoResult
+import com.arvi.Model.GetVisitorListResult
+import com.arvi.Model.VisitorsListModel
 import com.arvi.R
 import com.arvi.RetrofitApiCall.APIService
 import com.arvi.RetrofitApiCall.ApiUtils
@@ -24,7 +27,6 @@ import com.google.gson.Gson
 import com.google.gson.JsonObject
 import com.makeramen.roundedimageview.RoundedTransformationBuilder
 import com.squareup.picasso.Picasso
-import kotlinx.android.synthetic.main.activity_add_visitor_detail.view.*
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
@@ -185,7 +187,7 @@ class AddVisitorDetailActivity : AppCompatActivity(), View.OnClickListener {
                         Crashlytics.log(e.toString())
                     }
 
-                    val fmtOut = SimpleDateFormat("hh:mm")
+                    val fmtOut = SimpleDateFormat("hh:mm a")
 
                     val formattedTime = fmtOut.format(date)
                     etVisitTimeAVDA!!.setText(formattedTime)
@@ -224,11 +226,18 @@ class AddVisitorDetailActivity : AppCompatActivity(), View.OnClickListener {
                 }
                 R.id.tvSaveAVDA -> {
                     if (isValidation()) {
+                        val sdf = SimpleDateFormat("yyyy-MM-dd hh:mm a")
 
-                        if (ConnectivityDetector.isConnectingToInternet(context!!)) {
-                            callAddVisitorDetailsApi()
+                        var strDate =
+                            sdf.parse(etVisitDateAVDA!!.text.toString() + " " + etVisitTimeAVDA!!.text.toString())
+                        if (System.currentTimeMillis() >= strDate.getTime()) {
+                            Toast.makeText(context, "Please select time after current date and time", Toast.LENGTH_SHORT).show();
                         } else {
-                            SnackBar.showInternetError(context!!, snackbarView!!)
+                            if (ConnectivityDetector.isConnectingToInternet(context!!)) {
+                                callAddVisitorDetailsApi()
+                            } else {
+                                SnackBar.showInternetError(context!!, snackbarView!!)
+                            }
                         }
                     }
                 }
@@ -245,12 +254,20 @@ class AddVisitorDetailActivity : AppCompatActivity(), View.OnClickListener {
                     openTimePickerDialog()
                 }
                 R.id.tvRegisterAVDA -> {
-                    if (ConnectivityDetector.isConnectingToInternet(context!!)) {
-                        callGetCheckMobileNoApi(visitorDetails.data.visitor.mobile)
-                    } else {
-                        SnackBar.showInternetError(context!!, snackbarView!!)
-                    }
 
+                    val sdf = SimpleDateFormat("yyyy-MM-dd hh:mm a")
+
+                    var strDate =
+                        sdf.parse(etVisitDateAVDA!!.text.toString() + " " + etVisitTimeAVDA!!.text.toString())
+                    if (System.currentTimeMillis() >= strDate.getTime()) {
+                        Toast.makeText(context, "Please select time after current date and time", Toast.LENGTH_SHORT).show();
+                    } else {
+                        if (ConnectivityDetector.isConnectingToInternet(context!!)) {
+                            callGetCheckMobileNoApi(visitorDetails.data.visitor.mobile)
+                        } else {
+                            SnackBar.showInternetError(context!!, snackbarView!!)
+                        }
+                    }
                     //MM Close- 3/3/2021
                     //openPersionVerifyDialog()
 
