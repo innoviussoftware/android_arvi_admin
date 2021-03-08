@@ -8,6 +8,8 @@ import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import com.arvi.Model.GetDesignationListResponse
 import com.arvi.Model.GetDesignationListResponseItem
+import com.arvi.Model.GetGroupListResponse
+import com.arvi.Model.GetGroupListResponseItem
 import com.arvi.R
 import com.arvi.RetrofitApiCall.APIService
 import com.arvi.RetrofitApiCall.ApiUtils
@@ -22,6 +24,8 @@ import retrofit2.Response
 
 class EnterEmployeeDetailsActivity : AppCompatActivity(), View.OnClickListener {
 
+
+    private lateinit var strDesignation: String
     var imgVwBackEEDA: ImageView? = null
     var etNameEEDA: EditText? = null
     var etEmployeeIDEEDA: EditText? = null
@@ -29,11 +33,21 @@ class EnterEmployeeDetailsActivity : AppCompatActivity(), View.OnClickListener {
     var etMobileEEDA: EditText? = null
     var etMailEEDA: EditText? = null
     var tvTakePicEEDA: TextView? = null
-    var aTvDesignationEEDA: AutoCompleteTextView? = null
+    var spDesignationEEDA: Spinner? = null
+    var spGroupEEDA: Spinner? = null
 
     var context: Context? = null
     var snackbarView: View? = null
     var alDesignationList: ArrayList<GetDesignationListResponseItem> = ArrayList()
+    var alGroupList: ArrayList<GetGroupListResponseItem> = ArrayList()
+
+    private var strEmpId: String? = null
+    private var strPhone: String? = null
+    var strName: String? = null
+    var strEmail: String? = null
+    var role_id: Int? = 0
+    var group_id: Int? = 0
+    private var strGroupName: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,7 +56,91 @@ class EnterEmployeeDetailsActivity : AppCompatActivity(), View.OnClickListener {
         setListener()
         try {
             CallGetDesignationListApi()
+            CallGroupListApi()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
 
+    }
+
+    private fun CallGroupListApi() {
+        try {
+            var mAPIService: APIService? = null
+            mAPIService = ApiUtils.apiService
+
+            mAPIService!!.getGroupList(
+                AppConstants.BEARER_TOKEN + SessionManager.getToken(context!!)
+            )
+                .enqueue(object : Callback<GetGroupListResponse> {
+
+                    override fun onResponse(
+                        call: Call<GetGroupListResponse>,
+                        response: Response<GetGroupListResponse>
+                    ) {
+
+                        try {
+                            if (response.code() == 200) {
+                                if (response.body() != null) {
+                                    alGroupList = ArrayList()
+                                    alGroupList.addAll(response.body())
+                                    setGroupList()
+                                }
+                            } else if (response.code() == 401) {
+                                var intent =
+                                    Intent(context!!, EnterCompanyDetailActivity::class.java)
+                                intent.flags =
+                                    Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+                                startActivity(intent)
+                                SessionManager.clearAppSession(context!!)
+                            } else {
+                                SnackBar.showError(
+                                    context!!,
+                                    snackbarView!!,
+                                    "Something went wrong"
+                                )
+                            }
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+
+                        }
+                    }
+
+                    override fun onFailure(
+                        call: Call<GetGroupListResponse>,
+                        t: Throwable
+                    ) {
+
+                    }
+                })
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+    }
+
+    private fun setGroupList() {
+        try {
+            if (!alGroupList.isNullOrEmpty()) {
+                val adapter = ArrayAdapter(
+                    this,
+                    android.R.layout.simple_spinner_dropdown_item, alGroupList
+                )
+                spGroupEEDA!!.adapter = adapter
+                spGroupEEDA!!.onItemSelectedListener = object :
+                    AdapterView.OnItemSelectedListener {
+                    override fun onItemSelected(
+                        parent: AdapterView<*>,
+                        view: View, position: Int, id: Long
+                    ) {
+                        strGroupName = alGroupList.get(position).name
+                        group_id = alGroupList.get(position).id
+                    }
+
+                    override fun onNothingSelected(parent: AdapterView<*>) {
+                        // write code to perform some action
+                    }
+                }
+            }
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -51,64 +149,85 @@ class EnterEmployeeDetailsActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun CallGetDesignationListApi() {
 
-        var mAPIService: APIService? = null
-        mAPIService = ApiUtils.apiService
-        MyProgressDialog.showProgressDialog(context!!)
-        mAPIService!!.getDesignationList(
-            AppConstants.BEARER_TOKEN + SessionManager.getToken(context!!)
-        )
-            .enqueue(object : Callback<GetDesignationListResponse> {
+        try {
+            var mAPIService: APIService? = null
+            mAPIService = ApiUtils.apiService
 
-                override fun onResponse(
-                    call: Call<GetDesignationListResponse>,
-                    response: Response<GetDesignationListResponse>
-                ) {
-                    MyProgressDialog.hideProgressDialog()
-                    try {
-                        if (response.code() == 200) {
-                            if (response.body() != null) {
-                                alDesignationList = ArrayList()
-                                alDesignationList.addAll(response.body())
-                                setDesignation()
+            mAPIService!!.getDesignationList(
+                AppConstants.BEARER_TOKEN + SessionManager.getToken(context!!)
+            )
+                .enqueue(object : Callback<GetDesignationListResponse> {
+
+                    override fun onResponse(
+                        call: Call<GetDesignationListResponse>,
+                        response: Response<GetDesignationListResponse>
+                    ) {
+
+                        try {
+                            if (response.code() == 200) {
+                                if (response.body() != null) {
+                                    alDesignationList = ArrayList()
+                                    alDesignationList.addAll(response.body())
+                                    setDesignation()
+                                }
+                            } else if (response.code() == 401) {
+                                var intent =
+                                    Intent(context!!, EnterCompanyDetailActivity::class.java)
+                                intent.flags =
+                                    Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+                                startActivity(intent)
+                                SessionManager.clearAppSession(context!!)
+                            } else {
+                                SnackBar.showError(
+                                    context!!,
+                                    snackbarView!!,
+                                    "Something went wrong"
+                                )
                             }
-                        } else if(response.code() == 401){
-                            var intent = Intent(context!!, EnterCompanyDetailActivity::class.java)
-                            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
-                            startActivity(intent)
-                            SessionManager.clearAppSession(context!!)
-                        }else {
-                            SnackBar.showError(
-                                context!!,
-                                snackbarView!!,
-                                "Something went wrong"
-                            )
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+
                         }
-                    } catch (e: Exception) {
-                        e.printStackTrace()
+                    }
+
+                    override fun onFailure(
+                        call: Call<GetDesignationListResponse>,
+                        t: Throwable
+                    ) {
 
                     }
-                }
-
-                override fun onFailure(
-                    call: Call<GetDesignationListResponse>,
-                    t: Throwable
-                ) {
-                    MyProgressDialog.hideProgressDialog()
-                }
-            })
+                })
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
 
     }
 
     private fun setDesignation() {
-        if (!alDesignationList.isNullOrEmpty()) {
-            val adapter: ArrayAdapter<GetDesignationListResponseItem> =
-                ArrayAdapter<GetDesignationListResponseItem>(
+        try {
+            if (!alDesignationList.isNullOrEmpty()) {
+                val adapter = ArrayAdapter(
                     this,
-                    android.R.layout.select_dialog_item,
-                    alDesignationList
+                    android.R.layout.simple_spinner_dropdown_item, alDesignationList
                 )
-            aTvDesignationEEDA!!.threshold = 1
-            aTvDesignationEEDA!!.setAdapter(adapter)
+                spDesignationEEDA!!.adapter = adapter
+                spDesignationEEDA!!.onItemSelectedListener = object :
+                    AdapterView.OnItemSelectedListener {
+                    override fun onItemSelected(
+                        parent: AdapterView<*>,
+                        view: View, position: Int, id: Long
+                    ) {
+                        strDesignation = alDesignationList.get(position).role
+                        role_id = alDesignationList.get(position).id
+                    }
+
+                    override fun onNothingSelected(parent: AdapterView<*>) {
+                        // write code to perform some action
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 
@@ -127,16 +246,14 @@ class EnterEmployeeDetailsActivity : AppCompatActivity(), View.OnClickListener {
         etMobileEEDA = findViewById(R.id.etMobileEEDA)
         etMailEEDA = findViewById(R.id.etMailEEDA)
         tvTakePicEEDA = findViewById(R.id.tvTakePicEEDA)
-        aTvDesignationEEDA = findViewById(R.id.aTvDesignationEEDA)
+        spDesignationEEDA = findViewById(R.id.spDesignationEEDA)
+        spGroupEEDA = findViewById(R.id.spGroupEEDA)
     }
 
     override fun onBackPressed() {
         finish()
     }
 
-    private var strEmpId: String? = null
-    private var strPhone: String? = null
-    var strName: String? = null
 
     override fun onClick(view: View?) {
         when (view!!.id) {
@@ -149,6 +266,9 @@ class EnterEmployeeDetailsActivity : AppCompatActivity(), View.OnClickListener {
                     intent.putExtra("name", strName)
                     intent.putExtra("mobile", strPhone)
                     intent.putExtra("employeeId", strEmpId)
+                    intent.putExtra("email", strEmail)
+                    intent.putExtra("role_id", role_id)
+                    intent.putExtra("group_id", group_id)
                     startActivity(intent)
                 }
             }
@@ -159,6 +279,7 @@ class EnterEmployeeDetailsActivity : AppCompatActivity(), View.OnClickListener {
         strName = etNameEEDA!!.text.toString()
         strEmpId = etEmployeeIDEEDA!!.text.toString()
         strPhone = etMobileEEDA!!.text.toString()
+        strEmail = etMailEEDA!!.text.toString()
 
         if (strName!!.isEmpty()) {
             SnackBar.showValidationError(context!!, snackbarView!!, "Please enter person's name")
@@ -167,6 +288,12 @@ class EnterEmployeeDetailsActivity : AppCompatActivity(), View.OnClickListener {
         } else if (strEmpId!!.isEmpty()) {
             SnackBar.showValidationError(context!!, snackbarView!!, "Please enter employee id")
             etEmployeeIDEEDA!!.requestFocus()
+            return false
+        } else if (strDesignation!!.isNullOrEmpty()) {
+            SnackBar.showValidationError(context!!, snackbarView!!, "Please select role")
+            return false
+        } else if (strGroupName!!.isNullOrEmpty()) {
+            SnackBar.showValidationError(context!!, snackbarView!!, "Please select group")
             return false
         } else if (strPhone!!.isEmpty()) {
             SnackBar.showValidationError(
@@ -183,6 +310,14 @@ class EnterEmployeeDetailsActivity : AppCompatActivity(), View.OnClickListener {
                 "Please enter valid mobile number"
             )
             etMobileEEDA!!.requestFocus()
+            return false
+        } else if (strEmail.isNullOrEmpty()) {
+            SnackBar.showValidationError(
+                context!!,
+                snackbarView!!,
+                "Please enter official email address"
+            )
+            etMailEEDA!!.requestFocus()
             return false
         }
         return true

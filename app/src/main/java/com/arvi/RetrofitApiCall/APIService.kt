@@ -137,15 +137,14 @@ interface APIService {
 
 
     @GET("v1/companies/roles")
-    fun getComaniesRolesList(
-        @Header("Authorization") auth: String,
-        @Header("Content-Type") ctype: String
-    ): Call<RoleListModel>
-
-    @GET("v1/companies/roles")
     fun getDesignationList(
         @Header("Authorization") auth: String
     ):Call<GetDesignationListResponse>
+
+    @GET("v1/companies/groups")
+    fun getGroupList(
+        @Header("Authorization") auth: String
+    ):Call<GetGroupListResponse>
 
     @GET("v1/companies/users")
     fun getComaniesUsersList(

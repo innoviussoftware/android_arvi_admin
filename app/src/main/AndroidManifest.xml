@@ -47,14 +47,26 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".Activity.NewApp.TakeEmployeePicActivity"></activity>
-        <activity android:name=".Activity.NewApp.EnterEmployeeDetailsActivity" />
+        <activity
+            android:name=".Activity.NewApp.TakeEmployeePicActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden|adjustPan" />
+        <activity
+            android:name=".Activity.NewApp.EnterEmployeeDetailsActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden|adjustPan" />
         <activity
             android:name=".Activity.NewApp.UserEmployeesListActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden|adjustPan" />
-        <activity android:name=".Activity.NewApp.AddLeaveRequestActivity" />
-        <activity android:name=".Activity.NewApp.AddWfHRequestActivity" />
+        <activity
+            android:name=".Activity.NewApp.AddLeaveRequestActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden|adjustPan" />
+        <activity
+            android:name=".Activity.NewApp.AddWfHRequestActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden|adjustPan" />
         <activity
             android:name=".Activity.NewApp.AddRegularizationRequestActivity"
             android:screenOrientation="portrait"
@@ -109,7 +121,10 @@
             </intent-filter>
         </receiver>
 
-        <activity android:name=".Activity.Enroll.TakePersonPhotoActivity" />
+        <activity
+            android:name=".Activity.Enroll.TakePersonPhotoActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden|adjustPan" />
         <activity
             android:name=".Activity.Enroll.AddPersonDetailActivity"
             android:screenOrientation="portrait"

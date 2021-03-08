@@ -83,16 +83,48 @@
                     android:textSize="@dimen/_12ssp" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <AutoCompleteTextView
-                android:id="@+id/aTvDesignationEEDA"
+
+            <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:fontFamily="@font/gotham_book_regular"
-                android:hint="@string/designation_ttl"
-                android:singleLine="true"
+                android:text="Select Role"
                 android:textColor="@color/black"
-                android:textSize="@dimen/_12ssp"
                 android:layout_marginTop="@dimen/_8sdp"
+                android:fontFamily="@font/gotham_book_regular"
+                android:textSize="@dimen/_10ssp"
+                />
+            <Spinner
+                android:id="@+id/spDesignationEEDA"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_2sdp"
+                />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/view_bg"
+                android:layout_marginTop="@dimen/_1sdp"
+                />
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Select Group"
+                android:textColor="@color/black"
+                android:layout_marginTop="@dimen/_8sdp"
+                android:fontFamily="@font/gotham_book_regular"
+                android:textSize="@dimen/_10ssp"
+                />
+            <Spinner
+                android:id="@+id/spGroupEEDA"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_2sdp"
+                />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/view_bg"
+                android:layout_marginTop="@dimen/_1sdp"
                 />
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"

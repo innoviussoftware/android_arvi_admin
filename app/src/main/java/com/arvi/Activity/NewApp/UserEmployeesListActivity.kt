@@ -112,6 +112,7 @@ class UserEmployeesListActivity : AppCompatActivity() {
                                     e.printStackTrace()
                                 }
 
+/*
                                 try {
                                     val gson = Gson()
                                     val type = object : TypeToken<CompaniesUsersResponse>() {}.type
@@ -123,6 +124,7 @@ class UserEmployeesListActivity : AppCompatActivity() {
                                 } catch (e: Exception) {
                                     e.printStackTrace()
                                 }
+*/
 
                                 setComapniesUserData()
                             }

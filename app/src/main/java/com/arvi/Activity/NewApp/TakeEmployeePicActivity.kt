@@ -53,6 +53,7 @@ class TakeEmployeePicActivity : AppCompatActivity(), CompoundButton.OnCheckedCha
     SlaveListener, View.OnClickListener {
 
 
+
     internal var tvInstruction: TextView? = null
     private val TAG = "Add Visitor Photo"
     private val PERMISSION_REQUESTS = 1
@@ -66,8 +67,8 @@ class TakeEmployeePicActivity : AppCompatActivity(), CompoundButton.OnCheckedCha
     private var newFace: Bitmap? = null
     private var strEmpId: String? = null
     private var strPhone: String? = null
-
-
+    private var role_id: Int?=0
+    private var group_id: Int?=0
     private enum class STATE {
         UNKNOWN, INIT, WAIT_FOR_FACE, READ_TEMP, WAIT_FOR_TEMP, WAIT_FOR_EXIT
     }
@@ -95,9 +96,9 @@ class TakeEmployeePicActivity : AppCompatActivity(), CompoundButton.OnCheckedCha
     internal var isImg4Seted: Boolean? = false
     internal var isImg5Seted: Boolean? = false
     internal var imgCount = 0
-    internal var name: String? = ""
+    internal var strName: String? = ""
     internal var context: Context? = null
-
+    private var strEmail: String? = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -131,11 +132,17 @@ class TakeEmployeePicActivity : AppCompatActivity(), CompoundButton.OnCheckedCha
             serviceIntent = Intent(applicationContext, SlaveService::class.java)
 
             if (intent.extras != null) {
-                name = intent.getStringExtra("name")
+
+
+
+                strName = intent.getStringExtra("name")
                 token = getToken(context!!)
                 // getIntent().getStringExtra("token");
                 strPhone = intent.getStringExtra("mobile")
                 strEmpId = intent.getStringExtra("employeeId")
+                strEmail = intent.getStringExtra("email")
+                role_id = intent.getIntExtra("role_id", 0)
+                group_id = intent.getIntExtra("group_id", 0)
 //                String msg = "Please put your face inside border";
                 //todo:: priyanka 27-10
                 /*if (name != null) {
@@ -301,7 +308,12 @@ class TakeEmployeePicActivity : AppCompatActivity(), CompoundButton.OnCheckedCha
     private fun getImageUri(inContext: Context, inImage: Bitmap): Uri {
         val bytes = ByteArrayOutputStream()
         inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes)
-        val path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(), inImage, "IMG_" + Calendar.getInstance().getTime(), null)
+        val path = MediaStore.Images.Media.insertImage(
+            inContext.getContentResolver(),
+            inImage,
+            "IMG_" + Calendar.getInstance().getTime(),
+            null
+        )
         return Uri.parse(path)
     }
 
@@ -314,7 +326,7 @@ class TakeEmployeePicActivity : AppCompatActivity(), CompoundButton.OnCheckedCha
             Log.e("path ", profilePath!!)
             callStorePersonPicApi(profilePath)
             if (imgCount == 4) {
-                var message= "Welcome "+ name+" , Your onboarding is complete"
+                var message = "Welcome " + strName + " , Your onboarding is complete"
                 val builder = AlertDialog.Builder(this)
                 builder.setCancelable(false)
                 builder.setMessage(message)
@@ -393,14 +405,26 @@ class TakeEmployeePicActivity : AppCompatActivity(), CompoundButton.OnCheckedCha
                 jsonImgObject.addProperty("path", path)
                 jsonImgObject.addProperty("mimetype", mimetype)
                 jsonImgObject.addProperty("filename", filename)
+
+                var jsonObjectRole = JsonObject()
+                jsonObjectRole.addProperty("id",role_id)
+
+                var jsonObjectGroup = JsonObject()
+                jsonObjectGroup.addProperty("id",group_id)
+
+                jsonObject.addProperty("name", strName)
+                jsonObject.addProperty("email", strEmail)
                 jsonObject.addProperty("mobile", strPhone)
-                jsonObject.addProperty("email", "")
                 jsonObject.addProperty("employeeId", strEmpId)
-                jsonObject.addProperty("name", name)
+                jsonObject.add("role",jsonObjectRole)
+                jsonObject.add("group",jsonObjectGroup)
+
+
 
 //            jsonArray.add("images",jsonImgObject);
                 jsonArray.add(jsonImgObject)
                 jsonObject.add("images", jsonArray)
+                Log.e("request:",jsonObject.toString())
                 var mAPIService: APIService? = null
                 mAPIService = apiService
                 val context: Context = this@TakeEmployeePicActivity
@@ -423,11 +447,11 @@ class TakeEmployeePicActivity : AppCompatActivity(), CompoundButton.OnCheckedCha
                 })
 
             }
-            } catch (e: java.lang.Exception) {
-                e.printStackTrace()
-                hideProgressDialog()
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+            hideProgressDialog()
 
-            }
+        }
 
     }
 
