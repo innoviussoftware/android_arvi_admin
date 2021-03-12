@@ -11,38 +11,113 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.arvi.Adapter.GetLeaveRequestResponse
+import com.arvi.Adapter.GetLeaveRequest_Leave
 import com.arvi.Adapter.SetLeaveRequestDataAdapter
-import com.arvi.Adapter.SetWfHDataAdapter
 import com.arvi.R
+import com.arvi.RetrofitApiCall.APIService
+import com.arvi.RetrofitApiCall.ApiUtils
+import com.arvi.SessionManager.SessionManager
+import com.arvi.Utils.AppConstants
+import com.arvi.Utils.MyProgressDialog
+import com.arvi.Utils.SnackBar
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class LeaveRequestListActivity : AppCompatActivity(), View.OnClickListener {
-    var imgVwBackLRLA: ImageView?=null
-    var rVwRequestLRLA: RecyclerView?=null
-    var tvNoVisitorLRLA: TextView?=null
-    var imgVwAddRequestLRLA: ImageView?=null
+    var imgVwBackLRLA: ImageView? = null
+    var rVwRequestLRLA: RecyclerView? = null
+    var tvNoLeaveLRLA: TextView? = null
+    var imgVwAddRequestLRLA: ImageView? = null
 
-    var context: Context?=null
-    var snackbarView: View?=null
+    var context: Context? = null
+    var snackbarView: View? = null
+    var alLeaveRequests: ArrayList<GetLeaveRequest_Leave> = ArrayList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_leave_request_list)
         setIds()
         setListeners()
-        setData()
+
     }
 
-    @SuppressLint("WrongConstant")
-    private fun setData() {
+    override fun onResume() {
+        super.onResume()
+        callGetLeaveRequestApi()
+    }
+
+    private fun callGetLeaveRequestApi() {
         try {
-            var setDataAdapter = SetLeaveRequestDataAdapter(context!!)
-            rVwRequestLRLA!!.layoutManager =
-                LinearLayoutManager(context, LinearLayout.VERTICAL, false)
-            rVwRequestLRLA!!.setAdapter(setDataAdapter)
+            var mAPIService: APIService? = null
+            mAPIService = ApiUtils.apiService
+//            MyProgressDialog.showProgressDialog(context!!)
+            mAPIService!!.getLeaveRequest(
+                AppConstants.BEARER_TOKEN + SessionManager.getToken(
+                    context!!
+                )
+            )
+                .enqueue(object : Callback<GetLeaveRequestResponse> {
+
+                    override fun onResponse(
+                        call: Call<GetLeaveRequestResponse>,
+                        response: Response<GetLeaveRequestResponse>
+                    ) {
+//                        MyProgressDialog.hideProgressDialog()
+                        try {
+                            if (response.code() == 200) {
+                                if (response.body() != null) {
+                                    try {
+                                        alLeaveRequests = ArrayList()
+                                        alLeaveRequests.addAll(response.body().leaves)
+                                        setLeaveRequestData()
+                                    } catch (e: Exception) {
+                                        e.printStackTrace()
+                                    }
+
+                                }
+                            } else {
+                                SnackBar.showError(
+                                    context!!,
+                                    snackbarView!!,
+                                    "Something went wrong"
+                                )
+                            }
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+
+                        }
+                    }
+
+                    override fun onFailure(
+                        call: Call<GetLeaveRequestResponse>,
+                        t: Throwable
+                    ) {
+//                        MyProgressDialog.hideProgressDialog()
+                    }
+                })
         } catch (e: Exception) {
             e.printStackTrace()
         }
+
     }
+
+    @SuppressLint("WrongConstant")
+    private fun setLeaveRequestData() {
+        if (alLeaveRequests!=null && alLeaveRequests.size>0) {
+            tvNoLeaveLRLA!!.visibility = View.GONE
+            rVwRequestLRLA!!.visibility = View.VISIBLE
+            var setDataAdapter = SetLeaveRequestDataAdapter(context!!, alLeaveRequests)
+            rVwRequestLRLA!!.layoutManager =
+                LinearLayoutManager(context, LinearLayout.VERTICAL, false)
+            rVwRequestLRLA!!.setAdapter(setDataAdapter)
+        }else{
+            tvNoLeaveLRLA!!.visibility = View.VISIBLE
+            rVwRequestLRLA!!.visibility = View.GONE
+        }
+    }
+
 
     private fun setListeners() {
         imgVwBackLRLA!!.setOnClickListener(this)
@@ -50,11 +125,11 @@ class LeaveRequestListActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun setIds() {
-        context = LeaveRequestListActivity@this
+        context = LeaveRequestListActivity@ this
         snackbarView = findViewById(android.R.id.content)
         imgVwBackLRLA = findViewById(R.id.imgVwBackLRLA)
         rVwRequestLRLA = findViewById(R.id.rVwRequestLRLA)
-        tvNoVisitorLRLA = findViewById(R.id.tvNoVisitorLRLA)
+        tvNoLeaveLRLA = findViewById(R.id.tvNoLeaveLRLA)
         imgVwAddRequestLRLA = findViewById(R.id.imgVwAddRequestLRLA)
     }
 
@@ -63,12 +138,12 @@ class LeaveRequestListActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     override fun onClick(view: View?) {
-        when(view!!.id){
-            R.id.imgVwBackLRLA->{
+        when (view!!.id) {
+            R.id.imgVwBackLRLA -> {
                 finish()
             }
-            R.id.imgVwAddRequestLRLA->{
-                var intent = Intent(context!!,AddLeaveRequestActivity::class.java)
+            R.id.imgVwAddRequestLRLA -> {
+                var intent = Intent(context!!, AddLeaveRequestActivity::class.java)
                 startActivity(intent)
             }
         }

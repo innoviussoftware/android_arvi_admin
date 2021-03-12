@@ -18,6 +18,8 @@ import com.arvi.SessionManager.SessionManager
 import com.arvi.Utils.AppConstants
 import com.arvi.Utils.MyProgressDialog
 import com.arvi.Utils.SnackBar
+import com.arvihealthscanner.Model.GetEmployeeListResponse
+import com.arvihealthscanner.Model.GetEmployeeListResult
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.activity_user_employees_list.*
@@ -47,128 +49,82 @@ class UserEmployeesListActivity : AppCompatActivity() {
     }
 
 
-    lateinit var alComapniesUserList:ArrayList<CompaniesUsersList>
+    lateinit var alComapniesUserList: ArrayList<GetEmployeeListResult>
     private fun CallGetComapniesUserListApi() {
 
-        var mAPIService: APIService? = null
-        mAPIService = ApiUtils.apiService
-        MyProgressDialog.showProgressDialog(mContext!!)
-        mAPIService!!.getComaniesUsersList(
-            AppConstants.BEARER_TOKEN + SessionManager.getToken(
-                mContext!!
+        try {
+            var mAPIService: APIService? = null
+            mAPIService = ApiUtils.apiService
+            MyProgressDialog.showProgressDialog(mContext!!)
+            mAPIService!!.getComaniesUsersList(
+                AppConstants.BEARER_TOKEN + SessionManager.getToken(
+                    mContext!!
+                )
             )
-        )
-            .enqueue(object : Callback<ResponseBody> {
+                .enqueue(object : Callback<GetEmployeeListResponse> {
 
-                override fun onResponse(
-                    call: Call<ResponseBody>,
-                    response: Response<ResponseBody>
-                ) {
-                    MyProgressDialog.hideProgressDialog()
-                    try {
-                        if (response.code() == 200) {
-                            if (response.body() != null) {
+                    override fun onResponse(
+                        call: Call<GetEmployeeListResponse>,
+                        response: Response<GetEmployeeListResponse>
+                    ) {
+                        MyProgressDialog.hideProgressDialog()
+                        try {
+                            if (response.code() == 200) {
+                                if (response.body() != null) {
 
-                                try {
-                                    val data = response.body().string()
-
-                                    //println("Uniapp :----===-> $data")
-                                    Log.e("data----==->", "" + data)
-                                    alComapniesUserList = ArrayList()
-
-                                    val jObjData = JSONObject(data)
-                                    Log.e(
-                                        "total data----==->",
-                                        "" + jObjData.get("total").toString()
-                                    )
-                                    var jsonArrayMain = JSONArray(jObjData.get("result").toString())
-                                    Log.e("jsonArrayMain----==->", "" + jsonArrayMain)
-
-                                    //Log.e("jsonArrayMain----==->",""+jsonArrayMain.get(""))
-                                    for (i in 0 until jsonArrayMain.length()) {
-                                     //   var id = jsonArrayMain.getJSONObject(i).getString("id")
-                                        var companiesUsersList = CompaniesUsersList(
-                                            jsonArrayMain.getJSONObject(i).getString("id"),
-                                            jsonArrayMain.getJSONObject(i).getString("employeeId"),
-                                            jsonArrayMain.getJSONObject(i).getString("mobile"),
-                                            jsonArrayMain.getJSONObject(i).getString("name"),
-                                            jsonArrayMain.getJSONObject(i).getString("picture"),
-                                            jsonArrayMain.getJSONObject(i).getString("status")
-                                        )
-                                        alComapniesUserList.add(companiesUsersList)
+                                    try {
+                                        alComapniesUserList = ArrayList()
+                                        alComapniesUserList.addAll(response.body().result!!)
+                                    } catch (e: Exception) {
+                                        e.printStackTrace()
                                     }
 
-
-
-
-                                    /*val gson = Gson()
-                                        val responseModel = gson.fromJson(
-                                            response.body().toString(),
-                                            CompaniesUsersResponse::class.java
-                                        )*/
-
-
-                                } catch (e: Exception) {
-                                    e.printStackTrace()
+                                    setComapniesUserData()
                                 }
-
-/*
-                                try {
-                                    val gson = Gson()
-                                    val type = object : TypeToken<CompaniesUsersResponse>() {}.type
-                                    var responseData: CompaniesUsersResponse? = gson.fromJson(
-                                        response.errorBody()!!.charStream(),
-                                        type
-                                    )
-                                    Log.e("responseData----==->", "" + responseData)
-                                } catch (e: Exception) {
-                                    e.printStackTrace()
-                                }
-*/
-
-                                setComapniesUserData()
+                            } else if (response.code() == 401) {
+                                var intent = Intent(mContext!!, EnterCompanyDetailActivity::class.java)
+                                intent.flags =
+                                    Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+                                startActivity(intent)
+                                SessionManager.clearAppSession(mContext!!)
+                            } else {
+                                SnackBar.showError(
+                                    mContext!!,
+                                    snackbarView!!,
+                                    "Something went wrong"
+                                )
                             }
-                        } else if (response.code() == 401) {
-                            var intent = Intent(mContext!!, EnterCompanyDetailActivity::class.java)
-                            intent.flags =
-                                Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
-                            startActivity(intent)
-                            SessionManager.clearAppSession(mContext!!)
-                        } else {
-                            SnackBar.showError(
-                                mContext!!,
-                                snackbarView!!,
-                                "Something went wrong"
-                            )
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+
                         }
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-
                     }
-                }
 
-                override fun onFailure(
-                    call: Call<ResponseBody>,
-                    t: Throwable
-                ) {
-                    MyProgressDialog.hideProgressDialog()
-                }
-            })
+                    override fun onFailure(
+                        call: Call<GetEmployeeListResponse>,
+                        t: Throwable
+                    ) {
+                        MyProgressDialog.hideProgressDialog()
+                    }
+                })
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
 
     }
-    
+
     private fun setComapniesUserData() {
         try {
-            if(alComapniesUserList.size>0) {
-                tvNoEmplyoeeListFound.visibility=View.GONE
-                rcVwEmpliyeeListAUEL.visibility=View.VISIBLE
+            if (alComapniesUserList.size > 0) {
+                tvNoEmplyoeeListFound.visibility = View.GONE
+                rcVwEmpliyeeListAUEL.visibility = View.VISIBLE
                 var setVisitorDataAdapter = UserEmployeesListAdapter(mContext, alComapniesUserList)
                 rcVwEmpliyeeListAUEL!!.layoutManager =
                     LinearLayoutManager(mContext, RecyclerView.VERTICAL, false)
                 rcVwEmpliyeeListAUEL!!.adapter = setVisitorDataAdapter
-            }else{
-                tvNoEmplyoeeListFound.visibility=View.VISIBLE
-                rcVwEmpliyeeListAUEL.visibility=View.GONE
+            } else {
+                tvNoEmplyoeeListFound.visibility = View.VISIBLE
+                rcVwEmpliyeeListAUEL.visibility = View.GONE
             }
         } catch (e: Exception) {
             e.printStackTrace()
@@ -183,6 +139,7 @@ class UserEmployeesListActivity : AppCompatActivity() {
 
     fun addEmployeeDetails(view: View) {
         var intent = Intent(mContext, EnterEmployeeDetailsActivity::class.java)
+        intent.putExtra("from","add")
         startActivity(intent)
     }
 }

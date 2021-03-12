@@ -38,6 +38,7 @@
     </RelativeLayout>
 
     <ScrollView
+        android:id="@+id/sVwLeaveALRA"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/rlHeaderALRA">
@@ -225,5 +226,18 @@
 
         </LinearLayout>
     </ScrollView>
+
+    <TextView
+        android:id="@+id/tvNoEmpALRA"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginStart="@dimen/_10sdp"
+        android:layout_marginEnd="@dimen/_10sdp"
+        android:text="No Employee found, Please add employee first"
+        android:gravity="center"
+        android:textSize="@dimen/_14ssp"
+        android:textColor="@color/app_bg"
+        android:fontFamily="@font/gotham_medium"
+        />
 
 </RelativeLayout>

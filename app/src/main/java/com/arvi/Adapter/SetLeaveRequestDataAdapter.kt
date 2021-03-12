@@ -4,14 +4,23 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.arvi.R
+import com.crashlytics.android.Crashlytics
+import java.text.ParseException
+import java.text.SimpleDateFormat
+
 
 class SetLeaveRequestDataAdapter(
-    var context: Context
+    var context: Context,
+    var alLeaveRequests: ArrayList<GetLeaveRequest_Leave>
 ) : RecyclerView.Adapter<SetLeaveRequestDataAdapter.ViewHolder>() {
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+        var tvNameRLR = itemView.findViewById(R.id.tvNameRLR) as TextView
+        var tvDateRLR = itemView.findViewById(R.id.tvDateRLR) as TextView
+        var tvLeaveTypeRLR = itemView.findViewById(R.id.tvLeaveTypeRLR) as TextView
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -25,11 +34,34 @@ class SetLeaveRequestDataAdapter(
     }
 
     override fun getItemCount(): Int {
-        return 10
+        return alLeaveRequests.size
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         try {
+            var dateFrom = alLeaveRequests.get(position).dateFrom
+            var dateTo = alLeaveRequests.get(position).dateTo
+            var name = alLeaveRequests.get(position).user.name
+
+            val input = SimpleDateFormat("yyyy-MM-dd")
+            val output = SimpleDateFormat("MMM dd")
+            try {
+                var formateStartdate = input.parse(dateFrom)
+                var show_start_date = output.format(formateStartdate)
+
+                var formateEnddate = input.parse(dateTo)
+                var show_end_date = output.format(formateEnddate)
+
+                holder.tvNameRLR.setText(name)
+                if (dateFrom.equals(dateTo)){
+                    holder.tvDateRLR.setText(show_start_date)
+                }else{
+                    holder.tvDateRLR.setText(show_start_date + " - "+show_end_date)
+                }
+            } catch (e: ParseException) {
+                e.printStackTrace()
+                Crashlytics.log(e.toString())
+            }
         } catch (e: Exception) {
             e.printStackTrace()
         }

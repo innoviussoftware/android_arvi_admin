@@ -1,6 +1,8 @@
 package com.arvi.RetrofitApiCall
 
+import com.arvi.Adapter.GetLeaveRequestResponse
 import com.arvi.Model.*
+import com.arvihealthscanner.Model.GetEmployeeListResponse
 import com.google.gson.JsonObject
 import okhttp3.MultipartBody
 import okhttp3.ResponseBody
@@ -135,7 +137,7 @@ interface APIService {
 //Todo: visitors Related Flow.. End...............................
 
 
-
+//todo:: employee add APi start.....................................
     @GET("v1/companies/roles")
     fun getDesignationList(
         @Header("Authorization") auth: String
@@ -149,9 +151,21 @@ interface APIService {
     @GET("v1/companies/users")
     fun getComaniesUsersList(
         @Header("Authorization") auth: String
+    ):Call<GetEmployeeListResponse>
+    //todo:: employee add APi end.....................................
+
+    //todo:: add leave request
+    @POST("v1/attendence/leaves/")
+    fun addLeaveRequest(
+        @Header("Authorization") auth: String,
+        @Header("Content-Type") ctype: String,
+        @Body detail: JsonObject
     ):Call<ResponseBody>
 
-    //CHeck Mobile number thru VIsitor mobile no Register or not
-
+    //todo:: get leave request
+    @GET("v1/attendence/leaves")
+    fun getLeaveRequest(
+        @Header("Authorization") auth: String
+    ):Call<GetLeaveRequestResponse>
 
 }

@@ -6,6 +6,9 @@ import android.os.Bundle
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.arvi.Adapter.SetEmpPhotoAdapter
 import com.arvi.Model.GetDesignationListResponse
 import com.arvi.Model.GetDesignationListResponseItem
 import com.arvi.Model.GetGroupListResponse
@@ -15,11 +18,13 @@ import com.arvi.RetrofitApiCall.APIService
 import com.arvi.RetrofitApiCall.ApiUtils
 import com.arvi.SessionManager.SessionManager
 import com.arvi.Utils.AppConstants
-import com.arvi.Utils.MyProgressDialog
 import com.arvi.Utils.SnackBar
+import com.arvihealthscanner.Model.GetEmployeeListResult
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.util.*
+import kotlin.collections.ArrayList
 
 
 class EnterEmployeeDetailsActivity : AppCompatActivity(), View.OnClickListener {
@@ -35,6 +40,9 @@ class EnterEmployeeDetailsActivity : AppCompatActivity(), View.OnClickListener {
     var tvTakePicEEDA: TextView? = null
     var spDesignationEEDA: Spinner? = null
     var spGroupEEDA: Spinner? = null
+    var rVwEmployeePic: RecyclerView? = null
+    var tvEditEEDA: TextView? = null
+    var tvTitleEEDA: TextView? = null
 
     var context: Context? = null
     var snackbarView: View? = null
@@ -48,6 +56,8 @@ class EnterEmployeeDetailsActivity : AppCompatActivity(), View.OnClickListener {
     var role_id: Int? = 0
     var group_id: Int? = 0
     private var strGroupName: String? = null
+    var from: String? = ""
+    var emp_data: GetEmployeeListResult? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,14 +65,65 @@ class EnterEmployeeDetailsActivity : AppCompatActivity(), View.OnClickListener {
         setIds()
         setListener()
         try {
+            if (intent.extras != null) {
+                from = intent.getStringExtra("from")
+                if (from.equals("edit")) {
+                    emp_data = intent.getParcelableExtra("empData")
+
+                    rVwEmployeePic!!.visibility = View.VISIBLE
+                    tvEditEEDA!!.visibility = View.VISIBLE
+                    tvTitleEEDA!!.setText("Update employee details")
+                    tvTakePicEEDA!!.setText("Update Pic")
+                    etNameEEDA!!.setText(emp_data!!.name)
+                    etEmployeeIDEEDA!!.setText(emp_data!!.employeeId)
+
+
+                    etMobileEEDA!!.setText(emp_data!!.mobile)
+                    etMailEEDA!!.setText(emp_data!!.email)
+                    if (!emp_data!!.picture.isNullOrEmpty()){
+                        setPhoto(emp_data!!.picture)
+                    }
+                } else {
+                    rVwEmployeePic!!.visibility = View.GONE
+                    tvEditEEDA!!.visibility = View.GONE
+                    tvTitleEEDA!!.setText("Add employee details")
+                    tvTakePicEEDA!!.setText("Take Pic")
+                }
+            }
+
+
             CallGetDesignationListApi()
             CallGroupListApi()
+
         } catch (e: Exception) {
             e.printStackTrace()
         }
 
     }
 
+    private fun setPhoto(picture: String?) {
+
+        try {
+            val myList: List<String> = picture!!.split(",")
+            var picAdapter = SetEmpPhotoAdapter(context!!,myList)
+            rVwEmployeePic!!.setAdapter(picAdapter)
+            val manager =
+                GridLayoutManager(this, 3, GridLayoutManager.VERTICAL, false)
+            rVwEmployeePic!!.setLayoutManager(manager)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    //private method of your class
+    private fun getIndex(spinner: Spinner, myString: String): Int {
+        for (i in 0 until spinner.count) {
+            if (spinner.getItemAtPosition(i).toString().equals(myString, ignoreCase = true)) {
+                return i
+            }
+        }
+        return 0
+    }
     private fun CallGroupListApi() {
         try {
             var mAPIService: APIService? = null
@@ -140,6 +201,15 @@ class EnterEmployeeDetailsActivity : AppCompatActivity(), View.OnClickListener {
                         // write code to perform some action
                     }
                 }
+            }
+            if (emp_data!!.group != null) {
+                var group = emp_data!!.group!!.name
+                spGroupEEDA!!.setSelection(
+                    getIndex(
+                        spGroupEEDA!!,
+                        group!!
+                    )
+                )
             }
         } catch (e: Exception) {
             e.printStackTrace()
@@ -226,6 +296,16 @@ class EnterEmployeeDetailsActivity : AppCompatActivity(), View.OnClickListener {
                     }
                 }
             }
+
+            if (emp_data!!.role != null) {
+                var role = emp_data!!.role!!.role
+                spDesignationEEDA!!.setSelection(
+                    getIndex(
+                        spDesignationEEDA!!,
+                        role!!
+                    )
+                )
+            }
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -234,6 +314,7 @@ class EnterEmployeeDetailsActivity : AppCompatActivity(), View.OnClickListener {
     private fun setListener() {
         imgVwBackEEDA!!.setOnClickListener(this)
         tvTakePicEEDA!!.setOnClickListener(this)
+        tvEditEEDA!!.setOnClickListener(this)
     }
 
     private fun setIds() {
@@ -248,6 +329,9 @@ class EnterEmployeeDetailsActivity : AppCompatActivity(), View.OnClickListener {
         tvTakePicEEDA = findViewById(R.id.tvTakePicEEDA)
         spDesignationEEDA = findViewById(R.id.spDesignationEEDA)
         spGroupEEDA = findViewById(R.id.spGroupEEDA)
+        rVwEmployeePic = findViewById(R.id.rVwEmployeePic)
+        tvEditEEDA = findViewById(R.id.tvEditEEDA)
+        tvTitleEEDA = findViewById(R.id.tvTitleEEDA)
     }
 
     override fun onBackPressed() {
@@ -262,15 +346,22 @@ class EnterEmployeeDetailsActivity : AppCompatActivity(), View.OnClickListener {
             }
             R.id.tvTakePicEEDA -> {
                 if (isValidInput()) {
-                    var intent = Intent(context!!, TakeEmployeePicActivity::class.java)
-                    intent.putExtra("name", strName)
-                    intent.putExtra("mobile", strPhone)
-                    intent.putExtra("employeeId", strEmpId)
-                    intent.putExtra("email", strEmail)
-                    intent.putExtra("role_id", role_id)
-                    intent.putExtra("group_id", group_id)
-                    startActivity(intent)
+                    if (from.equals("edit")) {
+                        SnackBar.showInProgressError(context!!,snackbarView!!)
+                    }else{
+                        var intent = Intent(context!!, TakeEmployeePicActivity::class.java)
+                        intent.putExtra("name", strName)
+                        intent.putExtra("mobile", strPhone)
+                        intent.putExtra("employeeId", strEmpId)
+                        intent.putExtra("email", strEmail)
+                        intent.putExtra("role_id", role_id)
+                        intent.putExtra("group_id", group_id)
+                        startActivity(intent)
+                    }
                 }
+            }
+            R.id.tvEditEEDA -> {
+                SnackBar.showInProgressError(context!!,snackbarView!!)
             }
         }
     }

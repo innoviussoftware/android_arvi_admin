@@ -33,15 +33,25 @@
 
         <TextView
             android:fontFamily="@font/gotham_book_regular"
-            android:layout_marginEnd="@dimen/_5sdp"
-            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="@dimen/_8sdp"
             android:id="@+id/tvActiveStatusRUED"
             android:textSize="@dimen/_12ssp"
             android:text="Active"
+            android:layout_toStartOf="@+id/imgVwEditRUED"
             android:layout_marginStart="@dimen/_10sdp"
             android:layout_centerVertical="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
+
+        <ImageView
+            android:id="@+id/imgVwEditRUED"
+            android:layout_width="@dimen/_25sdp"
+            android:layout_height="@dimen/_25sdp"
+            android:padding="@dimen/_5sdp"
+            android:src="@drawable/edit_pen"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            />
 
     </RelativeLayout>
 
