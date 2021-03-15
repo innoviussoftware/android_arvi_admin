@@ -75,11 +75,10 @@ class UserEmployeesListActivity : AppCompatActivity() {
                                     try {
                                         alComapniesUserList = ArrayList()
                                         alComapniesUserList.addAll(response.body().result!!)
+                                        setComapniesUserData()
                                     } catch (e: Exception) {
                                         e.printStackTrace()
                                     }
-
-                                    setComapniesUserData()
                                 }
                             } else if (response.code() == 401) {
                                 var intent = Intent(mContext!!, EnterCompanyDetailActivity::class.java)

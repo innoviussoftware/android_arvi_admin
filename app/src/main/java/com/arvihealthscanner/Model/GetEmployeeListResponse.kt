@@ -53,7 +53,7 @@ data class GetEmployeeListRole(
     val id: Int?=0,
     val idDefault: Int?=0,
     val name: String?="",
-    val permissions: String?="",
+//    val permissions: String?="",
     val role: String?="",
     val updatedAt: String?=""
 ):Parcelable
