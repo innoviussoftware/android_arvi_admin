@@ -1,10 +1,7 @@
 package com.arvi.Activity.NewApp
 
 import android.app.Dialog
-import android.content.ComponentName
-import android.content.Context
-import android.content.Intent
-import android.content.ServiceConnection
+import android.content.*
 import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.graphics.Bitmap
@@ -21,6 +18,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -29,6 +27,7 @@ import com.arvi.Model.DetectFaceNewResponse
 import com.arvi.R
 import com.arvi.RetrofitApiCall.APIService
 import com.arvi.RetrofitApiCall.ApiUtils.apiService
+import com.arvi.SessionManager.SessionManager
 import com.arvi.SessionManager.SessionManager.getFaceRecognizeOption
 import com.arvi.SessionManager.SessionManager.getKioskID
 import com.arvi.SessionManager.SessionManager.getKioskModel
@@ -71,6 +70,7 @@ class SelfiCheckInActivity : AppCompatActivity(), CompoundButton.OnCheckedChange
     SlaveListener {
 
     var tvInstruction: TextView? = null
+    var imgVwHomeSCA: ImageView?= null
     var dialog: Dialog? = null
     private var TAG = "Face Capture"
     private val PERMISSION_REQUESTS = 1
@@ -124,6 +124,7 @@ class SelfiCheckInActivity : AppCompatActivity(), CompoundButton.OnCheckedChange
             context = this@SelfiCheckInActivity
             ArviAudioPlaybacks.init(this.applicationContext)
             facingSwitch = findViewById(R.id.facingSwitch)
+            imgVwHomeSCA = findViewById(R.id.imgVwHomeSCA)
             faceCapturePreview = findViewById(R.id.faceCapturePreview)
             facePreviewOverlay = findViewById(R.id.facePreviewOverlay)
             facingSwitch!!.setOnCheckedChangeListener(this)
@@ -152,6 +153,28 @@ class SelfiCheckInActivity : AppCompatActivity(), CompoundButton.OnCheckedChange
                 } else {
                     tvInstruction!!.text = msg
                 }
+            }
+
+            imgVwHomeSCA!!.setOnClickListener {
+                var intent = Intent(context, DashboardActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+                startActivity(intent)
+            }
+
+            if (SessionManager.getSelectedCameraFacing(context!!) != null) {
+                if (SessionManager.getSelectedCameraFacing(context!!)
+                        .equals(resources.getString(R.string.front_facing))
+                ) {
+                    if (cameraSource != null) {
+                        cameraSource!!.setFacing(CameraSource.CAMERA_FACING_FRONT)
+                    }
+                } else {
+                    if (cameraSource != null) {
+                        cameraSource!!.setFacing(CameraSource.CAMERA_FACING_BACK)
+                    }
+                }
+            } else {
+                cameraSource!!.setFacing(CameraSource.CAMERA_FACING_FRONT)
             }
         } catch (e: Exception) {
             e.printStackTrace()
@@ -730,9 +753,13 @@ class SelfiCheckInActivity : AppCompatActivity(), CompoundButton.OnCheckedChange
             jsonObject.addProperty("employeeId", strUserId)
             jsonObject.addProperty("scanDate", strCurrentDate)
             jsonObject.addProperty("scanTime", strCurrentTime)
-            jsonObject.addProperty("address", strAddress)
-            jsonObject.addProperty("emp_lat", latitude)
-            jsonObject.addProperty("emp_long", longitude)
+
+            if(SessionManager.getSelectedGPSOption(context!!)!=null && SessionManager.getSelectedGPSOption(context!!).equals("Yes")){
+                jsonObject.addProperty("address", strAddress)
+                jsonObject.addProperty("emp_lat", latitude)
+                jsonObject.addProperty("emp_long", longitude)
+            }
+
             Log.e("storeT:", jsonObject.toString())
             var mAPIService: APIService? = null
             mAPIService = apiService
@@ -939,12 +966,32 @@ class SelfiCheckInActivity : AppCompatActivity(), CompoundButton.OnCheckedChange
 
 
     override fun onBackPressed() {
-        try {
-            finish()
+       /* try {
+
+            var builder = AlertDialog.Builder(context!!)
+            builder.setCancelable(false)
+            builder.setTitle("Arvi")
+            builder.setMessage("You want to open Home page?")
+            builder.setPositiveButton(
+                "Yes",
+                DialogInterface.OnClickListener { dialog, which ->
+                    dialog.dismiss()
+                    var intent = Intent(context, DashboardActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+                    startActivity(intent)
+                })
+            builder.setNegativeButton("No", DialogInterface.OnClickListener { dialog, which ->
+                dialog.dismiss()
+                finish()
+            })
+            var dialog = builder.create()
+            dialog.show()
+
           //  openSettingScreen(this@SelfiCheckInActivity)
         } catch (e: java.lang.Exception) {
             e.printStackTrace()
-        }
+        }*/
+        finish()
     }
 
     public fun stateMachine() {

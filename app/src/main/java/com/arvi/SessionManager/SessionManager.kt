@@ -428,4 +428,79 @@ object SessionManager {
         return preferences.getString(AppPrefFields.PARAM_RestartAppTime, "23:59:59")!!
     }
 
+    fun setSelectedServerURL(context: Context, server_url: String) {
+        try {
+            val preferences = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+
+            val editor = preferences.edit()
+            editor.putString(AppPrefFields.PARAM_serverURL, server_url)
+            editor.commit()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+    }
+
+    fun getSelectedServerURL(context: Context?): String {
+        val preferences = context!!.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+        return preferences.getString(AppPrefFields.PARAM_serverURL, "")!!
+    }
+
+    fun setSelectedDefaultScreen(context: Context, default_screen: String) {
+        try {
+            val preferences = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+
+            val editor = preferences.edit()
+            editor.putString(AppPrefFields.PARAM_defaultLaunchScreen, default_screen)
+            editor.commit()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+    }
+
+    fun getSelectedDefaultScreen(context: Context?): String {
+        val preferences = context!!.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+        return preferences.getString(AppPrefFields.PARAM_defaultLaunchScreen, "")!!
+    }
+
+
+    fun setSelectedCameraFacing(context: Context, camera_facing: String) {
+        try {
+            val preferences = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+
+            val editor = preferences.edit()
+            editor.putString(AppPrefFields.PARAM_CameraFacing, camera_facing)
+            editor.commit()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+    }
+
+    fun getSelectedCameraFacing(context: Context?): String {
+        val preferences = context!!.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+        return preferences.getString(AppPrefFields.PARAM_CameraFacing, "")!!
+    }
+
+    fun setSelectedGPSOption(context: Context, option: String) {
+        try {
+            val preferences = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+
+            val editor = preferences.edit()
+            editor.putString(AppPrefFields.PARAM_gpsOption, option)
+            editor.commit()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+    }
+
+    fun getSelectedGPSOption(context: Context?): String {
+        val preferences = context!!.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+        return preferences.getString(AppPrefFields.PARAM_gpsOption, "")!!
+    }
+
+
+
 }

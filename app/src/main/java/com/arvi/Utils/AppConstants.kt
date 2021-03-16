@@ -5,7 +5,8 @@ object AppConstants {
    /* //release version
     val BASE_URL = "https://kiosk-api-qa.arvi.in/"
     val IMAGE_URL= "https://kiosk-api-qa.arvi.in/v1/s3/cache/"*/
-    //testing version
+
+ //testing version
     val BASE_URL = "https://kiosk-api-dev.arvi.in/"
     val IMAGE_URL= "https://kiosk-api-dev.arvi.in/v1/s3/cache/"
 

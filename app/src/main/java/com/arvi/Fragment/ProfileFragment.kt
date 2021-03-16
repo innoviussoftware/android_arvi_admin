@@ -15,11 +15,13 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.arvi.Activity.NewApp.EnterCompanyDetailActivity
+import com.arvi.Activity.NewApp.SettingActivity
 import com.arvi.Activity.NewApp.UserEmployeesListActivity
 
 import com.arvi.R
@@ -40,7 +42,7 @@ class ProfileFragment : Fragment(), View.OnClickListener {
     var filePathProfile: String? = ""
     var fileProfile: File? = null
     var fileMaltipartProfile: MultipartBody.Part? = null
-
+    var imgVwSettingFP: ImageView?=null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,6 +55,7 @@ class ProfileFragment : Fragment(), View.OnClickListener {
         // Inflate the layout for this fragment
         var view = inflater.inflate(R.layout.fragment_profile, container, false)
         mContext = requireActivity()
+        imgVwSettingFP = view.findViewById(R.id.imgVwSettingFP)
         return view
     }
 
@@ -80,7 +83,7 @@ class ProfileFragment : Fragment(), View.OnClickListener {
         tvTotalEmployeesFP.setOnClickListener(this)
         ivLogoutFP.setOnClickListener(this)
         ivProfilePicFP.setImageDrawable(mContext.resources.getDrawable(R.drawable.user))
-
+        imgVwSettingFP!!.setOnClickListener(this)
         notUpdateDetails()
     }
 
@@ -151,6 +154,10 @@ class ProfileFragment : Fragment(), View.OnClickListener {
             }
             R.id.tvUpdateFP -> {
                 notUpdateDetails()
+            }
+            R.id.imgVwSettingFP->{
+                var intent = Intent(context!!,SettingActivity::class.java)
+                startActivity(intent)
             }
         }
     }

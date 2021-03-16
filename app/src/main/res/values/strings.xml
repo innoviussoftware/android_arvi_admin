@@ -137,6 +137,13 @@
     <string name="expected_ttl">Expected</string>
     <string name="screened_ttl">Screened</string>
 
+    <string name="page_dashboard">Dashboard</string>
+    <string name="page_selfiCheckIn">Selfi CheckIn</string>
+    <string name="page_visitor">Visitor</string>
+    <string name="page_request">Requests</string>
+    <string name="page_profile">Profile</string>
+    <string name="front_facing">Front Facing</string>
+    <string name="back_facing">Back Facing</string>
 
     <string-array name="default_emp">
         <item>Emp 1</item>
@@ -148,5 +155,24 @@
     <string-array name="default_leave_type">
         <item>All Day</item>
         <item>Half Day</item>
+    </string-array>
+
+    <string-array name="default_server_url">
+        <item>Developer Server</item>
+        <item>QA Server</item>
+    </string-array>
+
+
+    <string-array name="default_screen_option">
+        <item>@string/page_dashboard</item>
+        <item>@string/page_selfiCheckIn</item>
+        <item>@string/page_visitor</item>
+        <item>@string/page_request</item>
+        <item>@string/page_profile</item>
+    </string-array>
+
+    <string-array name="camera_facing_option">
+        <item>@string/front_facing</item>
+        <item>@string/back_facing</item>
     </string-array>
 </resources>

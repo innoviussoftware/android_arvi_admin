@@ -17,39 +17,41 @@ import com.arvi.Fragment.ProfileFragment
 import com.arvi.Fragment.RequestTypeFragment
 import com.arvi.Fragment.VisitorListFragment
 import com.arvi.R
+import com.arvi.SessionManager.SessionManager
 import com.arvi.Utils.SnackBar
 import com.google.android.material.snackbar.Snackbar
 import java.util.*
 
 class DashboardActivity : AppCompatActivity(), View.OnClickListener {
 
-    var containerBody : FrameLayout?=null
-    var rlDashboardDA: RelativeLayout?=null
-    var imgVwDashboardDA:ImageView?=null
-    var tvDashboardTitleDA:TextView?=null
+    var containerBody: FrameLayout? = null
+    var rlDashboardDA: RelativeLayout? = null
+    var imgVwDashboardDA: ImageView? = null
+    var tvDashboardTitleDA: TextView? = null
 
-    var rlSelfiCheckInDA: RelativeLayout?=null
-    var imgVwSelfiCheckInDA:ImageView?=null
-    var tvSelfiCheckInDA:TextView?=null
+    var rlSelfiCheckInDA: RelativeLayout? = null
+    var imgVwSelfiCheckInDA: ImageView? = null
+    var tvSelfiCheckInDA: TextView? = null
 
-    var rlVisitorDA: RelativeLayout?=null
-    var imgVwVisitorDA:ImageView?=null
-    var tvVisitorTitleDA:TextView?=null
+    var rlVisitorDA: RelativeLayout? = null
+    var imgVwVisitorDA: ImageView? = null
+    var tvVisitorTitleDA: TextView? = null
 
-    var rlRequestDA: RelativeLayout?=null
-    var imgVwRequestDA:ImageView?=null
-    var tvRequestTitleDA:TextView?=null
+    var rlRequestDA: RelativeLayout? = null
+    var imgVwRequestDA: ImageView? = null
+    var tvRequestTitleDA: TextView? = null
 
-    var rlProfileDA: RelativeLayout?=null
-    var imgVwProfileDA:ImageView?=null
-    var tvProfileDA:TextView?=null
+    var rlProfileDA: RelativeLayout? = null
+    var imgVwProfileDA: ImageView? = null
+    var tvProfileDA: TextView? = null
 
 
-    var context: Context?=null
-    var snackbarView: View?=null
+    var context: Context? = null
+    var snackbarView: View? = null
     private var fragmentStack: Stack<Fragment>? = null
     var fragment: Fragment? = null
     private var mContentFragment: Fragment? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,7 +59,36 @@ class DashboardActivity : AppCompatActivity(), View.OnClickListener {
         try {
             setIds()
             setListeners()
-            setDashboardPage()
+
+            if(intent.extras!=null){
+                if (intent.getStringExtra("from")!=null &&  intent.getStringExtra("from")!!.equals("splash")){
+                    if (SessionManager.getSelectedDefaultScreen(context!!)
+                            .equals(resources.getString(R.string.page_dashboard))
+                    ) {
+                        setDashboardPage()
+                    } else if (SessionManager.getSelectedDefaultScreen(context!!)
+                            .equals(resources.getString(R.string.page_visitor))
+                    ) {
+                        setVisitorPage()
+                    } else if (SessionManager.getSelectedDefaultScreen(context!!)
+                            .equals(resources.getString(R.string.page_request))
+                    ) {
+                        setRequestTypePage()
+                    } else if (SessionManager.getSelectedDefaultScreen(context!!)
+                            .equals(resources.getString(R.string.page_profile))
+                    ) {
+                        setProfilePage()
+                    } else{
+                        setDashboardPage()
+                    }
+                }else{
+                    setDashboardPage()
+                }
+            }else{
+                setDashboardPage()
+            }
+
+
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -249,29 +280,29 @@ class DashboardActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun setIds() {
         try {
-            context = DashboardActivity@this
+            context = DashboardActivity@ this
             snackbarView = findViewById(android.R.id.content)
 
             containerBody = findViewById(R.id.containerBody)
-            rlDashboardDA= findViewById(R.id.rlDashboardDA)
-            imgVwDashboardDA= findViewById(R.id.imgVwDashboardDA)
-            tvDashboardTitleDA= findViewById(R.id.tvDashboardTitleDA)
+            rlDashboardDA = findViewById(R.id.rlDashboardDA)
+            imgVwDashboardDA = findViewById(R.id.imgVwDashboardDA)
+            tvDashboardTitleDA = findViewById(R.id.tvDashboardTitleDA)
 
-            rlSelfiCheckInDA= findViewById(R.id.rlSelfiCheckInDA)
-            imgVwSelfiCheckInDA= findViewById(R.id.imgVwSelfiCheckInDA)
-            tvSelfiCheckInDA= findViewById(R.id.tvSelfiCheckInDA)
+            rlSelfiCheckInDA = findViewById(R.id.rlSelfiCheckInDA)
+            imgVwSelfiCheckInDA = findViewById(R.id.imgVwSelfiCheckInDA)
+            tvSelfiCheckInDA = findViewById(R.id.tvSelfiCheckInDA)
 
-            rlVisitorDA= findViewById(R.id.rlVisitorDA)
-            imgVwVisitorDA= findViewById(R.id.imgVwVisitorDA)
-            tvVisitorTitleDA= findViewById(R.id.tvVisitorTitleDA)
+            rlVisitorDA = findViewById(R.id.rlVisitorDA)
+            imgVwVisitorDA = findViewById(R.id.imgVwVisitorDA)
+            tvVisitorTitleDA = findViewById(R.id.tvVisitorTitleDA)
 
-            rlRequestDA= findViewById(R.id.rlRequestDA)
-            imgVwRequestDA= findViewById(R.id.imgVwRequestDA)
-            tvRequestTitleDA= findViewById(R.id.tvRequestTitleDA)
+            rlRequestDA = findViewById(R.id.rlRequestDA)
+            imgVwRequestDA = findViewById(R.id.imgVwRequestDA)
+            tvRequestTitleDA = findViewById(R.id.tvRequestTitleDA)
 
-            rlProfileDA= findViewById(R.id.rlProfileDA)
-            imgVwProfileDA= findViewById(R.id.imgVwProfileDA)
-            tvProfileDA= findViewById(R.id.tvProfileDA)
+            rlProfileDA = findViewById(R.id.rlProfileDA)
+            imgVwProfileDA = findViewById(R.id.imgVwProfileDA)
+            tvProfileDA = findViewById(R.id.tvProfileDA)
 
             fragmentStack = Stack()
         } catch (e: Exception) {
@@ -281,20 +312,20 @@ class DashboardActivity : AppCompatActivity(), View.OnClickListener {
 
     override fun onClick(view: View?) {
         try {
-            when(view!!.id){
-                R.id.rlDashboardDA->{
+            when (view!!.id) {
+                R.id.rlDashboardDA -> {
                     setDashboardPage()
                 }
-                R.id.rlSelfiCheckInDA->{
+                R.id.rlSelfiCheckInDA -> {
                     openSelfiCheckInPage()
                 }
-                R.id.rlVisitorDA->{
+                R.id.rlVisitorDA -> {
                     setVisitorPage()
                 }
-                R.id.rlRequestDA->{
+                R.id.rlRequestDA -> {
                     setRequestTypePage()
                 }
-                R.id.rlProfileDA->{
+                R.id.rlProfileDA -> {
                     setProfilePage()
                 }
             }
@@ -304,7 +335,7 @@ class DashboardActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun openSelfiCheckInPage() {
-        var intent = Intent(context!!,SelfiCheckInActivity::class.java)
+        var intent = Intent(context!!, SelfiCheckInActivity::class.java)
         startActivity(intent)
     }
 

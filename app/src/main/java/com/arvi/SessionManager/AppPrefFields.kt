@@ -2,6 +2,10 @@ package com.arvi.SessionManager
 
 object AppPrefFields {
 
+    val PARAM_serverURL: String? = "server_url"
+    val PARAM_defaultLaunchScreen: String? = "dashboard"
+    val PARAM_CameraFacing: String? = "front"
+    val PARAM_gpsOption: String? = "on"
     val PARAM_RestartAppTime: String? = "restart_time"
     val PARAM_FaceRecognize_OPTION: String? = "faceRecognize_option"
     val PARAM_Sanitizer_OPTION: String? = "sanitizer_option"

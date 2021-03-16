@@ -29,13 +29,23 @@
 
     </com.arvi.btScan.common.CameraSourcePreview>
 
+    <ImageView
+        android:id="@+id/imgVwHomeSCA"
+        android:layout_width="@dimen/_35sdp"
+        android:layout_height="@dimen/_35sdp"
+        android:layout_alignParentEnd="true"
+        android:layout_margin="@dimen/_10sdp"
+        android:src="@drawable/ic_home"
+        />
+
     <ToggleButton
         android:id="@+id/facingSwitch"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
+        android:layout_width="@dimen/_40sdp"
+        android:layout_height="@dimen/_40sdp"
         android:layout_gravity="center_vertical"
         android:background="@drawable/toggle_style"
         android:checked="false"
+        android:layout_margin="@dimen/_10sdp"
         android:textOff=""
         android:visibility="visible"
         android:textOn="" />

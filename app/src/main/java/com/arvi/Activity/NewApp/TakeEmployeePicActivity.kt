@@ -24,6 +24,7 @@ import com.arvi.Model.UploadPhotoResponse
 import com.arvi.R
 import com.arvi.RetrofitApiCall.APIService
 import com.arvi.RetrofitApiCall.ApiUtils.apiService
+import com.arvi.SessionManager.SessionManager
 import com.arvi.SessionManager.SessionManager.getToken
 import com.arvi.Utils.AppConstants.BEARER_TOKEN
 import com.arvi.Utils.MyProgressDialog.hideProgressDialog
@@ -153,6 +154,22 @@ class TakeEmployeePicActivity : AppCompatActivity(), CompoundButton.OnCheckedCha
                         tvInstruction.setText(msg);
                     }
                 }*/
+            }
+
+            if (SessionManager.getSelectedCameraFacing(context!!) != null) {
+                if (SessionManager.getSelectedCameraFacing(context!!)
+                        .equals(resources.getString(R.string.front_facing))
+                ) {
+                    if (cameraSource != null) {
+                        cameraSource!!.setFacing(CameraSource.CAMERA_FACING_FRONT)
+                    }
+                } else {
+                    if (cameraSource != null) {
+                        cameraSource!!.setFacing(CameraSource.CAMERA_FACING_BACK)
+                    }
+                }
+            } else {
+                cameraSource!!.setFacing(CameraSource.CAMERA_FACING_FRONT)
             }
         } catch (e: Exception) {
             e.printStackTrace()

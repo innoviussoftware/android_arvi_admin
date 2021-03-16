@@ -30,6 +30,16 @@
             android:textSize="@dimen/_13ssp" />
 
         <ImageView
+            android:id="@+id/imgVwSettingFP"
+            android:layout_width="@dimen/_20sdp"
+            android:layout_height="@dimen/_20sdp"
+            android:layout_centerVertical="true"
+            android:layout_toStartOf="@+id/ivEditProfileFP"
+            android:src="@drawable/ic_settings"
+            android:layout_marginEnd="@dimen/_10sdp"
+            />
+
+        <ImageView
             android:id="@+id/ivEditProfileFP"
             android:layout_width="@dimen/_20sdp"
             android:layout_height="@dimen/_20sdp"

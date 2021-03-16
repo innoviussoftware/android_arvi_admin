@@ -102,15 +102,44 @@ class AddVisitorDetailActivity : AppCompatActivity(), View.OnClickListener {
         try {
             etNameAVDA!!.setText(visitorDetails.name)
             var expectedEntryDateTime = visitorDetails.data!!.expectedEntryTime
-            etVisitDateAVDA!!.setText(expectedEntryDateTime.substring(0,expectedEntryDateTime.indexOf(" ")))
-            etVisitTimeAVDA!!.setText(expectedEntryDateTime.substring(expectedEntryDateTime.indexOf(" "),expectedEntryDateTime.length))
+            if(expectedEntryDateTime.contains("T")){
+                etVisitDateAVDA!!.setText(
+                    expectedEntryDateTime.substring(
+                        0,
+                        expectedEntryDateTime.indexOf("T")
+                    )
+                )
+
+                var strTime =expectedEntryDateTime.substring(expectedEntryDateTime.indexOf("T")+1, expectedEntryDateTime.length-1)
+
+                val output = SimpleDateFormat("hh:mm a")
+                val input = SimpleDateFormat("HH:mm:ss")
+                var formateStartdate = input.parse(strTime)
+                var showTime = output.format(formateStartdate)
+                etVisitTimeAVDA!!.setText(showTime)
+            }else {
+
+                etVisitDateAVDA!!.setText(
+                    expectedEntryDateTime.substring(
+                        0,
+                        expectedEntryDateTime.indexOf(" ")
+                    )
+                )
+                etVisitTimeAVDA!!.setText(
+                    expectedEntryDateTime.substring(
+                        expectedEntryDateTime.indexOf(
+                            " "
+                        ), expectedEntryDateTime.length
+                    )
+                )
+            }
             etComingFromAVDA!!.setText(visitorDetails.data!!.company)
 
             etPurposeAVDA!!.setText(visitorDetails.data!!.purpose)
             if (className == "screended") {
                 aTvToMeetAVDA!!.setText(visitorDetails.data!!.employee!!.name)
-                if (visitorDetails.visitor!=null)
-                etMobileAVDA!!.setText(visitorDetails.visitor.mobile)
+                if (visitorDetails.visitor != null)
+                    etMobileAVDA!!.setText(visitorDetails.visitor.mobile)
                 llRegisterBtnAVDA!!.visibility = View.GONE
                 tvSaveAVDA!!.visibility = View.GONE
 
@@ -231,7 +260,11 @@ class AddVisitorDetailActivity : AppCompatActivity(), View.OnClickListener {
                         var strDate =
                             sdf.parse(etVisitDateAVDA!!.text.toString() + " " + etVisitTimeAVDA!!.text.toString())
                         if (System.currentTimeMillis() >= strDate.getTime()) {
-                            Toast.makeText(context, "Please select time after current date and time", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(
+                                context,
+                                "Please select time after current date and time",
+                                Toast.LENGTH_SHORT
+                            ).show();
                         } else {
                             if (ConnectivityDetector.isConnectingToInternet(context!!)) {
                                 callAddVisitorDetailsApi()
@@ -260,7 +293,11 @@ class AddVisitorDetailActivity : AppCompatActivity(), View.OnClickListener {
                     var strDate =
                         sdf.parse(etVisitDateAVDA!!.text.toString() + " " + etVisitTimeAVDA!!.text.toString())
                     if (System.currentTimeMillis() >= strDate.getTime()) {
-                        Toast.makeText(context, "Please select time after current date and time", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(
+                            context,
+                            "Please select time after current date and time",
+                            Toast.LENGTH_SHORT
+                        ).show();
                     } else {
                         if (ConnectivityDetector.isConnectingToInternet(context!!)) {
                             callGetCheckMobileNoApi(visitorDetails.data.visitor.mobile)
@@ -366,7 +403,7 @@ class AddVisitorDetailActivity : AppCompatActivity(), View.OnClickListener {
             var c = Calendar.getInstance().time
             System.out.println("Current time => " + c);
 
-            var df = SimpleDateFormat("yyyy-MM-dd hh:mm", Locale.getDefault())
+            var df = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault())
 
 
             var formattedDate: String = df.format(c)
@@ -385,7 +422,7 @@ class AddVisitorDetailActivity : AppCompatActivity(), View.OnClickListener {
             jsonObjectData.addProperty("actualEntryTime", formattedDate)
             //Employee Object..Start
             var jsonObjectEmployee = JsonObject()
-            jsonObjectEmployee.addProperty("name",  visitorDetails.data!!.visitingTo!!.name)
+            jsonObjectEmployee.addProperty("name", visitorDetails.data!!.visitingTo!!.name)
             jsonObjectData.add("employee", jsonObjectEmployee)
             //Employee Object..End
             jsonObjectMain.add("data", jsonObjectData)
@@ -440,6 +477,18 @@ class AddVisitorDetailActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun callAddVisitorDetailsApi() {
         try {
+
+            var sendUTCDate: String = ""
+            val str_date = visitDate + " " + visitTime
+            val output = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
+            val input = SimpleDateFormat("yyyy-MM-dd hh:mm a")
+            var formateStartdate = input.parse(str_date)
+            sendUTCDate = output.format(formateStartdate)
+
+            Log.e("utcDate", sendUTCDate)
+
+
+
             var jsonObjectMain = JsonObject()
 
             var jsonObjectVisitor = JsonObject()
@@ -453,7 +502,7 @@ class AddVisitorDetailActivity : AppCompatActivity(), View.OnClickListener {
             var jsonObjectData = JsonObject()
             jsonObjectData.addProperty("company", comingFrom)
             jsonObjectData.addProperty("purpose", purpose)
-            jsonObjectData.addProperty("expectedEntryTime", visitDate + " " + visitTime)
+            jsonObjectData.addProperty("expectedEntryTime", sendUTCDate)
 
 
             jsonObjectMain.add("visitor", jsonObjectVisitor)

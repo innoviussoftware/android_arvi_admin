@@ -58,6 +58,7 @@ class AddVisitorPhotoActivity : AppCompatActivity(), CompoundButton.OnCheckedCha
     private var isDoneCapture: String? = null
     private var photoCount = 0
     private var file1: MultipartBody.Part? = null
+
     //private var token: String? = null
     private var newFace: Bitmap? = null
     private var strEmpId: String? = null
@@ -313,7 +314,7 @@ class AddVisitorPhotoActivity : AppCompatActivity(), CompoundButton.OnCheckedCha
 
         try {
             jsonUserPicObject = JsonObject()
-            jsonArray= JsonArray()
+            jsonArray = JsonArray()
             name = intent.getStringExtra("name")
             visitorName = intent.getStringExtra("visitorName")!!
             expectDate = intent.getStringExtra("expectDate")!!
@@ -323,6 +324,22 @@ class AddVisitorPhotoActivity : AppCompatActivity(), CompoundButton.OnCheckedCha
             //           company = intent.getStringExtra("company")!!
             //        purpose = intent.getStringExtra("purpose")!!
 
+
+            if (SessionManager.getSelectedCameraFacing(context!!) != null) {
+                if (SessionManager.getSelectedCameraFacing(context!!)
+                        .equals(resources.getString(R.string.front_facing))
+                ) {
+                    if (cameraSource != null) {
+                        cameraSource!!.setFacing(CameraSource.CAMERA_FACING_FRONT)
+                    }
+                } else {
+                    if (cameraSource != null) {
+                        cameraSource!!.setFacing(CameraSource.CAMERA_FACING_BACK)
+                    }
+                }
+            } else {
+                cameraSource!!.setFacing(CameraSource.CAMERA_FACING_FRONT)
+            }
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -334,7 +351,7 @@ class AddVisitorPhotoActivity : AppCompatActivity(), CompoundButton.OnCheckedCha
             R.id.tvInstruction ->
 
                 if (!isImg1Seted!!) {
-                    if(newFace!=null ) {
+                    if (newFace != null) {
                         isImg1Seted = true
                         img1!!.setImageBitmap(newFace)
                         isDoneCapture = "front"
@@ -347,7 +364,7 @@ class AddVisitorPhotoActivity : AppCompatActivity(), CompoundButton.OnCheckedCha
                         openNextScreen(newFace!!)
                     }
                 } else if (!isImg2Seted!!) {
-                    if(newFace!=null) {
+                    if (newFace != null) {
                         isImg2Seted = true
                         img2!!.setImageBitmap(newFace)
                         isDoneCapture = "front,right"
@@ -360,7 +377,7 @@ class AddVisitorPhotoActivity : AppCompatActivity(), CompoundButton.OnCheckedCha
                         openNextScreen(newFace!!)
                     }
                 } else if (!isImg3Seted!!) {
-                    if(newFace!=null) {
+                    if (newFace != null) {
                         isImg3Seted = true
                         img3!!.setImageBitmap(newFace)
                         isDoneCapture = "front,left"
@@ -373,7 +390,7 @@ class AddVisitorPhotoActivity : AppCompatActivity(), CompoundButton.OnCheckedCha
                         openNextScreen(newFace!!)
                     }
                 } else if (!isImg4Seted!!) {
-                    if(newFace!=null) {
+                    if (newFace != null) {
                         isImg4Seted = true
                         img4!!.setImageBitmap(newFace)
                         photoCount = photoCount + 1
@@ -391,7 +408,12 @@ class AddVisitorPhotoActivity : AppCompatActivity(), CompoundButton.OnCheckedCha
     private fun getImageUri(inContext: Context, inImage: Bitmap): Uri {
         val bytes = ByteArrayOutputStream()
         inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes)
-        val path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(), inImage, "IMG_" + Calendar.getInstance().getTime(), null)
+        val path = MediaStore.Images.Media.insertImage(
+            inContext.getContentResolver(),
+            inImage,
+            "IMG_" + Calendar.getInstance().getTime(),
+            null
+        )
         return Uri.parse(path)
     }
 
@@ -446,7 +468,10 @@ class AddVisitorPhotoActivity : AppCompatActivity(), CompoundButton.OnCheckedCha
             }
             var mAPIService: APIService? = null
             mAPIService = ApiUtils.apiService
-            val call = mAPIService.uploadUserPhoto(AppConstants.BEARER_TOKEN + SessionManager.getToken(this), file1!!)
+            val call = mAPIService.uploadUserPhoto(
+                AppConstants.BEARER_TOKEN + SessionManager.getToken(this),
+                file1!!
+            )
             call.enqueue(object : Callback<UploadPhotoResponse> {
                 override fun onResponse(
                     call: Call<UploadPhotoResponse>,
@@ -455,11 +480,11 @@ class AddVisitorPhotoActivity : AppCompatActivity(), CompoundButton.OnCheckedCha
                     Log.e("Upload", "success")
                     try {
                         val alPhotoDetail = ArrayList<UploadPhotoData>()
-                        if(response.code()==200) {
+                        if (response.code() == 200) {
                             if (response.body().data != null)
                                 alPhotoDetail.addAll(response.body().data!!)
                             callStoreWithId(alPhotoDetail)
-                        }else if(response.code()==401){
+                        } else if (response.code() == 401) {
 
                         }
                     } catch (e: Exception) {
@@ -575,7 +600,8 @@ class AddVisitorPhotoActivity : AppCompatActivity(), CompoundButton.OnCheckedCha
             var c = Calendar.getInstance().time
             System.out.println("Current time => " + c);
 
-            var df = SimpleDateFormat("yyyy-MM-dd hh:mm", Locale.getDefault())
+       //     var df = SimpleDateFormat("yyyy-MM-dd hh:mm a", Locale.getDefault())
+            var df = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault())
 
 
             var formattedDate: String = df.format(c)
@@ -618,7 +644,10 @@ class AddVisitorPhotoActivity : AppCompatActivity(), CompoundButton.OnCheckedCha
                         MyProgressDialog.hideProgressDialog()
                         try {
                             if (response.code() == 200) {
-                                var intent=Intent(this@AddVisitorPhotoActivity,DashboardActivity::class.java)
+                                var intent = Intent(
+                                    this@AddVisitorPhotoActivity,
+                                    DashboardActivity::class.java
+                                )
                                 startActivity(intent)
                             } else {
                                 /*   SnackBar.showError(
