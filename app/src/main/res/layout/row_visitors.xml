@@ -27,7 +27,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/gotham_book_regular"
-                android:text="Today"
+                android:text=""
                 android:textColor="@color/black"
                 android:textSize="@dimen/_12ssp" />
 

@@ -2,13 +2,17 @@ package com.arvi.Utils
 
 object AppConstants {
 
-   /* //release version
-    val BASE_URL = "https://kiosk-api-qa.arvi.in/"
-    val IMAGE_URL= "https://kiosk-api-qa.arvi.in/v1/s3/cache/"*/
+    /* //release version
+     val BASE_URL = "https://kiosk-api-qa.arvi.in/v1/"
+     val IMAGE_URL= "https://kiosk-api-qa.arvi.in/v1/s3/cache/"*/
 
- //testing version
-    val BASE_URL = "https://kiosk-api-dev.arvi.in/"
-    val IMAGE_URL= "https://kiosk-api-dev.arvi.in/v1/s3/cache/"
+    //testing version
+    var BASE_URL = "https://kiosk-api-dev.arvi.in/v1/"
+    val IMAGE_URL = BASE_URL + "s3/cache/"
+    var BASE_Custom_URL: String? = ""
+
+
+//   var BASE_Custom_URL = ""
 
     public var BEARER_TOKEN: String = "Bearer "
 

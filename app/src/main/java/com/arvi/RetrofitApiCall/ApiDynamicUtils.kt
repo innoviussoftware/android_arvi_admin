@@ -1,28 +1,27 @@
 package com.arvi.RetrofitApiCall
 
 import android.util.Log
+import com.arvi.Utils.AppConstants
+import com.arvi.Utils.AppConstants.BASE_Custom_URL
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
-import com.arvi.Utils.AppConstants.BASE_URL
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
-
-object ApiUtils {
-
+object ApiDynamicUtils {
 
     val apiService: APIService
-        get() = getClient(BASE_URL)!!.create(APIService::class.java)
+        get() = getClient(BASE_Custom_URL!!)!!.create(APIService::class.java)
+
 
 
 
     fun getClient(baseUrl: String): Retrofit? {
         var retrofit: Retrofit? = null
-
-        Log.e("base_url: ", baseUrl)
+        Log.e("BASE_Custom_URL: ", baseUrl)
         val gson: Gson = GsonBuilder()
             .setLenient()
             .create()
@@ -40,7 +39,7 @@ object ApiUtils {
 
             retrofit = Retrofit.Builder()
                 .client(client)
-                .baseUrl(baseUrl)
+                .baseUrl(BASE_Custom_URL!!)
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build()
         }
@@ -48,6 +47,4 @@ object ApiUtils {
         return retrofit
 
     }
-
-
 }

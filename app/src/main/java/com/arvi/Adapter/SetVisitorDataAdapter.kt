@@ -114,7 +114,7 @@ class SetVisitorDataAdapter(
 
                 if (alVisitorList[position].data!!.expectedEntryTime!!.contains("Z")) {
 
-                    val format1 = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
+                    val format1 = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.s'Z'")
                     val dt1: Date = format1.parse(alVisitorList[position].data!!.expectedEntryTime)
                     val format2 = SimpleDateFormat("EEEE")
                     val finalDay: String = format2.format(dt1)

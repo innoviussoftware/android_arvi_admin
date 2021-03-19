@@ -154,6 +154,31 @@
                     android:fontFamily="@font/gotham_book_regular"
                     />
             </RelativeLayout>
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_40sdp"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:background="@drawable/light_blue_rounded_bg">
+
+                <EditText
+                    android:id="@+id/etServerURLECDA"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:layout_marginBottom="@dimen/_5sdp"
+                    android:layout_marginLeft="@dimen/_20sdp"
+                    android:layout_marginRight="@dimen/_20sdp"
+                    android:background="@null"
+                    android:textSize="@dimen/_14ssp"
+                    android:hint="Server pointing URL"
+                    android:singleLine="true"
+                    android:text=""
+                    android:textColor="@color/black"
+                    android:fontFamily="@font/gotham_book_regular"
+                    />
+            </RelativeLayout>
+
 
 
             <RelativeLayout

@@ -101,7 +101,7 @@ class AddVisitorDetailActivity : AppCompatActivity(), View.OnClickListener {
     fun setVisitorData(visitorDetails: GetVisitorListResult) {
         try {
             etNameAVDA!!.setText(visitorDetails.name)
-            var expectedEntryDateTime = visitorDetails.data!!.expectedEntryTime
+            var expectedEntryDateTime = visitorDetails.data!!.actualEntryTime
             if(expectedEntryDateTime.contains("T")){
                 etVisitDateAVDA!!.setText(
                     expectedEntryDateTime.substring(
@@ -403,7 +403,7 @@ class AddVisitorDetailActivity : AppCompatActivity(), View.OnClickListener {
             var c = Calendar.getInstance().time
             System.out.println("Current time => " + c);
 
-            var df = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault())
+            var df = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.s'Z'", Locale.getDefault())
 
 
             var formattedDate: String = df.format(c)
@@ -480,7 +480,7 @@ class AddVisitorDetailActivity : AppCompatActivity(), View.OnClickListener {
 
             var sendUTCDate: String = ""
             val str_date = visitDate + " " + visitTime
-            val output = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
+            val output = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.s'Z'")
             val input = SimpleDateFormat("yyyy-MM-dd hh:mm a")
             var formateStartdate = input.parse(str_date)
             sendUTCDate = output.format(formateStartdate)
@@ -628,8 +628,13 @@ class AddVisitorDetailActivity : AppCompatActivity(), View.OnClickListener {
             tvCompanyDVV.text = visitorDetails.data!!.company
 
             try {
-                tvLastVisitedDVV.text =
-                    GlobalMethods.convertOnlyDate(visitorDetails.data!!.expectedEntryTime!!)
+                if(visitorDetails.data!!.expectedEntryTime!!.contentEquals("T")){
+                    tvLastVisitedDVV.text =
+                        GlobalMethods.convertUTCDateformate(visitorDetails.data!!.expectedEntryTime!!)
+                }else {
+                    tvLastVisitedDVV.text =
+                        GlobalMethods.convertOnlyDate(visitorDetails.data!!.expectedEntryTime!!)
+                }
             } catch (e: Exception) {
                 e.printStackTrace()
             }

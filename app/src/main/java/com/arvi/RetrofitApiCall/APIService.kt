@@ -14,14 +14,14 @@ interface APIService {
 
     //todo:: login
     //get login
-    @POST("v1/companies/users/login")
+    @POST("companies/users/login?fromApp=1")
     fun getLogin(
         @Header("Content-Type") ctype: String,
         @Body detail: JsonObject
     ): Call<GetLoginResponse>
 
     //todo:: add employee
-    @POST("v1/companies/users/signup")
+    @POST("companies/users/signup")
     fun addEmployee(
         @Header("Content-Type") ctype: String,
         @Header("Authorization") auth: String,
@@ -29,7 +29,7 @@ interface APIService {
     ): Call<GetAddEmployeeResponse>
 
     //todo:: add photo of new employee
-    @POST("v1/companies/users/images?fromApp=1")
+    @POST("companies/users/images?fromApp=1")
     @Multipart
     fun uploadUserPhoto(
         @Header("Authorization") auth: String,
@@ -37,7 +37,7 @@ interface APIService {
     ): Call<UploadPhotoResponse>
 
     //todo:: detect face
-    @POST("v1/companies/face/detect?fromApp=1")
+    @POST("companies/face/detect?fromApp=1")
     @Multipart
     fun detectFace(
         @Header("Authorization") auth: String,
@@ -45,7 +45,7 @@ interface APIService {
     ): Call<DetectFaceNewResponse>
 
     //todo:: store data
-    @POST("v1/companies/records")
+    @POST("companies/records")
     fun recordUserTemperature(
         @Header("Authorization") auth: String,
         @Header("Content-Type") ctype: String,
@@ -94,7 +94,7 @@ interface APIService {
     //Todo: visitors Related Flow.. Start...............................
 
     //1. add new visitor list
-    @POST("v1/companies/visitor/entries")
+    @POST("companies/visitor/entries")
     fun addVisitorsEntry(
         @Header("Authorization") auth: String,
         @Header("Content-Type") ctype: String,
@@ -102,7 +102,7 @@ interface APIService {
     ): Call<VisitorsListModel>
 
     //2. get visitors list : open=actuled, closed=screned
-    @GET("v1/companies/visitor/entries")
+    @GET("companies/visitor/entries")
     fun getVisitorsList(
         @Header("Content-Type") ctype: String,
         @Header("Authorization") auth: String,
@@ -110,14 +110,14 @@ interface APIService {
     ): Call<GetVisitorListResponse>
 
     //Check come visitor mobile number register or not in visitor list
-    @GET("v1/companies/visitors")
+    @GET("companies/visitors")
     fun checkVisitorMobileNo(
         @Header("Authorization") auth: String,
         @Query("mobile") mobile:String
     ):Call<CheckMobileNoResponse>
 
     //id means entriesID,
-    @POST("v1/companies/visitor/entries/{id}")
+    @POST("companies/visitor/entries/{id}")
     fun visitorEntryRegister(
         @Header("Authorization") auth: String,
         @Header("Content-Type") ctype: String,
@@ -126,7 +126,7 @@ interface APIService {
     ): Call<ResponseBody>
 
 
-    @POST("v1/companies/visitors")
+    @POST("companies/visitors")
     fun newVisitorsEntryRegister(
         @Header("Authorization") auth: String,
         @Header("Content-Type") ctype: String,
@@ -138,24 +138,24 @@ interface APIService {
 
 
 //todo:: employee add APi start.....................................
-    @GET("v1/companies/roles")
+    @GET("companies/roles")
     fun getDesignationList(
         @Header("Authorization") auth: String
     ):Call<GetDesignationListResponse>
 
-    @GET("v1/companies/groups")
+    @GET("companies/groups")
     fun getGroupList(
         @Header("Authorization") auth: String
     ):Call<GetGroupListResponse>
 
-    @GET("v1/companies/users")
+    @GET("companies/users")
     fun getComaniesUsersList(
         @Header("Authorization") auth: String
     ):Call<GetEmployeeListResponse>
     //todo:: employee add APi end.....................................
 
     //todo:: add leave request
-    @POST("v1/attendence/leaves/")
+    @POST("attendence/leaves/")
     fun addLeaveRequest(
         @Header("Authorization") auth: String,
         @Header("Content-Type") ctype: String,
@@ -163,9 +163,13 @@ interface APIService {
     ):Call<ResponseBody>
 
     //todo:: get leave request
-    @GET("v1/attendence/leaves")
+    @GET("attendence/leaves")
     fun getLeaveRequest(
         @Header("Authorization") auth: String
     ):Call<GetLeaveRequestResponse>
+
+    //todo:: check dynamic url is valid
+    @GET("ping")
+    fun checkBaseURL():Call<ResponseBody>
 
 }

@@ -70,7 +70,7 @@ class SelfiCheckInActivity : AppCompatActivity(), CompoundButton.OnCheckedChange
     SlaveListener {
 
     var tvInstruction: TextView? = null
-    var imgVwHomeSCA: ImageView?= null
+    var imgVwHomeSCA: ImageView? = null
     var dialog: Dialog? = null
     private var TAG = "Face Capture"
     private val PERMISSION_REQUESTS = 1
@@ -161,21 +161,7 @@ class SelfiCheckInActivity : AppCompatActivity(), CompoundButton.OnCheckedChange
                 startActivity(intent)
             }
 
-            if (SessionManager.getSelectedCameraFacing(context!!) != null) {
-                if (SessionManager.getSelectedCameraFacing(context!!)
-                        .equals(resources.getString(R.string.front_facing))
-                ) {
-                    if (cameraSource != null) {
-                        cameraSource!!.setFacing(CameraSource.CAMERA_FACING_FRONT)
-                    }
-                } else {
-                    if (cameraSource != null) {
-                        cameraSource!!.setFacing(CameraSource.CAMERA_FACING_BACK)
-                    }
-                }
-            } else {
-                cameraSource!!.setFacing(CameraSource.CAMERA_FACING_FRONT)
-            }
+
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -350,7 +336,6 @@ class SelfiCheckInActivity : AppCompatActivity(), CompoundButton.OnCheckedChange
     }
 
 
-
     @RequiresApi(api = Build.VERSION_CODES.O)
     private fun callDetectFaceAPI(face: Bitmap) {
         try {
@@ -400,7 +385,7 @@ class SelfiCheckInActivity : AppCompatActivity(), CompoundButton.OnCheckedChange
                                     )
                                 } else {
 
-                                    if(response.body().data!=null) {
+                                    if (response.body().data != null) {
                                         if (response.body().data.employeeId != null) {
                                             strUserId = response.body().data.employeeId
                                         }
@@ -488,6 +473,8 @@ class SelfiCheckInActivity : AppCompatActivity(), CompoundButton.OnCheckedChange
         try {
             if (cameraSource != null) {
                 try {
+
+
                     if (faceCapturePreview == null) {
                         Log.d(TAG, "resume: Preview is null")
                     }
@@ -496,13 +483,30 @@ class SelfiCheckInActivity : AppCompatActivity(), CompoundButton.OnCheckedChange
                     }
                     faceCapturePreview!!.start(cameraSource, facePreviewOverlay)
 
-                    /*   if (cameraSource != null) {
-                        if  (cameraSource.getCameraFacing() == CameraSource.CAMERA_FACING_BACK) {
-                            cameraSource.setFacing(CameraSource.CAMERA_FACING_FRONT);
-                        }else{
-                            cameraSource.setFacing(CameraSource.CAMERA_FACING_BACK);
+                    /*      if (cameraSource != null) {
+                              if (cameraSource!!.getCameraFacing() == CameraSource.CAMERA_FACING_BACK) {
+                                  cameraSource!!.setFacing(CameraSource.CAMERA_FACING_FRONT)
+                              } else {
+                                  cameraSource!!.setFacing(CameraSource.CAMERA_FACING_BACK)
+                              }
+                          }*/
+
+                    if (SessionManager.getSelectedCameraFacing(context!!) != null) {
+                        if (SessionManager.getSelectedCameraFacing(context!!)
+                                .equals(resources.getString(R.string.front_facing))
+                        ) {
+                            if (cameraSource != null) {
+                                cameraSource!!.setFacing(CameraSource.CAMERA_FACING_FRONT)
+                            }
+                        } else {
+                            if (cameraSource != null) {
+                                cameraSource!!.setFacing(CameraSource.CAMERA_FACING_BACK)
+                            }
                         }
-                    }*/
+                    } else {
+                        cameraSource!!.setFacing(CameraSource.CAMERA_FACING_FRONT)
+                    }
+
                 } catch (e: IOException) {
                     Log.e(TAG, "Unable to start camera source.", e)
                     cameraSource!!.release()
@@ -564,6 +568,7 @@ class SelfiCheckInActivity : AppCompatActivity(), CompoundButton.OnCheckedChange
         strUserName: String?
     ) {
         try {
+
             if (message != null && message != "") {
                 if (message == "ENTRY DENIED") {
                     //     ArviAudioPlaybacks.forcePlay(R.raw.salli_temp_high_denined);
@@ -754,7 +759,10 @@ class SelfiCheckInActivity : AppCompatActivity(), CompoundButton.OnCheckedChange
             jsonObject.addProperty("scanDate", strCurrentDate)
             jsonObject.addProperty("scanTime", strCurrentTime)
 
-            if(SessionManager.getSelectedGPSOption(context!!)!=null && SessionManager.getSelectedGPSOption(context!!).equals("Yes")){
+            if (SessionManager.getSelectedGPSOption(context!!) != null && SessionManager.getSelectedGPSOption(
+                    context!!
+                ).equals("Yes")
+            ) {
                 jsonObject.addProperty("address", strAddress)
                 jsonObject.addProperty("emp_lat", latitude)
                 jsonObject.addProperty("emp_long", longitude)
@@ -949,6 +957,11 @@ class SelfiCheckInActivity : AppCompatActivity(), CompoundButton.OnCheckedChange
                 unbindService(serviceConnection!!)
                 isServiceBound = false
             }
+            if(cameraSource!=null) {
+                cameraSource!!.stop()
+                cameraSource!!.release()
+                cameraSource = null
+            }
         } catch (e: java.lang.Exception) {
             e.printStackTrace()
         }
@@ -966,31 +979,31 @@ class SelfiCheckInActivity : AppCompatActivity(), CompoundButton.OnCheckedChange
 
 
     override fun onBackPressed() {
-       /* try {
+        /* try {
 
-            var builder = AlertDialog.Builder(context!!)
-            builder.setCancelable(false)
-            builder.setTitle("Arvi")
-            builder.setMessage("You want to open Home page?")
-            builder.setPositiveButton(
-                "Yes",
-                DialogInterface.OnClickListener { dialog, which ->
-                    dialog.dismiss()
-                    var intent = Intent(context, DashboardActivity::class.java)
-                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
-                    startActivity(intent)
-                })
-            builder.setNegativeButton("No", DialogInterface.OnClickListener { dialog, which ->
-                dialog.dismiss()
-                finish()
-            })
-            var dialog = builder.create()
-            dialog.show()
+             var builder = AlertDialog.Builder(context!!)
+             builder.setCancelable(false)
+             builder.setTitle("Arvi")
+             builder.setMessage("You want to open Home page?")
+             builder.setPositiveButton(
+                 "Yes",
+                 DialogInterface.OnClickListener { dialog, which ->
+                     dialog.dismiss()
+                     var intent = Intent(context, DashboardActivity::class.java)
+                     intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+                     startActivity(intent)
+                 })
+             builder.setNegativeButton("No", DialogInterface.OnClickListener { dialog, which ->
+                 dialog.dismiss()
+                 finish()
+             })
+             var dialog = builder.create()
+             dialog.show()
 
-          //  openSettingScreen(this@SelfiCheckInActivity)
-        } catch (e: java.lang.Exception) {
-            e.printStackTrace()
-        }*/
+           //  openSettingScreen(this@SelfiCheckInActivity)
+         } catch (e: java.lang.Exception) {
+             e.printStackTrace()
+         }*/
         finish()
     }
 

@@ -52,6 +52,7 @@ data class GetVisitorListData(
     val addedBy: AddedByX,
     val expectedEntry: ExpectedEntry,
     val expectedEntryTime: String,
+    val actualEntryTime:String,
     val visitingTo: VisitingTo,
     val visitor: Visitor,
     val employee: GetVisitorEmployee,

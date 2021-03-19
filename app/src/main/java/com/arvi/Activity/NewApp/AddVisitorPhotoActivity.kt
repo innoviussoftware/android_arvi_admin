@@ -246,6 +246,11 @@ class AddVisitorPhotoActivity : AppCompatActivity(), CompoundButton.OnCheckedCha
                 unbindService(serviceConnection!!)
                 isServiceBound = false
             }
+            if(cameraSource!=null) {
+                cameraSource!!.stop()
+                cameraSource!!.release()
+                cameraSource = null
+            }
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -325,21 +330,7 @@ class AddVisitorPhotoActivity : AppCompatActivity(), CompoundButton.OnCheckedCha
             //        purpose = intent.getStringExtra("purpose")!!
 
 
-            if (SessionManager.getSelectedCameraFacing(context!!) != null) {
-                if (SessionManager.getSelectedCameraFacing(context!!)
-                        .equals(resources.getString(R.string.front_facing))
-                ) {
-                    if (cameraSource != null) {
-                        cameraSource!!.setFacing(CameraSource.CAMERA_FACING_FRONT)
-                    }
-                } else {
-                    if (cameraSource != null) {
-                        cameraSource!!.setFacing(CameraSource.CAMERA_FACING_BACK)
-                    }
-                }
-            } else {
-                cameraSource!!.setFacing(CameraSource.CAMERA_FACING_FRONT)
-            }
+
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -426,6 +417,9 @@ class AddVisitorPhotoActivity : AppCompatActivity(), CompoundButton.OnCheckedCha
             Log.e("path ", profilePath!!)
             callStorePersonPicApi(profilePath)
             if (imgCount == 4) {
+                cameraSource!!.stop()
+                cameraSource!!.release()
+                cameraSource = null
                 val builder = AlertDialog.Builder(this)
                 builder.setCancelable(false)
                 var message = "Welcome " + name + ", You have been registered"
@@ -601,7 +595,7 @@ class AddVisitorPhotoActivity : AppCompatActivity(), CompoundButton.OnCheckedCha
             System.out.println("Current time => " + c);
 
        //     var df = SimpleDateFormat("yyyy-MM-dd hh:mm a", Locale.getDefault())
-            var df = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault())
+            var df = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.s'Z'", Locale.getDefault())
 
 
             var formattedDate: String = df.format(c)
@@ -690,6 +684,21 @@ class AddVisitorPhotoActivity : AppCompatActivity(), CompoundButton.OnCheckedCha
                     faceCapturePreview!!.start(cameraSource, facePreviewOverlay)
 
 
+                    if (SessionManager.getSelectedCameraFacing(context!!) != null) {
+                        if (SessionManager.getSelectedCameraFacing(context!!)
+                                .equals(resources.getString(R.string.front_facing))
+                        ) {
+                            if (cameraSource != null) {
+                                cameraSource!!.setFacing(CameraSource.CAMERA_FACING_FRONT)
+                            }
+                        } else {
+                            if (cameraSource != null) {
+                                cameraSource!!.setFacing(CameraSource.CAMERA_FACING_BACK)
+                            }
+                        }
+                    } else {
+                        cameraSource!!.setFacing(CameraSource.CAMERA_FACING_FRONT)
+                    }
                 } catch (e: IOException) {
                     Log.e(TAG, "Unable to start camera source.", e)
                     cameraSource!!.release()

@@ -8,9 +8,21 @@ import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import com.arvi.Adapter.GetLeaveRequestResponse
 import com.arvi.R
+import com.arvi.RetrofitApiCall.APIService
+import com.arvi.RetrofitApiCall.ApiDynamicUtils
 import com.arvi.SessionManager.SessionManager
+import com.arvi.Utils.AppConstants
+import com.arvi.Utils.AppConstants.BASE_Custom_URL
+import com.arvi.Utils.AppConstants.BASE_URL
+import com.arvi.Utils.KeyboardUtility
+import com.arvi.Utils.MyProgressDialog
 import com.arvi.Utils.SnackBar
+import okhttp3.ResponseBody
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 
 class SettingActivity : AppCompatActivity(), View.OnClickListener {
@@ -47,16 +59,15 @@ class SettingActivity : AppCompatActivity(), View.OnClickListener {
             strSelectedScreenOption = SessionManager.getSelectedDefaultScreen(context!!)
             strSelectedGPSOption = SessionManager.getSelectedGPSOption(context!!)
 
-            if (!strSelectedServerOption.isNullOrEmpty()){
+            if (!strSelectedServerOption.isNullOrEmpty()) {
                 etServerUrlSA!!.setText(strSelectedServerOption)
             }
 
-            if (!strSelectedGPSOption.isNullOrEmpty()){
-                if (strSelectedGPSOption.equals("Yes"))
-                {
+            if (!strSelectedGPSOption.isNullOrEmpty()) {
+                if (strSelectedGPSOption.equals("Yes")) {
                     rbYesTrackSA!!.isSelected = true
                     rbNoTrackSA!!.isSelected = false
-                }else{
+                } else {
                     rbYesTrackSA!!.isSelected = false
                     rbNoTrackSA!!.isSelected = true
                 }
@@ -220,6 +231,7 @@ class SettingActivity : AppCompatActivity(), View.OnClickListener {
                     finish()
                 }
                 R.id.tvSaveSA -> {
+                    KeyboardUtility.hideKeyboard(context!!,tvSaveSA)
                     strSelectedServerOption = etServerUrlSA!!.text.toString()
                     if (strSelectedServerOption.isNullOrEmpty()) {
                         SnackBar.showValidationError(
@@ -229,40 +241,95 @@ class SettingActivity : AppCompatActivity(), View.OnClickListener {
                         )
                         etServerUrlSA!!.requestFocus()
                     } else {
-                        val selectedOption: Int = rgGPSTrackSA!!.checkedRadioButtonId
-                        var radioButton = findViewById(selectedOption) as RadioButton
-                        var selectedGpsOption = radioButton.text
-                        strSelectedGPSOption = selectedGpsOption.toString()
-                        Log.e("selectedGpsOption = ", strSelectedGPSOption)
-                        Log.e("selectedScreen = ", strSelectedScreenOption)
-                        Log.e("selectedFacing = ", strSelectedCameraFacing)
-                        Log.e("selectedServer = ", strSelectedServerOption)
-                        //todo:: set data in session
-                        SessionManager.setSelectedServerURL(context!!, strSelectedServerOption!!)
-                        SessionManager.setSelectedDefaultScreen(
-                            context!!,
-                            strSelectedScreenOption!!
-                        )
-                        SessionManager.setSelectedCameraFacing(context!!, strSelectedCameraFacing!!)
-                        SessionManager.setSelectedGPSOption(context!!, strSelectedGPSOption!!)
-
-                        var builder = AlertDialog.Builder(context!!)
-                        builder.setCancelable(false)
-                        builder.setTitle("Settings")
-                        builder.setMessage("Setting saved successfully")
-                        builder.setPositiveButton(
-                            "Ok",
-                            DialogInterface.OnClickListener { dialog, which ->
-                                dialog.dismiss()
-                                finish()
-                            })
-                        var dialog = builder.create()
-                        dialog.show()
+                        BASE_Custom_URL = strSelectedServerOption!!
+                        callCheckBaseURLAPI()
                     }
                 }
             }
         } catch (e: Exception) {
             e.printStackTrace()
         }
+    }
+
+    private fun callCheckBaseURLAPI() {
+        try {
+            var mAPIService: APIService? = null
+            mAPIService = ApiDynamicUtils.apiService
+            MyProgressDialog.showProgressDialog(context!!)
+            mAPIService!!.checkBaseURL()
+                .enqueue(object : Callback<ResponseBody> {
+
+                    override fun onResponse(
+                        call: Call<ResponseBody>,
+                        response: Response<ResponseBody>
+                    ) {
+                        MyProgressDialog.hideProgressDialog()
+                        if (response.code() == 200) {
+                            BASE_URL = strSelectedServerOption!!
+                            val selectedOption: Int = rgGPSTrackSA!!.checkedRadioButtonId
+                            var radioButton = findViewById(selectedOption) as RadioButton
+                            var selectedGpsOption = radioButton.text
+                            strSelectedGPSOption = selectedGpsOption.toString()
+                            Log.e("selectedGpsOption = ", strSelectedGPSOption)
+                            Log.e("selectedScreen = ", strSelectedScreenOption)
+                            Log.e("selectedFacing = ", strSelectedCameraFacing)
+                            Log.e("selectedServer = ", strSelectedServerOption)
+                            //todo:: set data in session
+                            SessionManager.setSelectedServerURL(
+                                context!!,
+                                strSelectedServerOption!!
+                            )
+                            SessionManager.setSelectedDefaultScreen(
+                                context!!,
+                                strSelectedScreenOption!!
+                            )
+                            SessionManager.setSelectedCameraFacing(
+                                context!!,
+                                strSelectedCameraFacing!!
+                            )
+                            SessionManager.setSelectedGPSOption(context!!, strSelectedGPSOption!!)
+
+                            var builder = AlertDialog.Builder(context!!)
+                            builder.setCancelable(false)
+                            builder.setTitle("Settings")
+                            builder.setMessage("Setting saved successfully")
+                            builder.setPositiveButton(
+                                "Ok",
+                                DialogInterface.OnClickListener { dialog, which ->
+                                    dialog.dismiss()
+                                    finish()
+                                })
+                            var dialog = builder.create()
+                            dialog.show()
+                        } else {
+                            SnackBar.showError(
+                                context!!,
+                                snackbarView!!,
+                                "Please enter valid URL"
+                            )
+                        }
+                    }
+
+                    override fun onFailure(
+                        call: Call<ResponseBody>,
+                        t: Throwable
+                    ) {
+                        MyProgressDialog.hideProgressDialog()
+                        SnackBar.showError(
+                            context!!,
+                            snackbarView!!,
+                            "Please enter valid URL"
+                        )
+                    }
+                })
+        } catch (e: Exception) {
+            e.printStackTrace()
+            SnackBar.showError(
+                context!!,
+                snackbarView!!,
+                "Please enter valid URL"
+            )
+        }
+
     }
 }

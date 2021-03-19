@@ -156,21 +156,7 @@ class TakeEmployeePicActivity : AppCompatActivity(), CompoundButton.OnCheckedCha
                 }*/
             }
 
-            if (SessionManager.getSelectedCameraFacing(context!!) != null) {
-                if (SessionManager.getSelectedCameraFacing(context!!)
-                        .equals(resources.getString(R.string.front_facing))
-                ) {
-                    if (cameraSource != null) {
-                        cameraSource!!.setFacing(CameraSource.CAMERA_FACING_FRONT)
-                    }
-                } else {
-                    if (cameraSource != null) {
-                        cameraSource!!.setFacing(CameraSource.CAMERA_FACING_BACK)
-                    }
-                }
-            } else {
-                cameraSource!!.setFacing(CameraSource.CAMERA_FACING_FRONT)
-            }
+
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -343,6 +329,11 @@ class TakeEmployeePicActivity : AppCompatActivity(), CompoundButton.OnCheckedCha
             Log.e("path ", profilePath!!)
             callStorePersonPicApi(profilePath)
             if (imgCount == 4) {
+                if(cameraSource!=null) {
+                    cameraSource!!.stop()
+                    cameraSource!!.release()
+                    cameraSource = null
+                }
                 var message = "Welcome " + strName + " , Your onboarding is complete"
                 val builder = AlertDialog.Builder(this)
                 builder.setCancelable(false)
@@ -485,6 +476,21 @@ class TakeEmployeePicActivity : AppCompatActivity(), CompoundButton.OnCheckedCha
                     faceCapturePreview!!.start(cameraSource, facePreviewOverlay)
 
 
+                    if (SessionManager.getSelectedCameraFacing(context!!) != null) {
+                        if (SessionManager.getSelectedCameraFacing(context!!)
+                                .equals(resources.getString(R.string.front_facing))
+                        ) {
+                            if (cameraSource != null) {
+                                cameraSource!!.setFacing(CameraSource.CAMERA_FACING_FRONT)
+                            }
+                        } else {
+                            if (cameraSource != null) {
+                                cameraSource!!.setFacing(CameraSource.CAMERA_FACING_BACK)
+                            }
+                        }
+                    } else {
+                        cameraSource!!.setFacing(CameraSource.CAMERA_FACING_FRONT)
+                    }
                 } catch (e: IOException) {
                     Log.e(TAG, "Unable to start camera source.", e)
                     cameraSource!!.release()
@@ -767,6 +773,11 @@ class TakeEmployeePicActivity : AppCompatActivity(), CompoundButton.OnCheckedCha
             if (isServiceBound) {
                 unbindService(serviceConnection!!)
                 isServiceBound = false
+            }
+            if(cameraSource!=null) {
+                cameraSource!!.stop()
+                cameraSource!!.release()
+                cameraSource = null
             }
         } catch (e: Exception) {
             e.printStackTrace()
