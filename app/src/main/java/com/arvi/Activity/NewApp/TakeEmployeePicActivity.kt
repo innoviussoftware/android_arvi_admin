@@ -42,6 +42,7 @@ import com.societyguard.Utils.FileUtil
 import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -49,10 +50,10 @@ import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.IOException
 import java.util.*
+import kotlin.collections.ArrayList
 
 class TakeEmployeePicActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener,
     SlaveListener, View.OnClickListener {
-
 
 
     internal var tvInstruction: TextView? = null
@@ -68,8 +69,9 @@ class TakeEmployeePicActivity : AppCompatActivity(), CompoundButton.OnCheckedCha
     private var newFace: Bitmap? = null
     private var strEmpId: String? = null
     private var strPhone: String? = null
-    private var role_id: Int?=0
-    private var group_id: Int?=0
+    private var role_id: Int? = 0
+    private var group_id: Int? = 0
+
     private enum class STATE {
         UNKNOWN, INIT, WAIT_FOR_FACE, READ_TEMP, WAIT_FOR_TEMP, WAIT_FOR_EXIT
     }
@@ -100,11 +102,14 @@ class TakeEmployeePicActivity : AppCompatActivity(), CompoundButton.OnCheckedCha
     internal var strName: String? = ""
     internal var context: Context? = null
     private var strEmail: String? = ""
+    var alPhotoDetail: ArrayList<UploadPhotoData>? = null
+    var emp_edit_id: Int? = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_take_employee_pic)
         try {
+            alPhotoDetail = ArrayList()
             context = this@TakeEmployeePicActivity
             ArviAudioPlaybacks.init(this.applicationContext)
             facingSwitch = findViewById(R.id.facingSwitch)
@@ -131,19 +136,21 @@ class TakeEmployeePicActivity : AppCompatActivity(), CompoundButton.OnCheckedCha
 
             isServiceBound = false
             serviceIntent = Intent(applicationContext, SlaveService::class.java)
-
+            token = getToken(context!!)
             if (intent.extras != null) {
 
 
+                emp_edit_id = intent.getIntExtra("emp_edit_id", 0)
+                if (emp_edit_id == 0) {
+                    strName = intent.getStringExtra("name")
 
-                strName = intent.getStringExtra("name")
-                token = getToken(context!!)
-                // getIntent().getStringExtra("token");
-                strPhone = intent.getStringExtra("mobile")
-                strEmpId = intent.getStringExtra("employeeId")
-                strEmail = intent.getStringExtra("email")
-                role_id = intent.getIntExtra("role_id", 0)
-                group_id = intent.getIntExtra("group_id", 0)
+                    // getIntent().getStringExtra("token");
+                    strPhone = intent.getStringExtra("mobile")
+                    strEmpId = intent.getStringExtra("employeeId")
+                    strEmail = intent.getStringExtra("email")
+                    role_id = intent.getIntExtra("role_id", 0)
+                    group_id = intent.getIntExtra("group_id", 0)
+                }
 //                String msg = "Please put your face inside border";
                 //todo:: priyanka 27-10
                 /*if (name != null) {
@@ -329,32 +336,115 @@ class TakeEmployeePicActivity : AppCompatActivity(), CompoundButton.OnCheckedCha
             Log.e("path ", profilePath!!)
             callStorePersonPicApi(profilePath)
             if (imgCount == 4) {
-                if(cameraSource!=null) {
+                if (cameraSource != null) {
                     cameraSource!!.stop()
                     cameraSource!!.release()
                     cameraSource = null
                 }
-                var message = "Welcome " + strName + " , Your onboarding is complete"
-                val builder = AlertDialog.Builder(this)
-                builder.setCancelable(false)
-                builder.setMessage(message)
-                builder.setPositiveButton("Ok") { dialog, which ->
-                    try {
-                        dialog.dismiss()
-                        val intent =
-                            Intent(applicationContext, DashboardActivity::class.java)
-                        intent.flags =
-                            Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
-                        startActivity(intent)
-                    } catch (e: Exception) {
-                        e.printStackTrace()
+
+                if (emp_edit_id==0) {
+
+                    callStoreWithId(alPhotoDetail!!)
+
+                    var message = "Welcome " + strName + " , Your onboarding is complete"
+                    val builder = AlertDialog.Builder(this)
+                    builder.setCancelable(false)
+                    builder.setMessage(message)
+                    builder.setPositiveButton("Ok") { dialog, which ->
+                        try {
+                            dialog.dismiss()
+                            val intent =
+                                Intent(applicationContext, DashboardActivity::class.java)
+                            intent.flags =
+                                Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+                            startActivity(intent)
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
                     }
+                    val dialog = builder.create()
+                    dialog.show()
+
+
+                }else{
+                    callUpdateEmployeePhoto()
                 }
-                val dialog = builder.create()
-                dialog.show()
+
+
             }
         } catch (e: Exception) {
             e.printStackTrace()
+        }
+
+    }
+
+    private fun callUpdateEmployeePhoto() {
+        try {
+            val jsonObject = JsonObject()
+            val jsonArray = JsonArray()
+            var jsonImgObject = JsonObject()
+            if (alPhotoDetail!!.size > 0) {
+                for (data in alPhotoDetail!!.indices) {
+                    jsonImgObject = JsonObject()
+                    val path = alPhotoDetail!!.get(data).path
+                    val mimetype = alPhotoDetail!!.get(data).mimetype
+                    val filename = alPhotoDetail!!.get(data).filename
+                    jsonImgObject.addProperty("path", path)
+                    jsonImgObject.addProperty("mimetype", mimetype)
+                    jsonImgObject.addProperty("filename", filename)
+                    jsonArray.add(jsonImgObject)
+                }
+            }
+
+            jsonObject.add("images", jsonArray)
+            Log.e("request:", jsonObject.toString())
+            var mAPIService: APIService? = null
+            mAPIService = apiService
+            val context: Context = this@TakeEmployeePicActivity
+            val call = mAPIService.updateEmployee(
+                "application/json",
+                "Bearer " + getToken(context),
+                emp_edit_id!!,
+                jsonObject
+            )
+            call.enqueue(object : Callback<ResponseBody?> {
+                override fun onResponse(
+                    call: Call<ResponseBody?>,
+                    response: Response<ResponseBody?>
+                ) {
+                    Log.e("Upload", "success")
+
+                    var message = "Employee photo updated successfully"
+                    val builder = AlertDialog.Builder(context)
+                    builder.setCancelable(false)
+                    builder.setMessage(message)
+                    builder.setPositiveButton("Ok") { dialog, which ->
+                        try {
+                            dialog.dismiss()
+                            val intent =
+                                Intent(applicationContext, DashboardActivity::class.java)
+                            intent.flags =
+                                Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+                            startActivity(intent)
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
+                    }
+                    val dialog = builder.create()
+                    dialog.show()
+
+                }
+
+                override fun onFailure(call: Call<ResponseBody?>, t: Throwable) {
+                    Log.e("Upload", "failure")
+                }
+            })
+
+
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+            hideProgressDialog()
+
         }
 
     }
@@ -383,10 +473,11 @@ class TakeEmployeePicActivity : AppCompatActivity(), CompoundButton.OnCheckedCha
                 ) {
                     Log.e("Upload", "success")
                     try {
-                        val alPhotoDetail = ArrayList<UploadPhotoData>()
+
+
                         if (response.body().data != null)
-                            alPhotoDetail.addAll(response.body().data!!)
-                        callStoreWithId(alPhotoDetail)
+                            alPhotoDetail!!.addAll(response.body().data!!)
+
                     } catch (e: Exception) {
                         e.printStackTrace()
                     }
@@ -401,60 +492,65 @@ class TakeEmployeePicActivity : AppCompatActivity(), CompoundButton.OnCheckedCha
         }
     }
 
-    private fun callStoreWithId(response: ArrayList<UploadPhotoData>) {
+    private fun callStoreWithId(alPhotoDetail: ArrayList<UploadPhotoData>) {
         try {
-            if (response.size > 0) {
-                val jsonObject = JsonObject()
-                val jsonArray = JsonArray()
-                val jsonImgObject = JsonObject()
-                val path = response[0].path
-                val mimetype = response[0].mimetype
-                val filename = response[0].filename
-                jsonImgObject.addProperty("path", path)
-                jsonImgObject.addProperty("mimetype", mimetype)
-                jsonImgObject.addProperty("filename", filename)
+            val jsonObject = JsonObject()
+            val jsonArray = JsonArray()
+            var jsonImgObject = JsonObject()
+            if (alPhotoDetail.size > 0) {
+                for (data in alPhotoDetail.indices) {
+                    jsonImgObject = JsonObject()
+                    val path = alPhotoDetail.get(data).path
+                    val mimetype = alPhotoDetail.get(data).mimetype
+                    val filename = alPhotoDetail.get(data).filename
+                    jsonImgObject.addProperty("path", path)
+                    jsonImgObject.addProperty("mimetype", mimetype)
+                    jsonImgObject.addProperty("filename", filename)
+                    jsonArray.add(jsonImgObject)
+                }
+            }
 
-                var jsonObjectRole = JsonObject()
-                jsonObjectRole.addProperty("id",role_id)
 
-                var jsonObjectGroup = JsonObject()
-                jsonObjectGroup.addProperty("id",group_id)
+            var jsonObjectRole = JsonObject()
+            jsonObjectRole.addProperty("id", role_id)
 
-                jsonObject.addProperty("name", strName)
-                jsonObject.addProperty("email", strEmail)
-                jsonObject.addProperty("mobile", strPhone)
-                jsonObject.addProperty("employeeId", strEmpId)
-                jsonObject.add("role",jsonObjectRole)
-                jsonObject.add("group",jsonObjectGroup)
+            var jsonObjectGroup = JsonObject()
+            jsonObjectGroup.addProperty("id", group_id)
 
+            jsonObject.addProperty("name", strName)
+            jsonObject.addProperty("email", strEmail)
+            jsonObject.addProperty("mobile", strPhone)
+            jsonObject.addProperty("employeeId", strEmpId)
+            jsonObject.add("role", jsonObjectRole)
+            jsonObject.add("group", jsonObjectGroup)
 
 
 //            jsonArray.add("images",jsonImgObject);
-                jsonArray.add(jsonImgObject)
-                jsonObject.add("images", jsonArray)
-                Log.e("request:",jsonObject.toString())
-                var mAPIService: APIService? = null
-                mAPIService = apiService
-                val context: Context = this@TakeEmployeePicActivity
-                val call = mAPIService.addEmployee(
-                    "application/json",
-                    "Bearer " + getToken(context),
-                    jsonObject
-                )
-                call.enqueue(object : Callback<GetAddEmployeeResponse?> {
-                    override fun onResponse(
-                        call: Call<GetAddEmployeeResponse?>,
-                        response: Response<GetAddEmployeeResponse?>
-                    ) {
-                        Log.e("Upload", "success")
-                    }
 
-                    override fun onFailure(call: Call<GetAddEmployeeResponse?>, t: Throwable) {
-                        Log.e("Upload", "failure")
-                    }
-                })
+            jsonObject.add("images", jsonArray)
+            Log.e("request:", jsonObject.toString())
+            var mAPIService: APIService? = null
+            mAPIService = apiService
+            val context: Context = this@TakeEmployeePicActivity
+            val call = mAPIService.createEmployee(
+                "application/json",
+                "Bearer " + getToken(context),
+                jsonObject
+            )
+            call.enqueue(object : Callback<ResponseBody?> {
+                override fun onResponse(
+                    call: Call<ResponseBody?>,
+                    response: Response<ResponseBody?>
+                ) {
+                    Log.e("Upload", "success")
+                }
 
-            }
+                override fun onFailure(call: Call<ResponseBody?>, t: Throwable) {
+                    Log.e("Upload", "failure")
+                }
+            })
+
+
         } catch (e: java.lang.Exception) {
             e.printStackTrace()
             hideProgressDialog()
@@ -774,7 +870,7 @@ class TakeEmployeePicActivity : AppCompatActivity(), CompoundButton.OnCheckedCha
                 unbindService(serviceConnection!!)
                 isServiceBound = false
             }
-            if(cameraSource!=null) {
+            if (cameraSource != null) {
                 cameraSource!!.stop()
                 cameraSource!!.release()
                 cameraSource = null

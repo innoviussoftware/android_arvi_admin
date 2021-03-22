@@ -101,7 +101,14 @@ class AddVisitorDetailActivity : AppCompatActivity(), View.OnClickListener {
     fun setVisitorData(visitorDetails: GetVisitorListResult) {
         try {
             etNameAVDA!!.setText(visitorDetails.name)
-            var expectedEntryDateTime = visitorDetails.data!!.actualEntryTime
+            var expectedEntryDateTime: String = ""
+            if (className.equals("expected")){
+                expectedEntryDateTime = visitorDetails.data!!.expectedEntryTime
+            }else{
+                expectedEntryDateTime = visitorDetails.data!!.actualEntryTime
+            }
+
+
             if(expectedEntryDateTime.contains("T")){
                 etVisitDateAVDA!!.setText(
                     expectedEntryDateTime.substring(

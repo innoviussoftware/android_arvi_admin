@@ -3,28 +3,27 @@ package com.arvi.Activity.NewApp
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.arvi.Adapter.SetEmpPhotoAdapter
-import com.arvi.Model.GetDesignationListResponse
-import com.arvi.Model.GetDesignationListResponseItem
-import com.arvi.Model.GetGroupListResponse
-import com.arvi.Model.GetGroupListResponseItem
+import com.arvi.Model.*
 import com.arvi.R
 import com.arvi.RetrofitApiCall.APIService
 import com.arvi.RetrofitApiCall.ApiUtils
 import com.arvi.SessionManager.SessionManager
 import com.arvi.Utils.AppConstants
+import com.arvi.Utils.MyProgressDialog
 import com.arvi.Utils.SnackBar
 import com.arvihealthscanner.Model.GetEmployeeListResult
+import com.google.gson.JsonObject
+import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.util.*
-import kotlin.collections.ArrayList
 
 
 class EnterEmployeeDetailsActivity : AppCompatActivity(), View.OnClickListener {
@@ -58,6 +57,7 @@ class EnterEmployeeDetailsActivity : AppCompatActivity(), View.OnClickListener {
     private var strGroupName: String? = null
     var from: String? = ""
     var emp_data: GetEmployeeListResult? = null
+    var alPhoto : ArrayList<GetEmpDetail_Face> = ArrayList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -80,9 +80,8 @@ class EnterEmployeeDetailsActivity : AppCompatActivity(), View.OnClickListener {
 
                     etMobileEEDA!!.setText(emp_data!!.mobile)
                     etMailEEDA!!.setText(emp_data!!.email)
-                    if (!emp_data!!.picture.isNullOrEmpty()){
-                        setPhoto(emp_data!!.picture)
-                    }
+                    callGetUserDetailApi()
+                   /**/
                 } else {
                     rVwEmployeePic!!.visibility = View.GONE
                     tvEditEEDA!!.visibility = View.GONE
@@ -99,6 +98,85 @@ class EnterEmployeeDetailsActivity : AppCompatActivity(), View.OnClickListener {
             e.printStackTrace()
         }
 
+    }
+
+    private fun callGetUserDetailApi() {
+        try {
+            var mAPIService: APIService? = null
+            mAPIService = ApiUtils.apiService
+//            MyProgressDialog.showProgressDialog(context!!)
+            mAPIService!!.getEmpDetail(
+                AppConstants.BEARER_TOKEN + SessionManager.getToken(
+                    context!!
+                ),emp_data!!.id!!
+            )
+                .enqueue(object : Callback<GetEmpDetailResponse> {
+
+                    override fun onResponse(
+                        call: Call<GetEmpDetailResponse>,
+                        response: Response<GetEmpDetailResponse>
+                    ) {
+//                        MyProgressDialog.hideProgressDialog()
+                        try {
+                            if (response.code() == 200) {
+                                if (response.body() != null) {
+                                    try {
+                                        alPhoto = ArrayList()
+                                        alPhoto.addAll(response.body().faces)
+                                        if (alPhoto.isNullOrEmpty() || alPhoto.size == 0){
+                                            if (!emp_data!!.picture.isNullOrEmpty()){
+                                                setPhoto(emp_data!!.picture)
+                                            }
+                                        }else{
+                                            setMultiplePhoto()
+                                        }
+                                    } catch (e: Exception) {
+                                        e.printStackTrace()
+                                    }
+
+                                }
+                            } else {
+                                SnackBar.showError(
+                                    context!!,
+                                    snackbarView!!,
+                                    "Something went wrong"
+                                )
+                            }
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+
+                        }
+                    }
+
+                    override fun onFailure(
+                        call: Call<GetEmpDetailResponse>,
+                        t: Throwable
+                    ) {
+//                        MyProgressDialog.hideProgressDialog()
+                    }
+                })
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+    }
+
+    private fun setMultiplePhoto() {
+        try {
+
+            val myList: MutableList<String> = ArrayList()
+            for (i in alPhoto.indices){
+                myList.add(alPhoto.get(i).data.path)
+            }
+
+            var picAdapter = SetEmpPhotoAdapter(context!!,myList)
+            rVwEmployeePic!!.setAdapter(picAdapter)
+            val manager =
+                GridLayoutManager(this, 3, GridLayoutManager.VERTICAL, false)
+            rVwEmployeePic!!.setLayoutManager(manager)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     private fun setPhoto(picture: String?) {
@@ -347,7 +425,9 @@ class EnterEmployeeDetailsActivity : AppCompatActivity(), View.OnClickListener {
             R.id.tvTakePicEEDA -> {
                 if (isValidInput()) {
                     if (from.equals("edit")) {
-                        SnackBar.showInProgressError(context!!,snackbarView!!)
+                        var intent = Intent(context!!, TakeEmployeePicActivity::class.java)
+                        intent.putExtra("emp_edit_id", emp_data!!.id)
+                        startActivity(intent)
                     }else{
                         var intent = Intent(context!!, TakeEmployeePicActivity::class.java)
                         intent.putExtra("name", strName)
@@ -361,9 +441,60 @@ class EnterEmployeeDetailsActivity : AppCompatActivity(), View.OnClickListener {
                 }
             }
             R.id.tvEditEEDA -> {
-                SnackBar.showInProgressError(context!!,snackbarView!!)
+                if (isValidInput()) {
+                    callEditUserDetailApi()
+                }
             }
         }
+    }
+
+    private fun callEditUserDetailApi() {
+        try {
+            val jsonObject = JsonObject()
+
+            var jsonObjectRole = JsonObject()
+            jsonObjectRole.addProperty("id",role_id)
+
+            var jsonObjectGroup = JsonObject()
+            jsonObjectGroup.addProperty("id",group_id)
+
+            jsonObject.addProperty("name", strName)
+            jsonObject.addProperty("email", strEmail)
+            jsonObject.addProperty("mobile", strPhone)
+            jsonObject.addProperty("employeeId", strEmpId)
+            jsonObject.add("role",jsonObjectRole)
+            jsonObject.add("group",jsonObjectGroup)
+
+            Log.e("request:",jsonObject.toString())
+            var mAPIService: APIService? = null
+            mAPIService = ApiUtils.apiService
+            val call = mAPIService.updateEmployee(
+                "application/json",
+                "Bearer " + SessionManager.getToken(context!!),
+                emp_data!!.id!!,
+                jsonObject
+            )
+            call.enqueue(object : Callback<ResponseBody?> {
+                override fun onResponse(
+                    call: Call<ResponseBody?>,
+                    response: Response<ResponseBody?>
+                ) {
+                    Log.e("Upload", "success")
+                    Toast.makeText(context!!,"Employee detail update successfully",Toast.LENGTH_LONG).show()
+                }
+
+                override fun onFailure(call: Call<ResponseBody?>, t: Throwable) {
+                    Log.e("Upload", "failure")
+                }
+            })
+
+
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+            MyProgressDialog.hideProgressDialog()
+
+        }
+
     }
 
     private fun isValidInput(): Boolean {

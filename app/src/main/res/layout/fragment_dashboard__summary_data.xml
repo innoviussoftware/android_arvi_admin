@@ -71,6 +71,7 @@
                             />
 
                         <TextView
+                            android:id="@+id/tvPresentCountDSDF"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_below="@+id/tvPresentTitleDSDF"
@@ -115,6 +116,7 @@
                             />
 
                         <TextView
+                            android:id="@+id/tvAbsentCountDSDF"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_below="@+id/tvAbsentTitleDSDF"
@@ -178,6 +180,7 @@
 
                             />
                         <TextView
+                            android:id="@+id/tvTotalWorkHrDSDF"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="0 Hrs"
@@ -211,6 +214,7 @@
                             android:src="@drawable/ic_overtime_black"
                             />
                         <TextView
+                            android:id="@+id/tvTotalOvertimeDSDF"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="0 Hrs"
@@ -251,6 +255,7 @@
 
                             />
                         <TextView
+                            android:id="@+id/tvTotalLeaveDSDF"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="0 Days"
@@ -285,6 +290,7 @@
 
                             />
                         <TextView
+                            android:id="@+id/tvTotalLateDSDF"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="0 Instances"
@@ -325,6 +331,7 @@
 
                             />
                         <TextView
+                            android:id="@+id/tvTotalWfhDSDF"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="0 Days"
@@ -359,6 +366,7 @@
 
                             />
                         <TextView
+                            android:id="@+id/tvTotalPendingRegularization"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:text="0 instances"

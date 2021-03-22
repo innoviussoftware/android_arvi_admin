@@ -172,4 +172,47 @@ interface APIService {
     @GET("ping")
     fun checkBaseURL():Call<ResponseBody>
 
+    //todo:: get employee detail
+    @GET("companies/users/{id}")
+    fun getEmpDetail(
+        @Header("Authorization") auth: String,
+        @Path("id")id: Int
+    ):Call<GetEmpDetailResponse>
+
+    //todo:: create employee
+    @POST("companies/employees")
+    fun createEmployee(
+        @Header("Content-Type") ctype: String,
+        @Header("Authorization") auth: String,
+        @Body detail: JsonObject
+    ): Call<ResponseBody>
+
+    //todo:: update employee detail
+    @PUT("companies/employees/{id}")
+    fun updateEmployee(
+        @Header("Content-Type") ctype: String,
+        @Header("Authorization") auth: String,
+        @Path("id")id:Int,
+        @Body detail: JsonObject
+    ): Call<ResponseBody>
+
+
+
+    //todo:: get attendance summary
+    @GET("dashboard/attendance_summary")
+    fun getAttendanceSummary(
+        @Header("Authorization") auth:String,
+        @Query("startDate") startDate:String,
+        @Query("endDate")endDate:String
+    ):Call<GetAttendanceSummaryResponse>
+
+    //todo:: get Key metrics
+    @GET("dashboard/key_metrics")
+    fun getKeyMetrics(
+        @Header("Authorization") auth:String,
+        @Query("startDate") startDate:String,
+        @Query("endDate")endDate:String
+    ):Call<GetKeyMetricsResponse>
+
+
 }

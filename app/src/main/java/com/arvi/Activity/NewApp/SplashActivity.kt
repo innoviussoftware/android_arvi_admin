@@ -41,7 +41,6 @@ class SplashActivity : AppCompatActivity() {
 
 
         try {
-
             context = SplashActivity@ this
 
             //todo:: priyanka 31/11/2020
