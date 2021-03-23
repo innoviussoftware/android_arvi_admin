@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.*
+import com.arvi.Model.GetRegularisationRequestResponseItem
 import com.arvi.R
 import com.arvi.Utils.SnackBar
 import com.crashlytics.android.Crashlytics
@@ -23,9 +24,11 @@ class AddRegularizationRequestActivity : AppCompatActivity(), View.OnClickListen
     var tvCheckInTimeARRA: TextView? = null
     var tvCheckOutTimeARRA: TextView? = null
     var tvAddRequestARRA:TextView?=null
+    var tvEmpNameARRA:TextView?=null
 
     var context:Context?=null
     var snackBarView:View?=null
+    var requestData: GetRegularisationRequestResponseItem?=null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,6 +36,32 @@ class AddRegularizationRequestActivity : AppCompatActivity(), View.OnClickListen
         try {
             setIds()
             setListeners()
+            if(intent.extras!=null){
+                requestData = intent.getParcelableExtra("requestData")
+                if(requestData!=null) {
+                    tvEmpNameARRA!!.setText(requestData!!.user!!.name)
+                    etEmpIdARRA!!.setText(requestData!!.user!!.employeeId)
+                    tvDateARRA!!.setText(requestData!!.dateOn)
+
+                    if (requestData!!.inAt!=null){
+                        var inDateTime = requestData!!.inAt
+                        val input = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.s'Z'")
+                        val output = SimpleDateFormat("hh:mm a")
+                        var formateStartdate = input.parse(inDateTime)
+                        var showInTime = output.format(formateStartdate)
+                        tvCheckInTimeARRA!!.setText(showInTime)
+                    }
+
+                    if (requestData!!.outAt!=null){
+                        var outDateTime = requestData!!.outAt
+                        val input = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.s'Z'")
+                        val output = SimpleDateFormat("hh:mm a")
+                        var formateEnddate = input.parse(outDateTime)
+                        var showOutTime = output.format(formateEnddate)
+                        tvCheckOutTimeARRA!!.setText(showOutTime)
+                    }
+                }
+            }
 
             val empList = resources.getStringArray(R.array.default_emp)
             val adapter = ArrayAdapter(this,
@@ -65,6 +94,7 @@ class AddRegularizationRequestActivity : AppCompatActivity(), View.OnClickListen
             tvCheckInTimeARRA = findViewById(R.id.tvCheckInTimeARRA)
             tvCheckOutTimeARRA = findViewById(R.id.tvCheckOutTimeARRA)
             tvAddRequestARRA = findViewById(R.id.tvAddRequestARRA)
+            tvEmpNameARRA = findViewById(R.id.tvEmpNameARRA)
         } catch (e: Exception) {
             e.printStackTrace()
         }

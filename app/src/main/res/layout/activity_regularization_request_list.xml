@@ -30,6 +30,16 @@
             android:textColor="@color/black"
             android:textSize="@dimen/_14ssp" />
 
+
+        <ImageView
+            android:id="@+id/imgVwCalendarRRLA"
+            android:layout_width="@dimen/_25sdp"
+            android:layout_height="@dimen/_25sdp"
+            android:src="@drawable/ic_calendar_leave"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="@dimen/_10sdp"
+            />
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
@@ -64,6 +74,7 @@
         android:src="@mipmap/ic_add_round"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
+        android:visibility="gone"
         android:layout_margin="@dimen/_10sdp"
         android:elevation="@dimen/_2sdp"
         />

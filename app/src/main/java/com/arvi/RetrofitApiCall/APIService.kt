@@ -20,13 +20,47 @@ interface APIService {
         @Body detail: JsonObject
     ): Call<GetLoginResponse>
 
-    //todo:: add employee
+    //todo:: add employee old
     @POST("companies/users/signup")
     fun addEmployee(
         @Header("Content-Type") ctype: String,
         @Header("Authorization") auth: String,
         @Body detail: JsonObject
     ): Call<GetAddEmployeeResponse>
+
+    //todo:: get employee list
+    @GET("companies/users")
+    fun getComaniesUsersList(
+        @Header("Authorization") auth: String
+    ):Call<GetEmployeeListResponse>
+
+
+    //todo:: get employee detail
+    @GET("companies/users/{id}")
+    fun getEmpDetail(
+        @Header("Authorization") auth: String,
+        @Path("id")id: Int
+    ):Call<GetEmpDetailResponse>
+
+    //todo:: create employee
+    @POST("companies/employees")
+    fun createEmployee(
+        @Header("Content-Type") ctype: String,
+        @Header("Authorization") auth: String,
+        @Body detail: JsonObject
+    ): Call<ResponseBody>
+
+    //todo:: update employee detail
+    @PUT("companies/employees/{id}")
+    fun updateEmployee(
+        @Header("Content-Type") ctype: String,
+        @Header("Authorization") auth: String,
+        @Path("id")id:Int,
+        @Body detail: JsonObject
+    ): Call<ResponseBody>
+
+
+
 
     //todo:: add photo of new employee
     @POST("companies/users/images?fromApp=1")
@@ -101,7 +135,7 @@ interface APIService {
         @Body detail: JsonObject
     ): Call<VisitorsListModel>
 
-    //2. get visitors list : open=actuled, closed=screned
+    //2. get visitors list : open=expected, closed=screened
     @GET("companies/visitor/entries")
     fun getVisitorsList(
         @Header("Content-Type") ctype: String,
@@ -133,6 +167,13 @@ interface APIService {
         @Body detail: JsonObject
     ): Call<NewVisitorRegisterResponse>
 
+    //todo:: delete visitor
+    @DELETE("companies/visitor/entries/{id}")
+    fun deleteVisitor(
+        @Header("Authorization") auth: String,
+        @Path("id") id: Int
+    ):Call<ResponseBody>
+
 
 //Todo: visitors Related Flow.. End...............................
 
@@ -148,14 +189,11 @@ interface APIService {
         @Header("Authorization") auth: String
     ):Call<GetGroupListResponse>
 
-    @GET("companies/users")
-    fun getComaniesUsersList(
-        @Header("Authorization") auth: String
-    ):Call<GetEmployeeListResponse>
+
     //todo:: employee add APi end.....................................
 
     //todo:: add leave request
-    @POST("attendence/leaves/")
+    @POST("attendence/leaves")
     fun addLeaveRequest(
         @Header("Authorization") auth: String,
         @Header("Content-Type") ctype: String,
@@ -171,30 +209,6 @@ interface APIService {
     //todo:: check dynamic url is valid
     @GET("ping")
     fun checkBaseURL():Call<ResponseBody>
-
-    //todo:: get employee detail
-    @GET("companies/users/{id}")
-    fun getEmpDetail(
-        @Header("Authorization") auth: String,
-        @Path("id")id: Int
-    ):Call<GetEmpDetailResponse>
-
-    //todo:: create employee
-    @POST("companies/employees")
-    fun createEmployee(
-        @Header("Content-Type") ctype: String,
-        @Header("Authorization") auth: String,
-        @Body detail: JsonObject
-    ): Call<ResponseBody>
-
-    //todo:: update employee detail
-    @PUT("companies/employees/{id}")
-    fun updateEmployee(
-        @Header("Content-Type") ctype: String,
-        @Header("Authorization") auth: String,
-        @Path("id")id:Int,
-        @Body detail: JsonObject
-    ): Call<ResponseBody>
 
 
 
@@ -213,6 +227,13 @@ interface APIService {
         @Query("startDate") startDate:String,
         @Query("endDate")endDate:String
     ):Call<GetKeyMetricsResponse>
+
+    //todo:: get regularisation list
+    @GET("attendence")
+    fun getRegularisationlist(
+        @Header("Authorization") auth:String,
+        @Query("date")date:String
+    ):Call<GetRegularisationRequestResponse>
 
 
 }

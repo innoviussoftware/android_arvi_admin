@@ -20,6 +20,7 @@
             android:orientation="vertical"
             android:layout_weight="1">
             <TextView
+                android:id="@+id/tvNameRR"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Name"
@@ -28,6 +29,7 @@
                 android:fontFamily="@font/gotham_book_regular"
                 />
             <TextView
+                android:id="@+id/tvDateRR"
                 android:layout_marginTop="@dimen/_8sdp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -43,6 +45,7 @@
             android:orientation="vertical"
             android:layout_weight="1">
             <TextView
+                android:id="@+id/tvStatusRR"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="end"
@@ -52,6 +55,8 @@
                 android:fontFamily="@font/gotham_bold"
                 />
             <LinearLayout
+                android:id="@+id/llTimeRR"
+
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/_8sdp"
@@ -59,7 +64,7 @@
                 android:gravity="end"
                 >
                 <TextView
-                    android:id="@+id/tvStartTimeRAD"
+                    android:id="@+id/tvStartTimeRR"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
@@ -75,7 +80,7 @@
                     android:src="@drawable/ic_next" />
 
                 <TextView
-                    android:id="@+id/tvEndTimeRAD"
+                    android:id="@+id/tvEndTimeRR"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"

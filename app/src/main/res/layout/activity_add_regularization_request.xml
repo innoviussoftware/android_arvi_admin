@@ -58,8 +58,20 @@
                     android:id="@+id/spEmpNameARRA"
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/_40sdp"
+                    android:visibility="gone"
                     android:background="@drawable/edit_left_border_bg"
                     android:paddingEnd="@dimen/_30sdp" />
+                <TextView
+                    android:id="@+id/tvEmpNameARRA"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_40sdp"
+                    android:background="@drawable/edit_left_border_bg"
+                    android:fontFamily="@font/gotham_book_regular"
+                    android:gravity="center_vertical"
+                    android:paddingStart="@dimen/_10sdp"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_12ssp"
+                    />
 
                 <ImageView
                     android:layout_width="@dimen/_20sdp"
@@ -88,6 +100,7 @@
                     android:fontFamily="@font/gotham_book_regular"
                     android:hint="Employee Id"
                     android:singleLine="true"
+                    android:clickable="false"
                     android:textSize="@dimen/_12ssp" />
             </com.google.android.material.textfield.TextInputLayout>
 

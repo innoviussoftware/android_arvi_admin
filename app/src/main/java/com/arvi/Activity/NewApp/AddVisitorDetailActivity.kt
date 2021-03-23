@@ -1,10 +1,8 @@
 package com.arvi.Activity.NewApp
 
-import android.app.Activity
-import android.app.DatePickerDialog
-import android.app.Dialog
-import android.app.TimePickerDialog
+import android.app.*
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -317,12 +315,86 @@ class AddVisitorDetailActivity : AppCompatActivity(), View.OnClickListener {
 
                 }
                 R.id.tvDeleteAVDA -> {
-                    SnackBar.showInProgressError(context!!, snackbarView!!)
+                    openConfirmDeleteDialog()
                 }
             }
         } catch (e: Exception) {
             e.printStackTrace()
         }
+    }
+
+    private fun openConfirmDeleteDialog() {
+        try {
+            var builder = AlertDialog.Builder(context!!)
+            builder.setCancelable(false)
+            builder.setTitle("Confirm Delete")
+            builder.setMessage("Are you sure you want to delete this visitor?")
+            builder.setNegativeButton("Cancel",object : DialogInterface.OnClickListener{
+                override fun onClick(dialog: DialogInterface?, which: Int) {
+                    dialog!!.dismiss()
+                }
+            })
+            builder.setPositiveButton("Yes",object:DialogInterface.OnClickListener{
+                override fun onClick(dialog: DialogInterface?, which: Int) {
+                    callDeleteVisitorApi()
+                    dialog!!.dismiss()
+                }
+            })
+            var dialog = builder.create()
+            dialog.show()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun callDeleteVisitorApi() {
+        var visitor_id = visitorDetails.id
+        try {
+            var mAPIService: APIService? = null
+            mAPIService = ApiUtils.apiService
+            MyProgressDialog.showProgressDialog(context!!)
+            mAPIService!!.deleteVisitor(
+                AppConstants.BEARER_TOKEN + SessionManager.getToken(context!!),
+                visitor_id
+            )
+                .enqueue(object : Callback<ResponseBody> {
+
+                    override fun onResponse(
+                        call: Call<ResponseBody>,
+                        response: Response<ResponseBody>
+                    ) {
+                        MyProgressDialog.hideProgressDialog()
+                        try {
+                            if (response.code() == 200) {
+                               Toast.makeText(context!!,"Visitor deleted successfully",Toast.LENGTH_LONG).show()
+                                finish()
+                            } else {
+                                /*   SnackBar.showError(
+                                       context!!,
+                                       snackbarView!!,
+                                       "Something went wrong"
+                                   )*/
+                            }
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+
+                        }
+                    }
+
+                    override fun onFailure(
+                        call: Call<ResponseBody>,
+                        t: Throwable
+                    ) {
+                        MyProgressDialog.hideProgressDialog()
+                    }
+                })
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+            MyProgressDialog.hideProgressDialog()
+
+        }
+
     }
 
     lateinit var alVisitorResultData: ArrayList<CheckMobileNoResult>

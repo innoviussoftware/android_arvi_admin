@@ -86,8 +86,17 @@ class SetScrennedVisitorDataAdapter(
         try {
             if (alVisitorList[position].data!!.actualEntryTime != null) {
                 if (alVisitorList[position].data!!.actualEntryTime.contains("Z")) {
-                    holder.tvVisitorTimeRV.text =
-                        GlobalMethods.convertUTCDateformate(alVisitorList[position].data!!.actualEntryTime!!)
+                    if (alVisitorList[position].data!!.actualEntryTime.length > 21) {
+                        holder.tvVisitorTimeRV.text =
+                            GlobalMethods.convertUTCDateformate(alVisitorList[position].data!!.actualEntryTime!!)
+                    }else{
+                        val format1 = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
+                        val dt1: Date =
+                            format1.parse(alVisitorList[position].data!!.actualEntryTime)
+                        val format2 = SimpleDateFormat("MMM dd")
+                        val finalDay: String = format2.format(dt1)
+                        holder.tvVisitorTimeRV.text = finalDay
+                    }
                 } else {
                     holder.tvVisitorTimeRV.text =
                         GlobalMethods.convertOnlyDate(alVisitorList[position].data!!.actualEntryTime!!)
@@ -100,11 +109,21 @@ class SetScrennedVisitorDataAdapter(
         try {
             if (alVisitorList[position].data!!.actualEntryTime != null) {
                 if (alVisitorList[position].data!!.actualEntryTime.contains("Z")) {
-                    val format1 = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.s'Z'")
-                    val dt1: Date = format1.parse(alVisitorList[position].data!!.actualEntryTime)
-                    val format2 = SimpleDateFormat("EEEE")
-                    val finalDay: String = format2.format(dt1)
-                    holder.tvVisitorDaysRV.text = finalDay
+                    if (alVisitorList[position].data!!.actualEntryTime.length > 21) {
+                        val format1 = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.s'Z'")
+                        val dt1: Date =
+                            format1.parse(alVisitorList[position].data!!.actualEntryTime)
+                        val format2 = SimpleDateFormat("EEEE")
+                        val finalDay: String = format2.format(dt1)
+                        holder.tvVisitorDaysRV.text = finalDay
+                    } else {
+                        val format1 = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
+                        val dt1: Date =
+                            format1.parse(alVisitorList[position].data!!.actualEntryTime)
+                        val format2 = SimpleDateFormat("EEEE")
+                        val finalDay: String = format2.format(dt1)
+                        holder.tvVisitorDaysRV.text = finalDay
+                    }
                 } else {
                     val format1 = SimpleDateFormat("yyyy-MM-dd HH:mm")
                     val dt1: Date = format1.parse(alVisitorList[position].data!!.actualEntryTime)
@@ -115,6 +134,7 @@ class SetScrennedVisitorDataAdapter(
             }
         } catch (e: Exception) {
             e.printStackTrace()
+
         }
     }
 
