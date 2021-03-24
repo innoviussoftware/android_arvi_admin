@@ -175,4 +175,14 @@
         <item>@string/front_facing</item>
         <item>@string/back_facing</item>
     </string-array>
+
+    <string name="this_month">This Month</string>
+    <string name="previous_month">Previous Month</string>
+    <string name="custom_date">Custom Date</string>
+
+    <string-array name="period_array">
+        <item>@string/this_month</item>
+        <item>@string/previous_month</item>
+        <item>@string/custom_date</item>
+    </string-array>
 </resources>

@@ -59,6 +59,11 @@ class RegularizationRequestListActivity : AppCompatActivity(), View.OnClickListe
         setContentView(R.layout.activity_regularization_request_list)
         setIds()
         setListeners()
+
+    }
+
+    override fun onResume() {
+        super.onResume()
         getDefaultDate()
         callGetRegularizationListAPI()
     }
@@ -90,7 +95,7 @@ class RegularizationRequestListActivity : AppCompatActivity(), View.OnClickListe
         try {
             var mAPIService: APIService? = null
             mAPIService = ApiUtils.apiService
-            MyProgressDialog.showProgressDialog(context!!)
+           // MyProgressDialog.showProgressDialog(context!!)
             mAPIService!!.getRegularisationlist(
                 AppConstants.BEARER_TOKEN + SessionManager.getToken(
                     context!!
@@ -102,7 +107,7 @@ class RegularizationRequestListActivity : AppCompatActivity(), View.OnClickListe
                         call: Call<GetRegularisationRequestResponse>,
                         response: Response<GetRegularisationRequestResponse>
                     ) {
-                        MyProgressDialog.hideProgressDialog()
+                    //    MyProgressDialog.hideProgressDialog()
                         try {
                             if (response.code() == 200) {
                                 if (response.body() != null) {
@@ -128,7 +133,7 @@ class RegularizationRequestListActivity : AppCompatActivity(), View.OnClickListe
                         call: Call<GetRegularisationRequestResponse>,
                         t: Throwable
                     ) {
-                        MyProgressDialog.hideProgressDialog()
+                   //     MyProgressDialog.hideProgressDialog()
                     }
                 })
         } catch (e: Exception) {

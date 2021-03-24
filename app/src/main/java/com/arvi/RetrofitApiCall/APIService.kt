@@ -235,5 +235,19 @@ interface APIService {
         @Query("date")date:String
     ):Call<GetRegularisationRequestResponse>
 
+    //todo:: add regularisation
+    @PATCH("attendence")
+    fun updateRegularisationRequest(
+        @Header("Authorization") auth:String,
+        @Header("Content-Type") ctype:String,
+        @Query("id")id:Int,
+        @Body detail: JsonObject
+    ):Call<ResponseBody>
+
+    //todo:: get work shift list
+    @GET("attendence/workshifts")
+    fun getWorkShifts(
+        @Header("Authorization") auth:String
+    ):Call<GetWorkShiftListResponse>
 
 }

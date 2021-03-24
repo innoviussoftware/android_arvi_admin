@@ -1,20 +1,18 @@
 package com.arvi.Adapter
 
 import android.content.Context
-import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
-import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.arvi.R
 import de.hdodenhof.circleimageview.CircleImageView
 
-class SetAllDataAdapter(
+class SetAllDataAttendanceAdapter(
     var context: Context
-) : RecyclerView.Adapter<SetAllDataAdapter.ViewHolder>() {
+) : RecyclerView.Adapter<SetAllDataAttendanceAdapter.ViewHolder>() {
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var imgVwProfileRAD = itemView.findViewById(R.id.imgVwProfileRAD) as CircleImageView
@@ -28,7 +26,7 @@ class SetAllDataAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val v = LayoutInflater.from(parent.context)
-            .inflate(R.layout.row_all_data, parent, false)
+            .inflate(R.layout.row_all_data_attendance, parent, false)
         return ViewHolder(v)
     }
 

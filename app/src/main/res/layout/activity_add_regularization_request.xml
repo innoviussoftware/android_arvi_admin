@@ -26,7 +26,7 @@
             android:layout_centerVertical="true"
             android:layout_toEndOf="@+id/imgVwBackARRA"
             android:fontFamily="@font/gotham_bold"
-            android:text="Add Regularization Request"
+            android:text="Update Regularization Request"
             android:textColor="@color/black"
             android:textSize="@dimen/_14ssp" />
 
@@ -105,13 +105,13 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <TextView
-                android:id="@+id/tvDateTitleARRA"
+                android:id="@+id/tvAttenDateTitleARRA"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/tILEmpIdARRA"
                 android:layout_marginTop="@dimen/_8sdp"
                 android:fontFamily="@font/gotham_book_regular"
-                android:text="Date"
+                android:text="Attendance Date"
                 android:textColor="@color/black"
                 android:textSize="@dimen/_12ssp" />
 
@@ -119,12 +119,12 @@
                 android:id="@+id/rlDateARRA"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/_40sdp"
-                android:layout_below="@+id/tvDateTitleARRA"
+                android:layout_below="@+id/tvAttenDateTitleARRA"
                 android:layout_marginTop="@dimen/_5sdp"
                 android:background="@drawable/edit_left_border_bg">
 
                 <TextView
-                    android:id="@+id/tvDateARRA"
+                    android:id="@+id/tvAttenDateARRA"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:fontFamily="@font/gotham_book_regular"
@@ -150,15 +150,43 @@
                 android:layout_below="@+id/rlDateARRA"
                 android:layout_marginTop="@dimen/_8sdp"
                 android:fontFamily="@font/gotham_book_regular"
-                android:text="Check-in Time"
+                android:text="Check-in:"
                 android:textColor="@color/black"
                 android:textSize="@dimen/_12ssp" />
+
+            <RelativeLayout
+                android:id="@+id/rlInDateARRA"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_40sdp"
+                android:layout_below="@+id/tvInTimeTitleARRA"
+                android:layout_marginTop="@dimen/_5sdp"
+                android:background="@drawable/edit_left_border_bg">
+
+                <TextView
+                    android:id="@+id/tvInDateARRA"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:fontFamily="@font/gotham_book_regular"
+                    android:gravity="center_vertical"
+                    android:hint="DD/MM/YYYY"
+                    android:paddingStart="@dimen/_10sdp"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_12ssp" />
+
+                <ImageView
+                    android:layout_width="@dimen/_20sdp"
+                    android:layout_height="@dimen/_20sdp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="@dimen/_10sdp"
+                    android:src="@drawable/ic_calendar_leave" />
+            </RelativeLayout>
 
             <RelativeLayout
                 android:id="@+id/rlInTimeARRA"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/_40sdp"
-                android:layout_below="@+id/tvInTimeTitleARRA"
+                android:layout_below="@+id/rlInDateARRA"
                 android:layout_marginTop="@dimen/_5sdp"
                 android:background="@drawable/edit_left_border_bg">
 
@@ -190,15 +218,44 @@
                 android:layout_below="@+id/rlInTimeARRA"
                 android:layout_marginTop="@dimen/_8sdp"
                 android:fontFamily="@font/gotham_book_regular"
-                android:text="Check-out Time"
+                android:text="Check-out:"
                 android:textColor="@color/black"
                 android:textSize="@dimen/_12ssp" />
+
+            <RelativeLayout
+                android:id="@+id/rlOutDateARRA"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_40sdp"
+                android:layout_below="@+id/tvOutTimeTitleARRA"
+                android:layout_marginTop="@dimen/_5sdp"
+                android:background="@drawable/edit_left_border_bg">
+
+                <TextView
+                    android:id="@+id/tvOutDateARRA"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:fontFamily="@font/gotham_book_regular"
+                    android:gravity="center_vertical"
+                    android:hint="DD/MM/YYYY"
+                    android:paddingStart="@dimen/_10sdp"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_12ssp" />
+
+                <ImageView
+                    android:layout_width="@dimen/_20sdp"
+                    android:layout_height="@dimen/_20sdp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginEnd="@dimen/_10sdp"
+                    android:src="@drawable/ic_calendar_leave" />
+            </RelativeLayout>
+
 
             <RelativeLayout
                 android:id="@+id/rlCheckOutARRA"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/_40sdp"
-                android:layout_below="@+id/tvOutTimeTitleARRA"
+                android:layout_below="@+id/rlOutDateARRA"
                 android:layout_marginTop="@dimen/_5sdp"
                 android:background="@drawable/edit_left_border_bg">
 
@@ -232,7 +289,7 @@
                 android:background="@drawable/btn_bg"
                 android:fontFamily="@font/gotham_bold"
                 android:gravity="center"
-                android:text="Add Request"
+                android:text="Save"
                 android:textAllCaps="true"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_14ssp" />

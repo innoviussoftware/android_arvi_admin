@@ -3,7 +3,6 @@ package com.arvi.Fragment
 import android.annotation.SuppressLint
 import android.app.DatePickerDialog
 import android.content.Context
-import android.net.Uri
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -15,7 +14,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.arvi.Adapter.SetAllDataAdapter
+import com.arvi.Adapter.SetAllDataAttendanceAdapter
 
 import com.arvi.R
 import java.util.*
@@ -56,7 +55,7 @@ class Dashboard_AllDataFragment : Fragment(), View.OnClickListener {
     @SuppressLint("WrongConstant")
     private fun setData() {
         try {
-            var setVisitorDataAdapter = SetAllDataAdapter(appContext!!)
+            var setVisitorDataAdapter = SetAllDataAttendanceAdapter(appContext!!)
             rVwAddDataADDF!!.layoutManager =
                 LinearLayoutManager(appContext, LinearLayout.VERTICAL, false)
             rVwAddDataADDF!!.setAdapter(setVisitorDataAdapter)

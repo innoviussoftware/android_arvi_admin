@@ -3,14 +3,28 @@ package com.arvi.Activity.NewApp
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Context
-import androidx.appcompat.app.AppCompatActivity
+import android.content.DialogInterface
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.*
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import com.arvi.Model.GetRegularisationRequestResponseItem
 import com.arvi.R
+import com.arvi.RetrofitApiCall.APIService
+import com.arvi.RetrofitApiCall.ApiUtils
+import com.arvi.SessionManager.SessionManager
+import com.arvi.Utils.AppConstants
+import com.arvi.Utils.KeyboardUtility
+import com.arvi.Utils.MyProgressDialog
 import com.arvi.Utils.SnackBar
 import com.crashlytics.android.Crashlytics
+import com.google.gson.JsonObject
+import okhttp3.ResponseBody
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
@@ -20,15 +34,22 @@ class AddRegularizationRequestActivity : AppCompatActivity(), View.OnClickListen
     var imgVwBackARRA: ImageView? = null
     var spEmpNameARRA: Spinner? = null
     var etEmpIdARRA: EditText? = null
-    var tvDateARRA: TextView? = null
+    var tvAttenDateARRA: TextView? = null
     var tvCheckInTimeARRA: TextView? = null
     var tvCheckOutTimeARRA: TextView? = null
-    var tvAddRequestARRA:TextView?=null
-    var tvEmpNameARRA:TextView?=null
+    var tvAddRequestARRA: TextView? = null
+    var tvInDateARRA: TextView? = null
+    var tvOutDateARRA: TextView? = null
+    var tvEmpNameARRA: TextView? = null
 
-    var context:Context?=null
-    var snackBarView:View?=null
-    var requestData: GetRegularisationRequestResponseItem?=null
+    var context: Context? = null
+    var snackBarView: View? = null
+    var requestData: GetRegularisationRequestResponseItem? = null
+    var strInDate: String? = null
+    var strInTime: String? = null
+    var strOutDate: String? = null
+    var strOutTime: String? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,14 +57,19 @@ class AddRegularizationRequestActivity : AppCompatActivity(), View.OnClickListen
         try {
             setIds()
             setListeners()
-            if(intent.extras!=null){
+            if (intent.extras != null) {
                 requestData = intent.getParcelableExtra("requestData")
-                if(requestData!=null) {
+                if (requestData != null) {
                     tvEmpNameARRA!!.setText(requestData!!.user!!.name)
                     etEmpIdARRA!!.setText(requestData!!.user!!.employeeId)
-                    tvDateARRA!!.setText(requestData!!.dateOn)
 
-                    if (requestData!!.inAt!=null){
+                    val input = SimpleDateFormat("yyyy-MM-dd")
+                    val output = SimpleDateFormat("dd/MM/yyyy")
+                    var formateDateOn = input.parse(requestData!!.dateOn)
+                    var showDateOn = output.format(formateDateOn)
+                    tvAttenDateARRA!!.setText(showDateOn)
+
+                    if (requestData!!.inAt != null) {
                         var inDateTime = requestData!!.inAt
                         val input = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.s'Z'")
                         val output = SimpleDateFormat("hh:mm a")
@@ -52,7 +78,7 @@ class AddRegularizationRequestActivity : AppCompatActivity(), View.OnClickListen
                         tvCheckInTimeARRA!!.setText(showInTime)
                     }
 
-                    if (requestData!!.outAt!=null){
+                    if (requestData!!.outAt != null) {
                         var outDateTime = requestData!!.outAt
                         val input = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.s'Z'")
                         val output = SimpleDateFormat("hh:mm a")
@@ -64,8 +90,10 @@ class AddRegularizationRequestActivity : AppCompatActivity(), View.OnClickListen
             }
 
             val empList = resources.getStringArray(R.array.default_emp)
-            val adapter = ArrayAdapter(this,
-                android.R.layout.simple_spinner_dropdown_item,empList)
+            val adapter = ArrayAdapter(
+                this,
+                android.R.layout.simple_spinner_dropdown_item, empList
+            )
             spEmpNameARRA!!.adapter = adapter
         } catch (e: Exception) {
             e.printStackTrace()
@@ -75,10 +103,12 @@ class AddRegularizationRequestActivity : AppCompatActivity(), View.OnClickListen
     private fun setListeners() {
         try {
             imgVwBackARRA!!.setOnClickListener(this)
-            tvDateARRA!!.setOnClickListener(this)
+//            tvAttenDateARRA!!.setOnClickListener(this)
             tvCheckInTimeARRA!!.setOnClickListener(this)
             tvCheckOutTimeARRA!!.setOnClickListener(this)
             tvAddRequestARRA!!.setOnClickListener(this)
+            tvInDateARRA!!.setOnClickListener(this)
+            tvOutDateARRA!!.setOnClickListener(this)
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -86,15 +116,18 @@ class AddRegularizationRequestActivity : AppCompatActivity(), View.OnClickListen
 
     private fun setIds() {
         try {
-            context = AddRegularizationRequestActivity@this
+            context = AddRegularizationRequestActivity@ this
+            snackBarView = findViewById(android.R.id.content)
             imgVwBackARRA = findViewById(R.id.imgVwBackARRA)
             spEmpNameARRA = findViewById(R.id.spEmpNameARRA)
             etEmpIdARRA = findViewById(R.id.etEmpIdARRA)
-            tvDateARRA = findViewById(R.id.tvDateARRA)
+            tvAttenDateARRA = findViewById(R.id.tvAttenDateARRA)
             tvCheckInTimeARRA = findViewById(R.id.tvCheckInTimeARRA)
             tvCheckOutTimeARRA = findViewById(R.id.tvCheckOutTimeARRA)
             tvAddRequestARRA = findViewById(R.id.tvAddRequestARRA)
             tvEmpNameARRA = findViewById(R.id.tvEmpNameARRA)
+            tvInDateARRA = findViewById(R.id.tvInDateARRA)
+            tvOutDateARRA = findViewById(R.id.tvOutDateARRA)
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -107,28 +140,153 @@ class AddRegularizationRequestActivity : AppCompatActivity(), View.OnClickListen
 
     override fun onClick(view: View?) {
         try {
-            when(view!!.id){
-                R.id.imgVwBackARRA->{
+            when (view!!.id) {
+                R.id.imgVwBackARRA -> {
                     finish()
                 }
-                R.id.tvDateARRA->{
-                    openDatePickerDialog()
+                R.id.tvInDateARRA -> {
+                    var from = "in"
+                    openDatePickerDialog(from)
                 }
-                R.id.tvCheckInTimeARRA->{
+                R.id.tvOutDateARRA -> {
+                    var from = "out"
+                    openDatePickerDialog(from)
+                }
+                /*  R.id.tvAttenDateARRA->{
+                      openDatePickerDialog()
+                  }*/
+                R.id.tvCheckInTimeARRA -> {
                     var from = "checkIn"
                     openTimePickerDialog(from)
                 }
-                R.id.tvCheckOutTimeARRA->{
+                R.id.tvCheckOutTimeARRA -> {
                     var from = "checkOut"
                     openTimePickerDialog(from)
                 }
-                R.id.tvAddRequestARRA->{
-                    SnackBar.showInProgressError(context!!,tvAddRequestARRA!!)
+                R.id.tvAddRequestARRA -> {
+                    KeyboardUtility.hideKeyboard(context!!, tvAddRequestARRA!!)
+                    if (isValidInput())
+                        try {
+                            val formatter = SimpleDateFormat("dd/MM/yyyy hh:mm a")
+                            val strIn = strInDate + " " + strInTime
+                            val date1 = formatter.parse(strIn)
+                            val strOut = strOutDate + " " + strOutTime
+                            val date2 = formatter.parse(strOut)
+                            if (date1.compareTo(date2) < 0) {
+                                //println("date2 is Greater than my date1")
+
+                                val output = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.s'Z'")
+                                val input = SimpleDateFormat("dd/MM/yyyy hh:mm a")
+                                var formateInDate = input.parse(strIn)
+                                var sendInAt = output.format(formateInDate)
+                                Log.e("sendInAt:-",sendInAt)
+
+                                var formateOutDate = input.parse(strOut)
+                                var sendOutAt = output.format(formateOutDate)
+                                Log.e("sendOutAt:-",sendOutAt)
+                                callAddRegularisationApi(sendInAt,sendOutAt)
+                            }else{
+                                SnackBar.showValidationError(context!!,snackBarView!!,"Check-Out should not be before Check-In")
+                            }
+                        } catch (e1: ParseException) {
+                            e1.printStackTrace()
+                        }
+                  //  SnackBar.showInProgressError(context!!, tvAddRequestARRA!!)
                 }
             }
         } catch (e: Exception) {
             e.printStackTrace()
         }
+    }
+
+    private fun callAddRegularisationApi(sendInAt: String, sendOutAt: String) {
+        try {
+            var jsonObject = JsonObject()
+            jsonObject.addProperty("dateOn", requestData!!.dateOn)
+            jsonObject.addProperty("userId", requestData!!.user!!.id)
+            jsonObject.addProperty("inAt", sendInAt)
+            jsonObject.addProperty("outAt", sendOutAt)
+
+            var mAPIService: APIService? = null
+            mAPIService = ApiUtils.apiService
+            MyProgressDialog.showProgressDialog(context!!)
+            mAPIService!!.updateRegularisationRequest(
+                AppConstants.BEARER_TOKEN + SessionManager.getToken(context!!),
+                "application/json",
+                requestData!!.id!!,
+                jsonObject
+            )
+                .enqueue(object : Callback<ResponseBody> {
+
+                    override fun onResponse(
+                        call: Call<ResponseBody>,
+                        response: Response<ResponseBody>
+                    ) {
+                        MyProgressDialog.hideProgressDialog()
+                        try {
+                            if (response.code() == 200) {
+                                var dialog = AlertDialog.Builder(context!!)
+                                dialog.setTitle("Regularisation request updated successfully")
+                                dialog.setCancelable(false)
+                                dialog.setPositiveButton("Ok",
+                                    object : DialogInterface.OnClickListener {
+                                        override fun onClick(dialog: DialogInterface?, which: Int) {
+                                            dialog!!.dismiss()
+                                            finish()
+                                        }
+                                    })
+                                dialog.show()
+                            } else {
+                                Toast.makeText(context,"Something went wrong",Toast.LENGTH_LONG).show()
+                            }
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+
+                        }
+                    }
+
+                    override fun onFailure(
+                        call: Call<ResponseBody>,
+                        t: Throwable
+                    ) {
+                        MyProgressDialog.hideProgressDialog()
+                        Toast.makeText(context,"Something went wrong",Toast.LENGTH_LONG).show()
+                    }
+                })
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+            MyProgressDialog.hideProgressDialog()
+
+        }
+
+    }
+
+    private fun isValidInput(): Boolean {
+        strInDate = tvInDateARRA!!.text.toString()
+        strInTime = tvCheckInTimeARRA!!.text.toString()
+        strOutDate = tvOutDateARRA!!.text.toString()
+        strOutTime = tvCheckOutTimeARRA!!.text.toString()
+
+        if (strInDate.isNullOrEmpty()) {
+            SnackBar.showValidationError(context!!, snackBarView!!, "Please select check-in date")
+            tvInDateARRA!!.requestFocus()
+            return false
+        } else if (strInTime.isNullOrEmpty()) {
+            SnackBar.showValidationError(context!!, snackBarView!!, "Please select check-in time")
+            tvCheckInTimeARRA!!.requestFocus()
+            return false
+        } else if (strOutDate.isNullOrEmpty()) {
+            SnackBar.showValidationError(context!!, snackBarView!!, "Please select check-out date")
+            tvOutDateARRA!!.requestFocus()
+            return false
+        } else if (strOutTime.isNullOrEmpty()) {
+            SnackBar.showValidationError(context!!, snackBarView!!, "Please select check-out time")
+            tvCheckOutTimeARRA!!.requestFocus()
+            return false
+        }
+
+        return true
     }
 
     private fun openTimePickerDialog(from: String) {
@@ -152,12 +310,12 @@ class AddRegularizationRequestActivity : AppCompatActivity(), View.OnClickListen
                         Crashlytics.log(e.toString())
                     }
 
-                    val fmtOut = SimpleDateFormat("hh:mm aa")
+                    val fmtOut = SimpleDateFormat("hh:mm a")
 
                     val formattedTime = fmtOut.format(date)
                     if (from.equals("checkIn")) {
                         tvCheckInTimeARRA!!.setText(formattedTime)
-                    }else{
+                    } else {
                         tvCheckOutTimeARRA!!.setText(formattedTime)
                     }
                 }, hour, minute, false
@@ -171,7 +329,7 @@ class AddRegularizationRequestActivity : AppCompatActivity(), View.OnClickListen
 
     }
 
-    private fun openDatePickerDialog() {
+    private fun openDatePickerDialog(from: String) {
         try {
             val c = Calendar.getInstance()
             val year = c.get(Calendar.YEAR)
@@ -195,7 +353,11 @@ class AddRegularizationRequestActivity : AppCompatActivity(), View.OnClickListen
                     } else {
                         showMonth = monthOfYear.toString()
                     }
-                    tvDateARRA!!.setText(showDay + "/" + showMonth + "/" + year.toString())
+                    if (from.equals("out")) {
+                        tvOutDateARRA!!.setText(showDay + "/" + showMonth + "/" + year.toString())
+                    } else {
+                        tvInDateARRA!!.setText(showDay + "/" + showMonth + "/" + year.toString())
+                    }
                 },
                 year,
                 month,
@@ -203,6 +365,30 @@ class AddRegularizationRequestActivity : AppCompatActivity(), View.OnClickListen
             )
 
             dpd.show()
+
+            val string_date = requestData!!.dateOn
+            val f = SimpleDateFormat("yyyy-MM-dd")
+            try {
+                val d = f.parse(string_date)
+                val milliseconds = d.time
+                dpd.datePicker.minDate = milliseconds
+
+                if (from.equals("out")) {
+                    var dateSelectedFrom = f.parse(string_date)
+                    val MILLIS_IN_DAY = 1000 * 60 * 60 * 24
+                    val nextDate: String =
+                        f.format(dateSelectedFrom.time + MILLIS_IN_DAY)
+                    val d1 = f.parse(nextDate)
+                    val milliseconds1 = d1.time
+                    dpd.datePicker.maxDate = milliseconds1
+                } else {
+                    dpd.datePicker.maxDate = milliseconds
+                }
+            } catch (e: ParseException) {
+                e.printStackTrace()
+            }
+
+
         } catch (e: Exception) {
             e.printStackTrace()
         }

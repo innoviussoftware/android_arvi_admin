@@ -9,7 +9,7 @@ data class GetKeyMetricsResponse(
 
 data class GetKeyMetrics_AvgHours(
     val label: String,
-    val value: Int
+    val value: String
 )
 
 data class GetKeyMetrics_PresentMenCount(
@@ -24,5 +24,5 @@ data class GetKeyMetrics_WorkDays(
 
 data class GetKeyMetrics_WorkHours(
     val label: String,
-    val value: Int
+    val value: String
 )
