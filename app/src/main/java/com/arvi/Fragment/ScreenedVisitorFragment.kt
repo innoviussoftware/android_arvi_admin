@@ -49,15 +49,19 @@ var imgVwAddVisitorVLF: ImageView? = null
         // Inflate the layout for this fragment
         var view= inflater.inflate(R.layout.fragment_screened_visitor, container, false)
 
-        setIds(view)
-        setListeners()
+        try {
+            setIds(view)
+            setListeners()
 
-        if (ConnectivityDetector.isConnectingToInternet(appContext!!)) {
-            callGetVisitorListAPI()
-            /*rVwVisitorVLF!!.visibility=View.GONE
-            tvNoVisitorVLF!!.visibility=View.VISIBLE*/
-        } else {
-            SnackBar.showInternetError(appContext!!, snackbarView!!)
+            if (ConnectivityDetector.isConnectingToInternet(appContext!!)) {
+                callGetVisitorListAPI()
+                /*rVwVisitorVLF!!.visibility=View.GONE
+                tvNoVisitorVLF!!.visibility=View.VISIBLE*/
+            } else {
+                SnackBar.showInternetError(appContext!!, snackbarView!!)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
         return view
     }
@@ -207,14 +211,18 @@ var imgVwAddVisitorVLF: ImageView? = null
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        if (requestCode==REQUEST_VISITOR){
-            if (ConnectivityDetector.isConnectingToInternet(appContext!!)) {
-                callGetVisitorListAPI()
-                /*rVwVisitorVLF!!.visibility=View.GONE
-                tvNoVisitorVLF!!.visibility=View.VISIBLE*/
-            } else {
-                SnackBar.showInternetError(appContext!!, snackbarView!!)
+        try {
+            if (requestCode==REQUEST_VISITOR){
+                if (ConnectivityDetector.isConnectingToInternet(appContext!!)) {
+                    callGetVisitorListAPI()
+                    /*rVwVisitorVLF!!.visibility=View.GONE
+                    tvNoVisitorVLF!!.visibility=View.VISIBLE*/
+                } else {
+                    SnackBar.showInternetError(appContext!!, snackbarView!!)
+                }
             }
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 

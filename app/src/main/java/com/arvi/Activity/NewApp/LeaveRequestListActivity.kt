@@ -38,14 +38,22 @@ class LeaveRequestListActivity : AppCompatActivity(), View.OnClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_leave_request_list)
-        setIds()
-        setListeners()
+        try {
+            setIds()
+            setListeners()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
 
     }
 
     override fun onResume() {
         super.onResume()
-        callGetLeaveRequestApi()
+        try {
+            callGetLeaveRequestApi()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     private fun callGetLeaveRequestApi() {
@@ -105,32 +113,44 @@ class LeaveRequestListActivity : AppCompatActivity(), View.OnClickListener {
 
     @SuppressLint("WrongConstant")
     private fun setLeaveRequestData() {
-        if (alLeaveRequests!=null && alLeaveRequests.size>0) {
-            tvNoLeaveLRLA!!.visibility = View.GONE
-            rVwRequestLRLA!!.visibility = View.VISIBLE
-            var setDataAdapter = SetLeaveRequestDataAdapter(context!!, alLeaveRequests)
-            rVwRequestLRLA!!.layoutManager =
-                LinearLayoutManager(context, LinearLayout.VERTICAL, false)
-            rVwRequestLRLA!!.setAdapter(setDataAdapter)
-        }else{
-            tvNoLeaveLRLA!!.visibility = View.VISIBLE
-            rVwRequestLRLA!!.visibility = View.GONE
+        try {
+            if (alLeaveRequests!=null && alLeaveRequests.size>0) {
+                tvNoLeaveLRLA!!.visibility = View.GONE
+                rVwRequestLRLA!!.visibility = View.VISIBLE
+                var setDataAdapter = SetLeaveRequestDataAdapter(context!!, alLeaveRequests)
+                rVwRequestLRLA!!.layoutManager =
+                    LinearLayoutManager(context, LinearLayout.VERTICAL, false)
+                rVwRequestLRLA!!.setAdapter(setDataAdapter)
+            }else{
+                tvNoLeaveLRLA!!.visibility = View.VISIBLE
+                rVwRequestLRLA!!.visibility = View.GONE
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 
 
     private fun setListeners() {
-        imgVwBackLRLA!!.setOnClickListener(this)
-        imgVwAddRequestLRLA!!.setOnClickListener(this)
+        try {
+            imgVwBackLRLA!!.setOnClickListener(this)
+            imgVwAddRequestLRLA!!.setOnClickListener(this)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     private fun setIds() {
-        context = LeaveRequestListActivity@ this
-        snackbarView = findViewById(android.R.id.content)
-        imgVwBackLRLA = findViewById(R.id.imgVwBackLRLA)
-        rVwRequestLRLA = findViewById(R.id.rVwRequestLRLA)
-        tvNoLeaveLRLA = findViewById(R.id.tvNoLeaveLRLA)
-        imgVwAddRequestLRLA = findViewById(R.id.imgVwAddRequestLRLA)
+        try {
+            context = LeaveRequestListActivity@ this
+            snackbarView = findViewById(android.R.id.content)
+            imgVwBackLRLA = findViewById(R.id.imgVwBackLRLA)
+            rVwRequestLRLA = findViewById(R.id.rVwRequestLRLA)
+            tvNoLeaveLRLA = findViewById(R.id.tvNoLeaveLRLA)
+            imgVwAddRequestLRLA = findViewById(R.id.imgVwAddRequestLRLA)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     override fun onBackPressed() {
@@ -138,14 +158,18 @@ class LeaveRequestListActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     override fun onClick(view: View?) {
-        when (view!!.id) {
-            R.id.imgVwBackLRLA -> {
-                finish()
+        try {
+            when (view!!.id) {
+                R.id.imgVwBackLRLA -> {
+                    finish()
+                }
+                R.id.imgVwAddRequestLRLA -> {
+                    var intent = Intent(context!!, AddLeaveRequestActivity::class.java)
+                    startActivity(intent)
+                }
             }
-            R.id.imgVwAddRequestLRLA -> {
-                var intent = Intent(context!!, AddLeaveRequestActivity::class.java)
-                startActivity(intent)
-            }
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 }

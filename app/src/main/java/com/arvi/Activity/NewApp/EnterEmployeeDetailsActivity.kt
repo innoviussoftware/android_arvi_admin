@@ -390,26 +390,34 @@ class EnterEmployeeDetailsActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun setListener() {
-        imgVwBackEEDA!!.setOnClickListener(this)
-        tvTakePicEEDA!!.setOnClickListener(this)
-        tvEditEEDA!!.setOnClickListener(this)
+        try {
+            imgVwBackEEDA!!.setOnClickListener(this)
+            tvTakePicEEDA!!.setOnClickListener(this)
+            tvEditEEDA!!.setOnClickListener(this)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     private fun setIds() {
-        context = EnterEmployeeDetailsActivity@ this
-        snackbarView = findViewById(android.R.id.content)
-        imgVwBackEEDA = findViewById(R.id.imgVwBackEEDA)
-        etNameEEDA = findViewById(R.id.etNameEEDA)
-        etEmployeeIDEEDA = findViewById(R.id.etEmployeeIDEEDA)
-        etDesignationEEDA = findViewById(R.id.etDesignationEEDA)
-        etMobileEEDA = findViewById(R.id.etMobileEEDA)
-        etMailEEDA = findViewById(R.id.etMailEEDA)
-        tvTakePicEEDA = findViewById(R.id.tvTakePicEEDA)
-        spDesignationEEDA = findViewById(R.id.spDesignationEEDA)
-        spGroupEEDA = findViewById(R.id.spGroupEEDA)
-        rVwEmployeePic = findViewById(R.id.rVwEmployeePic)
-        tvEditEEDA = findViewById(R.id.tvEditEEDA)
-        tvTitleEEDA = findViewById(R.id.tvTitleEEDA)
+        try {
+            context = EnterEmployeeDetailsActivity@ this
+            snackbarView = findViewById(android.R.id.content)
+            imgVwBackEEDA = findViewById(R.id.imgVwBackEEDA)
+            etNameEEDA = findViewById(R.id.etNameEEDA)
+            etEmployeeIDEEDA = findViewById(R.id.etEmployeeIDEEDA)
+            etDesignationEEDA = findViewById(R.id.etDesignationEEDA)
+            etMobileEEDA = findViewById(R.id.etMobileEEDA)
+            etMailEEDA = findViewById(R.id.etMailEEDA)
+            tvTakePicEEDA = findViewById(R.id.tvTakePicEEDA)
+            spDesignationEEDA = findViewById(R.id.spDesignationEEDA)
+            spGroupEEDA = findViewById(R.id.spGroupEEDA)
+            rVwEmployeePic = findViewById(R.id.rVwEmployeePic)
+            tvEditEEDA = findViewById(R.id.tvEditEEDA)
+            tvTitleEEDA = findViewById(R.id.tvTitleEEDA)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     override fun onBackPressed() {
@@ -423,26 +431,34 @@ class EnterEmployeeDetailsActivity : AppCompatActivity(), View.OnClickListener {
                 finish()
             }
             R.id.tvTakePicEEDA -> {
-                if (isValidInput()) {
-                    if (from.equals("edit")) {
-                        var intent = Intent(context!!, TakeEmployeePicActivity::class.java)
-                        intent.putExtra("emp_edit_id", emp_data!!.id)
-                        startActivity(intent)
-                    }else{
-                        var intent = Intent(context!!, TakeEmployeePicActivity::class.java)
-                        intent.putExtra("name", strName)
-                        intent.putExtra("mobile", strPhone)
-                        intent.putExtra("employeeId", strEmpId)
-                        intent.putExtra("email", strEmail)
-                        intent.putExtra("role_id", role_id)
-                        intent.putExtra("group_id", group_id)
-                        startActivity(intent)
+                try {
+                    if (isValidInput()) {
+                        if (from.equals("edit")) {
+                            var intent = Intent(context!!, TakeEmployeePicActivity::class.java)
+                            intent.putExtra("emp_edit_id", emp_data!!.id)
+                            startActivity(intent)
+                        }else{
+                            var intent = Intent(context!!, TakeEmployeePicActivity::class.java)
+                            intent.putExtra("name", strName)
+                            intent.putExtra("mobile", strPhone)
+                            intent.putExtra("employeeId", strEmpId)
+                            intent.putExtra("email", strEmail)
+                            intent.putExtra("role_id", role_id)
+                            intent.putExtra("group_id", group_id)
+                            startActivity(intent)
+                        }
                     }
+                } catch (e: Exception) {
+                    e.printStackTrace()
                 }
             }
             R.id.tvEditEEDA -> {
-                if (isValidInput()) {
-                    callEditUserDetailApi()
+                try {
+                    if (isValidInput()) {
+                        callEditUserDetailApi()
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
                 }
             }
         }

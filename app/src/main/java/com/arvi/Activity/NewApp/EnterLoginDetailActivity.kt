@@ -41,26 +41,38 @@ class EnterLoginDetailActivity : AppCompatActivity(), View.OnClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_enter_login_detail)
-        setIds()
-        setListeners()
-        if(intent.extras!=null){
-            companyId = intent.getStringExtra("companyId")
+        try {
+            setIds()
+            setListeners()
+            if(intent.extras!=null){
+                companyId = intent.getStringExtra("companyId")
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 
     private fun setListeners() {
-        rlLoginLDA!!.setOnClickListener(this)
-        ivPassWordShowAELD!!.setOnClickListener(this)
+        try {
+            rlLoginLDA!!.setOnClickListener(this)
+            ivPassWordShowAELD!!.setOnClickListener(this)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     private fun setIds() {
-        context = EnterLoginDetailActivity@ this
-        snackbarView = findViewById(android.R.id.content)
-        etEmpIdLDA = findViewById(R.id.etEmpIdLDA)
-        etPasswordLDA = findViewById(R.id.etPasswordLDA)
-        rlLoginLDA = findViewById(R.id.rlLoginLDA)
-        ivPassWordShowAELD=findViewById(R.id.ivPassWordShowAELD)
-        ivPassWordShowAELD.setImageResource(R.drawable.ic_pw_show_blk)
+        try {
+            context = EnterLoginDetailActivity@ this
+            snackbarView = findViewById(android.R.id.content)
+            etEmpIdLDA = findViewById(R.id.etEmpIdLDA)
+            etPasswordLDA = findViewById(R.id.etPasswordLDA)
+            rlLoginLDA = findViewById(R.id.rlLoginLDA)
+            ivPassWordShowAELD=findViewById(R.id.ivPassWordShowAELD)
+            ivPassWordShowAELD.setImageResource(R.drawable.ic_pw_show_blk)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     override fun onBackPressed() {
@@ -70,37 +82,41 @@ class EnterLoginDetailActivity : AppCompatActivity(), View.OnClickListener {
     var flag_pwd = 0
 
     override fun onClick(view: View?) {
-        when (view!!.id) {
-            R.id.rlLoginLDA -> {
-                KeyboardUtility.hideKeyboard(context!!,rlLoginLDA!!)
-                if (isValidInput()) {
-                    if (ConnectivityDetector.isConnectingToInternet(context!!)) {
-                        callNewLoginApi()
-                    } else {
-                        SnackBar.showInternetError(context!!, snackbarView!!)
-                    }
+        try {
+            when (view!!.id) {
+                R.id.rlLoginLDA -> {
+                    KeyboardUtility.hideKeyboard(context!!,rlLoginLDA!!)
+                    if (isValidInput()) {
+                        if (ConnectivityDetector.isConnectingToInternet(context!!)) {
+                            callNewLoginApi()
+                        } else {
+                            SnackBar.showInternetError(context!!, snackbarView!!)
+                        }
 
+                    }
+                }
+
+                R.id.ivPassWordShowAELD->{
+                    try {
+                        if (flag_pwd == 1) {
+                            //show password
+                            etPasswordLDA!!.transformationMethod =
+                                PasswordTransformationMethod.getInstance()
+                            ivPassWordShowAELD.setImageResource(R.drawable.ic_pw_dont_show_blk)
+                            flag_pwd = 0
+                        } else {
+                            //hide password
+                            etPasswordLDA!!.transformationMethod = HideReturnsTransformationMethod.getInstance()
+                            ivPassWordShowAELD.setImageResource(R.drawable.ic_pw_show_blk)
+                            flag_pwd = 1
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
                 }
             }
-
-            R.id.ivPassWordShowAELD->{
-                try {
-                    if (flag_pwd == 1) {
-                        //show password
-                        etPasswordLDA!!.transformationMethod =
-                            PasswordTransformationMethod.getInstance()
-                        ivPassWordShowAELD.setImageResource(R.drawable.ic_pw_dont_show_blk)
-                        flag_pwd = 0
-                    } else {
-                        //hide password
-                        etPasswordLDA!!.transformationMethod = HideReturnsTransformationMethod.getInstance()
-                        ivPassWordShowAELD.setImageResource(R.drawable.ic_pw_show_blk)
-                        flag_pwd = 1
-                    }
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                }
-            }
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 

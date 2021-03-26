@@ -54,8 +54,12 @@ class ProfileFragment : Fragment(), View.OnClickListener {
     ): View? {
         // Inflate the layout for this fragment
         var view = inflater.inflate(R.layout.fragment_profile, container, false)
-        mContext = requireActivity()
-        imgVwSettingFP = view.findViewById(R.id.imgVwSettingFP)
+        try {
+            mContext = requireActivity()
+            imgVwSettingFP = view.findViewById(R.id.imgVwSettingFP)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
         return view
     }
 
@@ -71,20 +75,29 @@ class ProfileFragment : Fragment(), View.OnClickListener {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        mContext = requireActivity()
-        setListners()
+        try {
+            mContext = requireActivity()
+            setListners()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     private fun setListners() {
-        ivEditProfileFP.setOnClickListener(this)
-        rlProfilePicFP.setOnClickListener(this)
-        ivChooseProfilePicFP.setOnClickListener(this)
-        tvUpdateFP.setOnClickListener(this)
-        tvTotalEmployeesFP.setOnClickListener(this)
-        ivLogoutFP.setOnClickListener(this)
-        ivProfilePicFP.setImageDrawable(mContext.resources.getDrawable(R.drawable.user))
-        imgVwSettingFP!!.setOnClickListener(this)
-        notUpdateDetails()
+        try {
+            ivEditProfileFP.setOnClickListener(this)
+            rlProfilePicFP.setOnClickListener(this)
+            ivChooseProfilePicFP.setOnClickListener(this)
+            tvUpdateFP.setOnClickListener(this)
+            tvTotalEmployeesFP.setOnClickListener(this)
+            ivLogoutFP.setOnClickListener(this)
+            ivProfilePicFP.setImageDrawable(mContext.resources.getDrawable(R.drawable.user))
+            imgVwSettingFP!!.setOnClickListener(this)
+            notUpdateDetails()
+        } catch (e: Exception)
+        {
+            e.printStackTrace()
+        }
     }
 
 
@@ -94,36 +107,44 @@ class ProfileFragment : Fragment(), View.OnClickListener {
         var i = p0!!.id
         when (i) {
             R.id.ivLogoutFP->{
-                val builder = AlertDialog.Builder(mContext!!)
-                builder.setCancelable(false)
-                builder.setTitle(mContext.resources.getString(R.string.app_name))
-                builder.setMessage(mContext.resources.getString(R.string.logout_message))
-                builder.setIcon(mContext.resources.getDrawable(R.drawable.ic_logout))
+                try {
+                    val builder = AlertDialog.Builder(mContext!!)
+                    builder.setCancelable(false)
+                    builder.setTitle(mContext.resources.getString(R.string.app_name))
+                    builder.setMessage(mContext.resources.getString(R.string.logout_message))
+                    builder.setIcon(mContext.resources.getDrawable(R.drawable.ic_logout))
 
-                builder.setPositiveButton(
-                    mContext.resources.getString(R.string.logout_ttl)
-                ) { dialog, which ->
+                    builder.setPositiveButton(
+                        mContext.resources.getString(R.string.logout_ttl)
+                    ) { dialog, which ->
 
-                    var intent = Intent(mContext!!, EnterCompanyDetailActivity::class.java)
-                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
-                    startActivity(intent)
-                    SessionManager.clearAppSession(mContext!!)
+                        var intent = Intent(mContext!!, EnterCompanyDetailActivity::class.java)
+                        intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+                        startActivity(intent)
+                        SessionManager.clearAppSession(mContext!!)
 
-                    dialog.dismiss()
+                        dialog.dismiss()
+                    }
+                    builder.setNegativeButton(
+                        mContext.resources.getString(R.string.cancel)
+                    ) { dialog, which ->
+                        dialog.dismiss()
+
+                    }
+                    val dialog = builder.create()
+                    dialog.show()
+                    // GlobalMethods.logOutApp(mContext)
+                } catch (e: Exception) {
+                    e.printStackTrace()
                 }
-                builder.setNegativeButton(
-                    mContext.resources.getString(R.string.cancel)
-                ) { dialog, which ->
-                    dialog.dismiss()
-
-                }
-                val dialog = builder.create()
-                dialog.show()
-                // GlobalMethods.logOutApp(mContext)
             }
             R.id.tvTotalEmployeesFP -> {
-                var intent=Intent(mContext, UserEmployeesListActivity::class.java)
-                startActivity(intent)
+                try {
+                    var intent=Intent(mContext, UserEmployeesListActivity::class.java)
+                    startActivity(intent)
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
             }
 
             R.id.rlProfilePicFP -> {
@@ -146,60 +167,76 @@ class ProfileFragment : Fragment(), View.OnClickListener {
             }
 
             R.id.ivEditProfileFP -> {
-                if (!isUpdateOrNot) {
-                    updateDetails()
-                } else {
-                    notUpdateDetails()
+                try {
+                    if (!isUpdateOrNot) {
+                        updateDetails()
+                    } else {
+                        notUpdateDetails()
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
                 }
             }
             R.id.tvUpdateFP -> {
                 notUpdateDetails()
             }
             R.id.imgVwSettingFP->{
-                var intent = Intent(context!!,SettingActivity::class.java)
-                startActivity(intent)
+                try {
+                    var intent = Intent(requireActivity(),SettingActivity::class.java)
+                    startActivity(intent)
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
             }
         }
     }
 
     private fun updateDetails() {
-        isUpdateOrNot = true
-        etComapnyNameFP.isEnabled = true
-        etAddressFP.isEnabled = true
-        etGSTNOFP.isEnabled = true
-        etPlanTypeFP.isEnabled = true
+        try {
+            isUpdateOrNot = true
+            etComapnyNameFP.isEnabled = true
+            etAddressFP.isEnabled = true
+            etGSTNOFP.isEnabled = true
+            etPlanTypeFP.isEnabled = true
 
-        tvUpdateFP.visibility = View.VISIBLE
-        rlProfilePicFP.visibility = View.VISIBLE
-        ivEditProfileFP.visibility = View.GONE
+            tvUpdateFP.visibility = View.VISIBLE
+            rlProfilePicFP.visibility = View.VISIBLE
+            ivEditProfileFP.visibility = View.GONE
 
-        KeyboardUtility.showKeyboard(mContext, etComapnyNameFP)
+            KeyboardUtility.showKeyboard(mContext, etComapnyNameFP)
 
-        val expireDate =
-            "<font color=#2977DD>" + mContext.resources.getString(R.string.view_list_ttl) + "</font>"
-        tvTotalEmployeesFP.text = Html.fromHtml("4 $expireDate")
+            val expireDate =
+                "<font color=#2977DD>" + mContext.resources.getString(R.string.view_list_ttl) + "</font>"
+            tvTotalEmployeesFP.text = Html.fromHtml("4 $expireDate")
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     private fun notUpdateDetails() {
-        isUpdateOrNot = false
+        try {
+            isUpdateOrNot = false
 
-        etComapnyNameFP.setText("Test")
-        etAddressFP.setText("Test, abd, abd")
-        etGSTNOFP.setText("THD1203654789")
-        etPlanTypeFP.setText("Stander")
+            etComapnyNameFP.setText("Test")
+            etAddressFP.setText("Test, abd, abd")
+            etGSTNOFP.setText("THD1203654789")
+            etPlanTypeFP.setText("Stander")
 
-        etComapnyNameFP.isEnabled = false
-        etAddressFP.isEnabled = false
-        etGSTNOFP.isEnabled = false
-        etPlanTypeFP.isEnabled = false
+            etComapnyNameFP.isEnabled = false
+            etAddressFP.isEnabled = false
+            etGSTNOFP.isEnabled = false
+            etPlanTypeFP.isEnabled = false
 
-        tvUpdateFP.visibility = View.GONE
-        rlProfilePicFP.visibility = View.GONE
-        ivEditProfileFP.visibility = View.VISIBLE
+            tvUpdateFP.visibility = View.GONE
+            rlProfilePicFP.visibility = View.GONE
+            ivEditProfileFP.visibility = View.VISIBLE
 
-        val expireDate =
-            "<font color=#2977DD>" + mContext.resources.getString(R.string.view_list_ttl) + "</font>"
-        tvTotalEmployeesFP.text = Html.fromHtml("4 $expireDate")
+            val expireDate =
+                "<font color=#2977DD>" + mContext.resources.getString(R.string.view_list_ttl) + "</font>"
+            tvTotalEmployeesFP.text = Html.fromHtml("4 $expireDate")
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     private fun checkPermission(): Boolean {

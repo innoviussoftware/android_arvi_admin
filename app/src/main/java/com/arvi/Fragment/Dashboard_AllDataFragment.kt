@@ -60,13 +60,17 @@ class Dashboard_AllDataFragment : Fragment(), View.OnClickListener {
     ): View? {
         // Inflate the layout for this fragment
         var view = inflater.inflate(R.layout.fragment_dashboard__all_data, container, false)
-        setIds(view)
-        setListeners()
-        setData()
-        getDefaultDates()
-        callGroupListApi()
-        setPeriodSpinnerData()
-        callGetWorkShiftApi()
+        try {
+            setIds(view)
+            setListeners()
+            setData()
+            getDefaultDates()
+            callGroupListApi()
+            setPeriodSpinnerData()
+            callGetWorkShiftApi()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
         return view
     }
 
@@ -131,8 +135,12 @@ class Dashboard_AllDataFragment : Fragment(), View.OnClickListener {
                         parent: AdapterView<*>,
                         view: View, position: Int, id: Long
                     ) {
-                        var strShiftName = alWorkShift.get(position).name
-                        var shift_id = alGroupList.get(position).id
+                        try {
+                            var strShiftName = alWorkShift.get(position).name
+                            var shift_id = alGroupList.get(position).id
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
                     }
 
                     override fun onNothingSelected(parent: AdapterView<*>) {
@@ -272,8 +280,12 @@ class Dashboard_AllDataFragment : Fragment(), View.OnClickListener {
                         parent: AdapterView<*>,
                         view: View, position: Int, id: Long
                     ) {
-                        var strGroupName = alGroupList.get(position).name
-                        var group_id = alGroupList.get(position).id
+                        try {
+                            var strGroupName = alGroupList.get(position).name
+                            var group_id = alGroupList.get(position).id
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
                     }
 
                     override fun onNothingSelected(parent: AdapterView<*>) {
@@ -338,13 +350,17 @@ class Dashboard_AllDataFragment : Fragment(), View.OnClickListener {
 
 
     private fun setIds(view: View) {
-        appContext = activity
-        snackbarView = activity?.findViewById(android.R.id.content)
+        try {
+            appContext = activity
+            snackbarView = activity?.findViewById(android.R.id.content)
 
-        spPeriodDADF = view.findViewById(R.id.spPeriodDADF)
-        spShiftDADF = view.findViewById(R.id.spShiftDADF)
-        spGroupDADF = view.findViewById(R.id.spGroupDADF)
-        rVwAllDataDADF = view.findViewById(R.id.rVwAllDataDADF)
+            spPeriodDADF = view.findViewById(R.id.spPeriodDADF)
+            spShiftDADF = view.findViewById(R.id.spShiftDADF)
+            spGroupDADF = view.findViewById(R.id.spGroupDADF)
+            rVwAllDataDADF = view.findViewById(R.id.rVwAllDataDADF)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
 
 
     }

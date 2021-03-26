@@ -6,12 +6,12 @@
     android:layout_height="match_parent"
     tools:context=".Activity.NewApp.AllDataAttendanceActivity">
     <RelativeLayout
-        android:id="@+id/rlHeaderADR"
+        android:id="@+id/rlHeaderADAA"
         android:layout_width="match_parent"
         android:layout_height="@dimen/_40sdp">
 
         <ImageView
-            android:id="@+id/imgVwBackADR"
+            android:id="@+id/imgVwBackADAA"
             android:layout_width="@dimen/_30sdp"
             android:layout_height="@dimen/_30sdp"
             android:layout_centerVertical="true"
@@ -22,7 +22,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:layout_toEndOf="@+id/imgVwBackADR"
+            android:layout_toEndOf="@+id/imgVwBackADAA"
             android:fontFamily="@font/gotham_bold"
             android:text="All Data"
             android:textColor="@color/black"
@@ -44,7 +44,7 @@
         android:textSize="@dimen/_12ssp"
         android:fontFamily="@font/gotham_book_regular"
         android:layout_margin="@dimen/_5sdp"
-        android:layout_below="@+id/rlHeaderADR"
+        android:layout_below="@+id/rlHeaderADAA"
         />
     <EditText
         android:id="@+id/etEmpNameADAA"

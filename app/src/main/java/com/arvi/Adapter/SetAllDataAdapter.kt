@@ -2,16 +2,15 @@ package com.arvi.Adapter
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.Paint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.arvi.Activity.NewApp.AllDataAttendanceActivity
 import com.arvi.R
-import de.hdodenhof.circleimageview.CircleImageView
 
 class SetAllDataAdapter(
     var context: Context
@@ -44,6 +43,10 @@ class SetAllDataAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         try {
+            holder.tvAbsentADR.setPaintFlags(holder.tvAbsentADR.getPaintFlags() or Paint.UNDERLINE_TEXT_FLAG)
+            holder.tvMissedADR.setPaintFlags(holder.tvMissedADR.getPaintFlags() or Paint.UNDERLINE_TEXT_FLAG)
+            holder.tvPresentADR.setPaintFlags(holder.tvPresentADR.getPaintFlags() or Paint.UNDERLINE_TEXT_FLAG)
+
             holder.rlPresentADR.setOnClickListener {
                 var intent = Intent(context!!,AllDataAttendanceActivity::class.java)
                 context.startActivity(intent)

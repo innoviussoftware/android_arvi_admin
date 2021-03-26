@@ -15,8 +15,8 @@ import com.arvi.Adapter.SetAllDataAdapter
 import com.arvi.Adapter.SetAllDataAttendanceAdapter
 import com.arvi.R
 
-class AllDataAttendanceActivity : AppCompatActivity() {
-    var imgVwBackADR: ImageView? = null
+class AllDataAttendanceActivity : AppCompatActivity(), View.OnClickListener {
+    var imgVwBackADAA: ImageView? = null
     var tvDetailADAA: TextView? = null
     var rVwDataADAA: RecyclerView? = null
     var etEmpNameADAA: EditText? = null
@@ -26,29 +26,62 @@ class AllDataAttendanceActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_all_data_attendance)
-        setIds()
-        setData()
+        try {
+            setIds()
+            setListeners()
+            setData()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun setListeners() {
+        try {
+            imgVwBackADAA!!.setOnClickListener(this)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     @SuppressLint("WrongConstant")
     private fun setData() {
-        var setVisitorDataAdapter = SetAllDataAttendanceAdapter(context!!)
-        rVwDataADAA!!.layoutManager =
-            LinearLayoutManager(context, LinearLayout.VERTICAL, false)
-        rVwDataADAA!!.setAdapter(setVisitorDataAdapter)
+        try {
+            var setVisitorDataAdapter = SetAllDataAttendanceAdapter(context!!)
+            rVwDataADAA!!.layoutManager =
+                LinearLayoutManager(context, LinearLayout.VERTICAL, false)
+            rVwDataADAA!!.setAdapter(setVisitorDataAdapter)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     private fun setIds() {
-        context = AllDataAttendanceActivity@ this
-        snackbarView = findViewById(android.R.id.content)
-        rVwDataADAA = findViewById(R.id.rVwDataADAA)
+        try {
+            context = AllDataAttendanceActivity@ this
+            snackbarView = findViewById(android.R.id.content)
+            rVwDataADAA = findViewById(R.id.rVwDataADAA)
 
-        imgVwBackADR = findViewById(R.id.imgVwBackADR)
-        tvDetailADAA = findViewById(R.id.tvDetailADAA)
-        etEmpNameADAA = findViewById(R.id.etEmpNameADAA)
+            imgVwBackADAA = findViewById(R.id.imgVwBackADAA)
+            tvDetailADAA = findViewById(R.id.tvDetailADAA)
+            etEmpNameADAA = findViewById(R.id.etEmpNameADAA)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     override fun onBackPressed() {
         finish()
+    }
+
+    override fun onClick(v: View?) {
+        try {
+            when (v!!.id) {
+                R.id.imgVwBackADAA -> {
+                    finish()
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 }

@@ -137,8 +137,12 @@ class UserEmployeesListActivity : AppCompatActivity() {
     }
 
     fun addEmployeeDetails(view: View) {
-        var intent = Intent(mContext, EnterEmployeeDetailsActivity::class.java)
-        intent.putExtra("from","add")
-        startActivity(intent)
+        try {
+            var intent = Intent(mContext, EnterEmployeeDetailsActivity::class.java)
+            intent.putExtra("from","add")
+            startActivity(intent)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 }

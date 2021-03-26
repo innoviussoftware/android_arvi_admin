@@ -236,11 +236,11 @@ interface APIService {
     ):Call<GetRegularisationRequestResponse>
 
     //todo:: add regularisation
-    @PATCH("attendence")
+    @PATCH("attendence/{id}")
     fun updateRegularisationRequest(
         @Header("Authorization") auth:String,
         @Header("Content-Type") ctype:String,
-        @Query("id")id:Int,
+        @Path("id")id:Int,
         @Body detail: JsonObject
     ):Call<ResponseBody>
 

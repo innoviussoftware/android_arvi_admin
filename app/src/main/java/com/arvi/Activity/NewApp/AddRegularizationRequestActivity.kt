@@ -236,7 +236,10 @@ class AddRegularizationRequestActivity : AppCompatActivity(), View.OnClickListen
                                         }
                                     })
                                 dialog.show()
-                            } else {
+                            } else if(response.code() == 501){
+                                Toast.makeText(context,"Report creation failed. Please try again." + response.errorBody().toString(),Toast.LENGTH_LONG).show()
+                            }
+                            else {
                                 Toast.makeText(context,"Something went wrong",Toast.LENGTH_LONG).show()
                             }
                         } catch (e: Exception) {
@@ -347,11 +350,10 @@ class AddRegularizationRequestActivity : AppCompatActivity(), View.OnClickListen
                     } else {
                         showDay = dayOfMonth.toString()
                     }
-
                     if (monthOfYear < 10) {
-                        showMonth = "0" + monthOfYear
+                        showMonth = "0" + (monthOfYear+1)
                     } else {
-                        showMonth = monthOfYear.toString()
+                        showMonth = (monthOfYear+1).toString()
                     }
                     if (from.equals("out")) {
                         tvOutDateARRA!!.setText(showDay + "/" + showMonth + "/" + year.toString())

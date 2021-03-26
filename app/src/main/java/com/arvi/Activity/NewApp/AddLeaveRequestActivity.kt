@@ -219,20 +219,24 @@ class AddLeaveRequestActivity : AppCompatActivity(), View.OnClickListener {
                 openDatePickerDialog(from)
             }
             R.id.tvAddRequestALRA -> {
-                KeyboardUtility.hideKeyboard(context!!, tvAddRequestALRA!!)
-                if (isValidInput()) {
-                    var formatter = SimpleDateFormat("dd/MM/yyyy")
-                    var dateStart = formatter.parse(strDateFrom)
-                    var dateEnd = formatter.parse(strDateTo)
-                    if (dateEnd.compareTo(dateStart) < 0) {
-                        SnackBar.showValidationError(
-                            context!!,
-                            snackbarView!!,
-                            "End date must be greater than Start date"
-                        )
-                    } else {
-                        callAddLeaveRequestApi()
+                try {
+                    KeyboardUtility.hideKeyboard(context!!, tvAddRequestALRA!!)
+                    if (isValidInput()) {
+                        var formatter = SimpleDateFormat("dd/MM/yyyy")
+                        var dateStart = formatter.parse(strDateFrom)
+                        var dateEnd = formatter.parse(strDateTo)
+                        if (dateEnd.compareTo(dateStart) < 0) {
+                            SnackBar.showValidationError(
+                                context!!,
+                                snackbarView!!,
+                                "End date must be greater than Start date"
+                            )
+                        } else {
+                            callAddLeaveRequestApi()
+                        }
                     }
+                } catch (e: Exception) {
+                    e.printStackTrace()
                 }
             }
         }

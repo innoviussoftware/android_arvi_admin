@@ -27,9 +27,13 @@ class WfHRequestListActivity : AppCompatActivity(), View.OnClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_wf_h_request_list)
-        setIds()
-        setListeners()
-        setData()
+        try {
+            setIds()
+            setListeners()
+            setData()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     @SuppressLint("WrongConstant")
@@ -45,17 +49,25 @@ class WfHRequestListActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun setListeners() {
-        imgVwBackWfhRA!!.setOnClickListener(this)
-        imgVwAddRequestWfhRA!!.setOnClickListener(this)
+        try {
+            imgVwBackWfhRA!!.setOnClickListener(this)
+            imgVwAddRequestWfhRA!!.setOnClickListener(this)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     private fun setIds() {
-        context = WfHRequestListActivity@this
-        snackbarView = findViewById(android.R.id.content)
-        imgVwBackWfhRA = findViewById(R.id.imgVwBackWfhRA)
-        rVwRequestWfhRA = findViewById(R.id.rVwRequestWfhRA)
-        tvNoVisitorWfhRA = findViewById(R.id.tvNoVisitorWfhRA)
-        imgVwAddRequestWfhRA = findViewById(R.id.imgVwAddRequestWfhRA)
+        try {
+            context = WfHRequestListActivity@this
+            snackbarView = findViewById(android.R.id.content)
+            imgVwBackWfhRA = findViewById(R.id.imgVwBackWfhRA)
+            rVwRequestWfhRA = findViewById(R.id.rVwRequestWfhRA)
+            tvNoVisitorWfhRA = findViewById(R.id.tvNoVisitorWfhRA)
+            imgVwAddRequestWfhRA = findViewById(R.id.imgVwAddRequestWfhRA)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     override fun onBackPressed() {
@@ -63,14 +75,18 @@ class WfHRequestListActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     override fun onClick(view: View?) {
-        when(view!!.id){
-            R.id.imgVwBackWfhRA->{
-                finish()
+        try {
+            when(view!!.id){
+                R.id.imgVwBackWfhRA->{
+                    finish()
+                }
+                R.id.imgVwAddRequestWfhRA->{
+                    var intent = Intent(context!!,AddWfHRequestActivity::class.java)
+                    startActivity(intent)
+                }
             }
-            R.id.imgVwAddRequestWfhRA->{
-                var intent = Intent(context!!,AddWfHRequestActivity::class.java)
-                startActivity(intent)
-            }
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 }

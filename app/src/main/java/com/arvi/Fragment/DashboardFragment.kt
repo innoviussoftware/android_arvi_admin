@@ -32,8 +32,12 @@ class DashboardFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         var view = inflater.inflate(R.layout.fragment_dashboard, container, false)
-        setIds(view)
-        setTabLayoutData()
+        try {
+            setIds(view)
+            setTabLayoutData()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
         return view
     }
 
@@ -102,10 +106,14 @@ class DashboardFragment : Fragment() {
 
 
     private fun setIds(view: View) {
-        appContext = activity
-        snackbarView = activity?.findViewById(android.R.id.content)
-        tlDashboardData = view.findViewById(R.id.tlDashboardData)
-        vpDashboardData = view.findViewById(R.id.vpDashboardData)
+        try {
+            appContext = activity
+            snackbarView = activity?.findViewById(android.R.id.content)
+            tlDashboardData = view.findViewById(R.id.tlDashboardData)
+            vpDashboardData = view.findViewById(R.id.vpDashboardData)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
 
     }
 

@@ -45,8 +45,12 @@ class EnterCompanyDetailActivity : AppCompatActivity(), View.OnClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_enter_company_detail)
-        setIds()
-        setListeners()
+        try {
+            setIds()
+            setListeners()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     private fun setListeners() {
@@ -75,14 +79,18 @@ class EnterCompanyDetailActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     override fun onClick(view: View?) {
-        when (view!!.id) {
-            R.id.rlSubmitECDA -> {
-                if (isValidInput()) {
-                    BASE_Custom_URL = serverUrl
-                    callCheckBaseURLAPI()
+        try {
+            when (view!!.id) {
+                R.id.rlSubmitECDA -> {
+                    if (isValidInput()) {
+                        BASE_Custom_URL = serverUrl
+                        callCheckBaseURLAPI()
 
+                    }
                 }
             }
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 

@@ -26,32 +26,44 @@ class AddWfHRequestActivity : AppCompatActivity(), View.OnClickListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_wf_h_request)
-        setIds()
-        setListeners()
+        try {
+            setIds()
+            setListeners()
 
 
-        val empList = resources.getStringArray(R.array.default_emp)
-        val adapter = ArrayAdapter(this,
-            android.R.layout.simple_spinner_dropdown_item,empList)
-        spEmpNameAWRA!!.adapter = adapter
+            val empList = resources.getStringArray(R.array.default_emp)
+            val adapter = ArrayAdapter(this,
+                android.R.layout.simple_spinner_dropdown_item,empList)
+            spEmpNameAWRA!!.adapter = adapter
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     private fun setListeners() {
-        imgVwBackAWRA!!.setOnClickListener(this)
-        tvStartDateAWRA!!.setOnClickListener(this)
-        tvEndDateAWRA!!.setOnClickListener(this)
-        tvAddRequestAWRA!!.setOnClickListener(this)
+        try {
+            imgVwBackAWRA!!.setOnClickListener(this)
+            tvStartDateAWRA!!.setOnClickListener(this)
+            tvEndDateAWRA!!.setOnClickListener(this)
+            tvAddRequestAWRA!!.setOnClickListener(this)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     private fun setIds() {
-        context = AddWfHRequestActivity@this
-        snackBarView = findViewById(android.R.id.content)
-        imgVwBackAWRA = findViewById(R.id.imgVwBackAWRA)
-        spEmpNameAWRA = findViewById(R.id.spEmpNameAWRA)
-        etEmpIdAWRA = findViewById(R.id.etEmpIdAWRA)
-        tvStartDateAWRA = findViewById(R.id.tvStartDateAWRA)
-        tvEndDateAWRA = findViewById(R.id.tvEndDateAWRA)
-        tvAddRequestAWRA = findViewById(R.id.tvAddRequestAWRA)
+        try {
+            context = AddWfHRequestActivity@this
+            snackBarView = findViewById(android.R.id.content)
+            imgVwBackAWRA = findViewById(R.id.imgVwBackAWRA)
+            spEmpNameAWRA = findViewById(R.id.spEmpNameAWRA)
+            etEmpIdAWRA = findViewById(R.id.etEmpIdAWRA)
+            tvStartDateAWRA = findViewById(R.id.tvStartDateAWRA)
+            tvEndDateAWRA = findViewById(R.id.tvEndDateAWRA)
+            tvAddRequestAWRA = findViewById(R.id.tvAddRequestAWRA)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     override fun onBackPressed() {
@@ -59,21 +71,25 @@ class AddWfHRequestActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     override fun onClick(view: View?) {
-        when(view!!.id){
-            R.id.imgVwBackAWRA->{
-                finish()
+        try {
+            when(view!!.id){
+                R.id.imgVwBackAWRA->{
+                    finish()
+                }
+                R.id.tvStartDateAWRA->{
+                    var from  = "startDate"
+                    openDatePickerDialog(from)
+                }
+                R.id.tvEndDateAWRA->{
+                    var from  = "endDate"
+                    openDatePickerDialog(from)
+                }
+                R.id.tvAddRequestAWRA->{
+                    SnackBar.showInProgressError(context!!,snackBarView!!)
+                }
             }
-            R.id.tvStartDateAWRA->{
-                var from  = "startDate"
-                openDatePickerDialog(from)
-            }
-            R.id.tvEndDateAWRA->{
-                var from  = "endDate"
-                openDatePickerDialog(from)
-            }
-            R.id.tvAddRequestAWRA->{
-                SnackBar.showInProgressError(context!!,snackBarView!!)
-            }
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 

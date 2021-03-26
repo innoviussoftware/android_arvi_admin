@@ -52,13 +52,17 @@ class ExpectedVisitorFragment : Fragment(), View.OnClickListener {
     ): View? {
         // Inflate the layout for this fragment
         var view = inflater.inflate(R.layout.fragment_expected_visitor, container, false)
-        setIds(view)
-        setListeners()
+        try {
+            setIds(view)
+            setListeners()
 
-        if (ConnectivityDetector.isConnectingToInternet(appContext!!)) {
-            callGetVisitorListAPI()
-        } else {
-            SnackBar.showInternetError(appContext!!, snackbarView!!)
+            if (ConnectivityDetector.isConnectingToInternet(appContext!!)) {
+                callGetVisitorListAPI()
+            } else {
+                SnackBar.showInternetError(appContext!!, snackbarView!!)
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
 
         return view
@@ -204,12 +208,16 @@ class ExpectedVisitorFragment : Fragment(), View.OnClickListener {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        if (requestCode == REQUEST_VISITOR) {
-            if (ConnectivityDetector.isConnectingToInternet(appContext!!)) {
-                callGetVisitorListAPI()
-            } else {
-                SnackBar.showInternetError(appContext!!, snackbarView!!)
+        try {
+            if (requestCode == REQUEST_VISITOR) {
+                if (ConnectivityDetector.isConnectingToInternet(appContext!!)) {
+                    callGetVisitorListAPI()
+                } else {
+                    SnackBar.showInternetError(appContext!!, snackbarView!!)
+                }
             }
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 

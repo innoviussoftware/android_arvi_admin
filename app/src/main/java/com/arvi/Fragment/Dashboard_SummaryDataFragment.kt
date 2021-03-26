@@ -134,8 +134,12 @@ class Dashboard_SummaryDataFragment : Fragment() {
                         parent: AdapterView<*>,
                         view: View, position: Int, id: Long
                     ) {
-                        var strShiftName = alWorkShift.get(position).name
-                        var shift_id = alGroupList.get(position).id
+                        try {
+                            var strShiftName = alWorkShift.get(position).name
+                            var shift_id = alGroupList.get(position).id
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
                     }
 
                     override fun onNothingSelected(parent: AdapterView<*>) {
@@ -371,8 +375,12 @@ class Dashboard_SummaryDataFragment : Fragment() {
                         parent: AdapterView<*>,
                         view: View, position: Int, id: Long
                     ) {
-                        var strGroupName = alGroupList.get(position).name
-                        var group_id = alGroupList.get(position).id
+                        try {
+                            var strGroupName = alGroupList.get(position).name
+                            var group_id = alGroupList.get(position).id
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
                     }
 
                     override fun onNothingSelected(parent: AdapterView<*>) {

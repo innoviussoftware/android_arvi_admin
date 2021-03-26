@@ -39,23 +39,35 @@ class RequestTypeFragment : Fragment(), View.OnClickListener {
     ): View? {
         // Inflate the layout for this fragment
         var view = inflater.inflate(R.layout.fragment_request_type, container, false)
-        setIds(view)
-        setListeners()
+        try {
+            setIds(view)
+            setListeners()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
         return view
     }
 
     private fun setListeners() {
-        llRegularizationRTF!!.setOnClickListener(this)
-        llWfHRTF!!.setOnClickListener(this)
-        llLeaveRequestRTF!!.setOnClickListener(this)
+        try {
+            llRegularizationRTF!!.setOnClickListener(this)
+            llWfHRTF!!.setOnClickListener(this)
+            llLeaveRequestRTF!!.setOnClickListener(this)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     private fun setIds(view: View) {
-        appContext = activity
-        snackbarView = activity?.findViewById(android.R.id.content)
-        llLeaveRequestRTF = view.findViewById(R.id.llLeaveRequestRTF)
-        llRegularizationRTF = view.findViewById(R.id.llRegularizationRTF)
-        llWfHRTF = view.findViewById(R.id.llWfHRTF)
+        try {
+            appContext = activity
+            snackbarView = activity?.findViewById(android.R.id.content)
+            llLeaveRequestRTF = view.findViewById(R.id.llLeaveRequestRTF)
+            llRegularizationRTF = view.findViewById(R.id.llRegularizationRTF)
+            llWfHRTF = view.findViewById(R.id.llWfHRTF)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
 
@@ -83,19 +95,23 @@ class RequestTypeFragment : Fragment(), View.OnClickListener {
     }
 
     override fun onClick(view: View) {
-        when (view.id) {
-            R.id.llRegularizationRTF -> {
-                var intent = Intent(appContext, RegularizationRequestListActivity::class.java)
-                startActivity(intent)
+        try {
+            when (view.id) {
+                R.id.llRegularizationRTF -> {
+                    var intent = Intent(appContext, RegularizationRequestListActivity::class.java)
+                    startActivity(intent)
+                }
+                R.id.llLeaveRequestRTF -> {
+                    var intent = Intent(appContext, LeaveRequestListActivity::class.java)
+                    startActivity(intent)
+                }
+                R.id.llWfHRTF -> {
+                    var intent = Intent(appContext, WfHRequestListActivity::class.java)
+                    startActivity(intent)
+                }
             }
-            R.id.llLeaveRequestRTF -> {
-                var intent = Intent(appContext, LeaveRequestListActivity::class.java)
-                startActivity(intent)
-            }
-            R.id.llWfHRTF -> {
-                var intent = Intent(appContext, WfHRequestListActivity::class.java)
-                startActivity(intent)
-            }
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
     }
 }

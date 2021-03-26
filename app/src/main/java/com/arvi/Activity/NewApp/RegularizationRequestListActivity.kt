@@ -57,15 +57,23 @@ class RegularizationRequestListActivity : AppCompatActivity(), View.OnClickListe
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_regularization_request_list)
-        setIds()
-        setListeners()
+        try {
+            setIds()
+            setListeners()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
 
     }
 
     override fun onResume() {
         super.onResume()
-        getDefaultDate()
-        callGetRegularizationListAPI()
+        try {
+            getDefaultDate()
+            callGetRegularizationListAPI()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     private fun getDefaultDate() {

@@ -131,7 +131,7 @@ class SelfiCheckInActivity : AppCompatActivity(), CompoundButton.OnCheckedChange
             tvInstruction = findViewById<View>(R.id.tvInstruction) as TextView
             // Hide the toggle button if there is only 1 camera
             if (Camera.getNumberOfCameras() == 1) {
-                facingSwitch!!.setVisibility(View.GONE)
+//                facingSwitch!!.setVisibility(View.GONE)
             }
             if (allPermissionsGranted()) {
                 createCameraSource()
@@ -246,7 +246,7 @@ class SelfiCheckInActivity : AppCompatActivity(), CompoundButton.OnCheckedChange
                                     if (faceLockTimeout == 0) {
                                         faceDetected = true
                                     }
-                                    if (facebitmap != null) {
+                                    if (facebitmap != null && !face.equals("") ) {
                                         if (!isApiCalled) {
                                             callDetectFaceAPI(facebitmap!!)
                                         }
@@ -388,12 +388,16 @@ class SelfiCheckInActivity : AppCompatActivity(), CompoundButton.OnCheckedChange
                                     if (response.body().data != null) {
                                         if (response.body().data.employeeId != null) {
                                             strUserId = response.body().data.employeeId
+                                        }else{
+                                            strUserId =""
                                         }
 
 
                                         if (response.body().data.name != null) {
                                             strUserName =
                                                 response.body().data.name // response.body().getFullName();
+                                        }else {
+                                            strUserName= "Unknown"
                                         }
 
                                     }
@@ -812,9 +816,10 @@ class SelfiCheckInActivity : AppCompatActivity(), CompoundButton.OnCheckedChange
                     timer.schedule(object : TimerTask() {
                         override fun run() {
                             dialog!!.dismiss()
-                            val i =
+                         /*   val i =
                                 Intent(applicationContext, DashboardActivity::class.java)
-                            startActivity(i)
+                            startActivity(i)*/
+                            openDashboard()
                         }
                     }, 5000)
                 } catch (e: java.lang.Exception) {
@@ -850,11 +855,11 @@ class SelfiCheckInActivity : AppCompatActivity(), CompoundButton.OnCheckedChange
                                     dialog!!.dismiss()
                                 }
                             }
-
-                            val i =
+                            openDashboard()
+                         /*   val i =
                                 Intent(applicationContext, DashboardActivity::class.java)
                             startActivity(i)
-                            finish()
+                            finish()*/
                         }
                     }, 5000)
                 } catch (e: java.lang.Exception) {
@@ -862,6 +867,56 @@ class SelfiCheckInActivity : AppCompatActivity(), CompoundButton.OnCheckedChange
                 }
             }
         } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun openDashboard() {
+        try {
+            /*  val i =
+                                Intent(applicationContext, DashboardActivity::class.java)
+                            startActivity(i)*/
+            try {
+                isApiCalled = false
+                SlaveService.serviceOn = true
+                resultToastTimeout = 0
+                stateTimeoutIn100ms = 100
+                faceDetectTimeout = Config.detectTimeoutSec * 10
+                state = STATE.INIT
+
+                if (!threadRunning) {
+                    threadRunning = true
+                    state = STATE.UNKNOWN
+                    val t = Thread(Runnable {
+                        Log.d(TAG, "activity thread started")
+                        while (threadRunning) {
+                            try {
+                                if (isServiceBound) {
+                                    stateMachine()
+                                }
+                                Thread.sleep(10)
+                            } catch (e: java.lang.Exception) {
+                                e.printStackTrace()
+                            }
+                        }
+                        Log.d(TAG, "thread outside while")
+                    })
+                    TAG += "(" + t.id + ")"
+                    t.start()
+                }
+            } catch (e: java.lang.Exception) {
+                e.printStackTrace()
+            }
+            startService(serviceIntent)
+            bindService()
+            faceDetected = false
+            if (allPermissionsGranted()) {
+                createCameraSource()
+                startCameraSource()
+            } else {
+                getRuntimePermissions()
+            }
+        } catch (e: Exception) {
             e.printStackTrace()
         }
     }
@@ -909,6 +964,7 @@ class SelfiCheckInActivity : AppCompatActivity(), CompoundButton.OnCheckedChange
             stateTimeoutIn100ms = 100
             faceDetectTimeout = Config.detectTimeoutSec * 10
             state = STATE.INIT
+
             if (!threadRunning) {
                 threadRunning = true
                 state = STATE.UNKNOWN
