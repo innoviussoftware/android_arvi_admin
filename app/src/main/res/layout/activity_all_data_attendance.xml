@@ -1,9 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Activity.NewApp.AllDataAttendanceActivity">
+    <RelativeLayout
+        android:id="@+id/rlHeaderADR"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_40sdp">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <ImageView
+            android:id="@+id/imgVwBackADR"
+            android:layout_width="@dimen/_30sdp"
+            android:layout_height="@dimen/_30sdp"
+            android:layout_centerVertical="true"
+            android:padding="@dimen/_8sdp"
+            android:src="@drawable/ic_back_black" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@+id/imgVwBackADR"
+            android:fontFamily="@font/gotham_bold"
+            android:text="All Data"
+            android:textColor="@color/black"
+            android:textSize="@dimen/_14ssp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_alignParentBottom="true"
+            android:background="@color/view_bg" />
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/tvDetailADAA"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Date: 01 Mar 21, Shift: Night, Group:G45"
+        android:textColor="@color/black"
+        android:textSize="@dimen/_12ssp"
+        android:fontFamily="@font/gotham_book_regular"
+        android:layout_margin="@dimen/_5sdp"
+        android:layout_below="@+id/rlHeaderADR"
+        />
+    <EditText
+        android:id="@+id/etEmpNameADAA"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_40sdp"
+        android:background="@drawable/edit_left_border_bg"
+        android:layout_below="@+id/tvDetailADAA"
+        android:paddingStart="@dimen/_10sdp"
+        android:layout_margin="@dimen/_5sdp"
+        android:hint="Employee Name"
+        android:textSize="@dimen/_12ssp"
+        android:fontFamily="@font/gotham_book_regular"
+        />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/etEmpNameADAA"
+        android:id="@+id/rVwDataADAA"
+        />
+</RelativeLayout>

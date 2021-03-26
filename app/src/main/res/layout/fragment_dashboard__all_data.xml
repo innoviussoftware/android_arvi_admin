@@ -4,184 +4,134 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="#f7f7f7"
     tools:context=".Fragment.Dashboard_AllDataFragment">
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+       <RelativeLayout
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content">
+           <LinearLayout
+               android:id="@+id/llFilter1DADF"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:layout_marginStart="@dimen/_10sdp"
+               android:layout_marginTop="@dimen/_20sdp"
+               android:layout_marginEnd="@dimen/_10sdp"
+               android:orientation="horizontal">
 
-            <LinearLayout
-                android:id="@+id/llDateFilterADDF"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/_40sdp"
-                android:layout_margin="@dimen/_10sdp"
-                android:orientation="horizontal">
+               <RelativeLayout
+                   android:layout_width="0dp"
+                   android:layout_gravity="center_vertical"
+                   android:layout_height="wrap_content"
+                   android:layout_marginEnd="@dimen/_5sdp"
+                   android:layout_weight="1">
 
-                <EditText
-                    android:id="@+id/etStartDateADDF"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:background="@drawable/edit_left_border_bg"
-                    android:fontFamily="@font/gotham_book_regular"
-                    android:hint="Start Date"
-                    android:editable="false"
-                    android:paddingStart="@dimen/_10sdp"
-                    android:textSize="@dimen/_12ssp" />
+                   <TextView
+                       android:id="@+id/tvPeriodTitleDADF"
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content"
+                       android:fontFamily="@font/gotham_book_regular"
+                       android:text="Period: "
+                       android:textSize="@dimen/_12ssp" />
 
-                <EditText
-                    android:id="@+id/etEndDateADDF"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:background="@drawable/edit_left_border_bg"
-                    android:fontFamily="@font/gotham_book_regular"
-                    android:hint="End Date"
-                    android:editable="false"
-                    android:paddingStart="@dimen/_10sdp"
-                    android:textSize="@dimen/_12ssp" />
+                   <RelativeLayout
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content"
+                       android:layout_below="@+id/tvPeriodTitleDADF"
+                       android:background="@drawable/edit_left_border_bg">
 
-                <TextView
-                    android:id="@+id/tvApplyADDF"
-                    android:layout_width="@dimen/_60sdp"
-                    android:layout_height="match_parent"
-                    android:background="@color/app_bg"
-                    android:fontFamily="@font/gotham_bold"
-                    android:gravity="center"
-                    android:text="Apply"
-                    android:textAllCaps="true"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/_12ssp" />
+                       <Spinner
+                           android:id="@+id/spPeriodDADF"
+                           android:layout_width="wrap_content"
+                           android:layout_height="wrap_content"
+                           android:layout_centerVertical="true" />
+                   </RelativeLayout>
+               </RelativeLayout>
 
-                <ImageView
-                    android:id="@+id/imgVwFilterADDF"
-                    android:layout_width="@dimen/_40sdp"
-                    android:layout_height="@dimen/_40sdp"
-                    android:padding="@dimen/_8sdp"
-                    android:src="@drawable/ic_filter" />
+               <RelativeLayout
+                   android:layout_width="0dp"
+                   android:layout_height="wrap_content"
+                   android:layout_gravity="center_vertical"
+                   android:layout_marginStart="@dimen/_5sdp"
+                   android:layout_weight="1">
 
-            </LinearLayout>
+                   <TextView
+                       android:id="@+id/tvShiftTitleDADF"
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content"
+                       android:fontFamily="@font/gotham_book_regular"
+                       android:text="Shift Wise: "
+                       android:textSize="@dimen/_12ssp" />
 
-            <EditText
-                android:id="@+id/etEmpNameADDF"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/_40sdp"
-                android:layout_below="@+id/llDateFilterADDF"
-                android:layout_marginStart="@dimen/_10sdp"
-                android:layout_marginEnd="@dimen/_10sdp"
-                android:background="@drawable/edit_left_border_bg"
-                android:fontFamily="@font/gotham_book_regular"
-                android:hint="Employee Name"
-                android:maxLines="1"
-                android:paddingStart="@dimen/_10sdp"
-                android:singleLine="true"
-                android:textSize="@dimen/_12ssp" />
+                   <RelativeLayout
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content"
+                       android:layout_below="@+id/tvShiftTitleDADF"
+                       android:background="@drawable/edit_left_border_bg">
 
-            <LinearLayout
-                android:id="@+id/llStatusDetailADDF"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/etEmpNameADDF"
-                android:layout_marginStart="@dimen/_10sdp"
-                android:layout_marginTop="@dimen/_10sdp"
-                android:layout_marginEnd="@dimen/_10sdp"
-                android:orientation="horizontal">
+                       <Spinner
+                           android:id="@+id/spShiftDADF"
+                           android:layout_width="wrap_content"
+                           android:layout_height="wrap_content" />
+                   </RelativeLayout>
+               </RelativeLayout>
+           </LinearLayout>
+           <RelativeLayout
+               android:id="@+id/rlFilter2DADF"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:layout_below="@+id/llFilter1DADF"
+               android:layout_centerHorizontal="true"
+               android:layout_marginTop="@dimen/_10sdp">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:fontFamily="@font/gotham_bold"
-                    android:text="All Data:"
-                    android:textColor="@color/black"
-                    android:textSize="@dimen/_12ssp"
+               <TextView
+                   android:id="@+id/tvGroupTitleDADF"
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:layout_centerVertical="true"
+                   android:layout_marginStart="@dimen/_5sdp"
+                   android:fontFamily="@font/gotham_book_regular"
+                   android:text="Group Wise: "
+                   android:textSize="@dimen/_12ssp" />
 
-                    />
+               <RelativeLayout
+                   android:layout_width="wrap_content"
+                   android:layout_height="wrap_content"
+                   android:layout_centerVertical="true"
+                   android:layout_toEndOf="@+id/tvGroupTitleDADF"
+                   android:background="@drawable/edit_left_border_bg">
 
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginStart="@dimen/_15sdp">
+                   <Spinner
+                       android:id="@+id/spGroupDADF"
+                       android:layout_width="wrap_content"
+                       android:layout_height="wrap_content"
+                       android:layout_centerVertical="true" />
+               </RelativeLayout>
 
-                    <de.hdodenhof.circleimageview.CircleImageView
-                        android:layout_width="@dimen/_15sdp"
-                        android:layout_height="@dimen/_15sdp"
-                        android:background="@drawable/overtime_status" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/_5sdp"
-                        android:fontFamily="@font/gotham_book_regular"
-                        android:text="Overtime"
-                        android:textColor="@color/black"
-                        android:textSize="@dimen/_12ssp" />
+           </RelativeLayout>
 
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginStart="@dimen/_20sdp">
-
-                    <de.hdodenhof.circleimageview.CircleImageView
-                        android:layout_width="@dimen/_15sdp"
-                        android:layout_height="@dimen/_15sdp"
-                        android:background="@drawable/late_status"
-                        />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/_5sdp"
-                        android:fontFamily="@font/gotham_book_regular"
-                        android:text="Late"
-                        android:textColor="@color/black"
-                        android:textSize="@dimen/_12ssp" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginStart="@dimen/_20sdp">
-
-                    <de.hdodenhof.circleimageview.CircleImageView
-                        android:layout_width="@dimen/_15sdp"
-                        android:layout_height="@dimen/_15sdp"
-                        android:background="@drawable/wfh_status"
-                        />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/_5sdp"
-                        android:fontFamily="@font/gotham_book_regular"
-                        android:text="Wfh"
-                        android:textColor="@color/black"
-                        android:textSize="@dimen/_12ssp" />
-
-                </LinearLayout>
-
-            </LinearLayout>
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rVwAddDataADDF"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/llStatusDetailADDF"
-                android:layout_margin="@dimen/_10sdp"
-                />
-
-        </RelativeLayout>
+           <RelativeLayout
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:layout_below="@+id/rlFilter2DADF"
+               android:layout_margin="@dimen/_13sdp"
+               android:background="@color/white"
+               android:elevation="1dp"
+               android:orientation="vertical"
+               android:paddingTop="@dimen/_5sdp"
+               android:paddingBottom="@dimen/_5sdp"
+               >
+               <androidx.recyclerview.widget.RecyclerView
+                   android:id="@+id/rVwAllDataDADF"
+                   android:layout_width="match_parent"
+                   android:layout_height="wrap_content"/>
+           </RelativeLayout>
+       </RelativeLayout>
     </ScrollView>
 
 </RelativeLayout>

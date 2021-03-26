@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:id="@+id/llMainADR"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_margin="@dimen/_10sdp"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_gravity="center_vertical"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/tvDayADR"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Day"
+                android:textSize="@dimen/_12ssp"
+                android:fontFamily="@font/gotham_book_regular"
+                />
+            <TextView
+                android:id="@+id/tvDateADR"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="MMM dd,yyyy"
+                android:layout_marginTop="@dimen/_3sdp"
+                android:textSize="@dimen/_12ssp"
+                android:fontFamily="@font/gotham_bold"
+                />
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+            <RelativeLayout
+                android:id="@+id/rlAbsentADR"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <ImageView
+                    android:id="@+id/imgVwAbsentADR"
+                    android:layout_width="@dimen/_12sdp"
+                    android:layout_height="@dimen/_12sdp"
+                    android:layout_centerVertical="true"
+                    android:src="@drawable/late_status"
+                    />
+                <TextView
+                    android:id="@+id/tvAbsentADR"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_toEndOf="@+id/imgVwAbsentADR"
+                    android:text="Absent: 0"
+                    android:textColor="@color/app_bg"
+                    android:layout_marginStart="@dimen/_5sdp"
+                    android:textSize="@dimen/_11ssp"
+                    android:fontFamily="@font/gotham_medium"
+                    />
+            </RelativeLayout>
+            <RelativeLayout
+                android:id="@+id/rlMissedADR"
+                android:layout_marginTop="@dimen/_3sdp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <ImageView
+                    android:id="@+id/imgVwMissCheckInADR"
+                    android:layout_width="@dimen/_12sdp"
+                    android:layout_height="@dimen/_12sdp"
+                    android:layout_centerVertical="true"
+                    android:src="@drawable/wfh_status"
+                    />
+                <TextView
+                    android:id="@+id/tvMissedADR"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_toEndOf="@+id/imgVwMissCheckInADR"
+                    android:text="Missed Checkins: 0"
+                    android:textColor="@color/app_bg"
+                    android:layout_marginStart="@dimen/_5sdp"
+                    android:textSize="@dimen/_11ssp"
+                    android:fontFamily="@font/gotham_medium"
+                    />
+            </RelativeLayout>
+            <RelativeLayout
+                android:id="@+id/rlPresentADR"
+                android:layout_marginTop="@dimen/_3sdp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <ImageView
+                    android:id="@+id/imgVwPresentADR"
+                    android:layout_width="@dimen/_12sdp"
+                    android:layout_height="@dimen/_12sdp"
+                    android:src="@drawable/present_status"
+                    android:layout_centerVertical="true"
+                    />
+                <TextView
+                    android:id="@+id/tvPresentADR"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_toEndOf="@+id/imgVwPresentADR"
+                    android:text="Present: 0"
+                    android:textColor="@color/app_bg"
+                    android:layout_marginStart="@dimen/_5sdp"
+                    android:textSize="@dimen/_11ssp"
+                    android:fontFamily="@font/gotham_medium"
+                    />
+            </RelativeLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@+id/llMainADR"
+        android:background="@color/view_bg"
+        />
+</RelativeLayout>
