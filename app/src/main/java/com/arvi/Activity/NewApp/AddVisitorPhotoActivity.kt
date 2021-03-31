@@ -307,6 +307,21 @@ class AddVisitorPhotoActivity : AppCompatActivity(), CompoundButton.OnCheckedCha
             if (allPermissionsGranted()) {
                 createCameraSource()
                 startCameraSource()
+                if (SessionManager.getSelectedCameraFacing(context!!) != null) {
+                    if (SessionManager.getSelectedCameraFacing(context!!)
+                            .equals(resources.getString(R.string.front_facing))
+                    ) {
+                        if (cameraSource != null) {
+                            cameraSource!!.setFacing(CameraSource.CAMERA_FACING_FRONT)
+                        }
+                    } else {
+                        if (cameraSource != null) {
+                            cameraSource!!.setFacing(CameraSource.CAMERA_FACING_BACK)
+                        }
+                    }
+                } else {
+                    cameraSource!!.setFacing(CameraSource.CAMERA_FACING_FRONT)
+                }
             } else {
                 getRuntimePermissions()
             }

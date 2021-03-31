@@ -12,6 +12,8 @@ import com.arvi.Interfaces.RecyclerViewItemClicked
 import com.arvi.Model.GetRegularisationRequestResponseItem
 import com.arvi.R
 import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
 
 class SetRegularizationDataAdapter(
     var context: Context,
@@ -63,6 +65,7 @@ class SetRegularizationDataAdapter(
         try {
             holder.tvNameRR.setText(alRegularisation.get(position).user!!.name)
 
+
             var strdate = alRegularisation.get(position).dateOn
             val input = SimpleDateFormat("yyyy-MM-dd")
             val output = SimpleDateFormat("MMM dd")
@@ -99,20 +102,27 @@ class SetRegularizationDataAdapter(
                 holder.llTimeRR.visibility = View.GONE
             }
 
+            val timeZone: TimeZone = TimeZone.getTimeZone("IST")
+
+
             if (alRegularisation.get(position).inAt!=null){
                 var inDateTime = alRegularisation.get(position).inAt
                 val input = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.s'Z'")
+                input.timeZone = timeZone
                 val output = SimpleDateFormat("hh:mm a")
                 var formateStartdate = input.parse(inDateTime)
                 var showInTime = output.format(formateStartdate)
                 holder.tvStartTimeRR.setText(showInTime)
             }
 
+
             if (alRegularisation.get(position).outAt!=null){
                 var outDateTime = alRegularisation.get(position).outAt
                 val input = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.s'Z'")
+                input.timeZone = timeZone
                 val output = SimpleDateFormat("hh:mm a")
                 var formateEnddate = input.parse(outDateTime)
+//                output.setTimeZone(timeZone)
                 var showOutTime = output.format(formateEnddate)
                 holder.tvEndTimeRR.setText(showOutTime)
             }

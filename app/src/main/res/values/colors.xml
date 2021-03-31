@@ -32,4 +32,11 @@
     <color name="yellow">#FDFF49</color>
 
     <color name="gray_clr">#747474</color>
+
+    <color name="absent_clr">#ff0000</color>
+    <color name="present_clr">#008000</color>
+    <color name="miss_clr">#fabd02</color>
+    <color name="visitor_clr">#ffa500</color>
+    <color name="holiday_clr">#1633ff</color>
+    <color name="leave_clr">#ffa500</color>
 </resources>

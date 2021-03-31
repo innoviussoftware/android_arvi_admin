@@ -12,6 +12,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.arvi.R
 import com.arvi.SessionManager.SessionManager
+import com.arvi.Utils.AppConstants.BASE_URL
 import com.crashlytics.android.Crashlytics
 import com.google.firebase.FirebaseApp
 import io.fabric.sdk.android.Fabric
@@ -66,6 +67,7 @@ class SplashActivity : AppCompatActivity() {
     private fun gotoNextPage() {
         try {
             if (SessionManager.getIsUserLoggedin(context!!)) {
+                BASE_URL = SessionManager.getSelectedServerURL(context!!)
                 if(SessionManager.getSelectedDefaultScreen(context!!).equals(resources.getString(R.string.page_dashboard))) {
                     var intent = Intent(context, DashboardActivity::class.java)
                     intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK

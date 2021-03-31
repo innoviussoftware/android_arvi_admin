@@ -136,6 +136,22 @@ class SelfiCheckInActivity : AppCompatActivity(), CompoundButton.OnCheckedChange
             if (allPermissionsGranted()) {
                 createCameraSource()
                 startCameraSource()
+                if (SessionManager.getSelectedCameraFacing(context!!) != null) {
+                    if (SessionManager.getSelectedCameraFacing(context!!)
+                            .equals(resources.getString(R.string.front_facing))
+                    ) {
+                        if (cameraSource != null) {
+                            cameraSource!!.setFacing(CameraSource.CAMERA_FACING_FRONT)
+                        }
+                    } else {
+                        if (cameraSource != null) {
+                            cameraSource!!.setFacing(CameraSource.CAMERA_FACING_BACK)
+                        }
+                    }
+
+                } else {
+                    cameraSource!!.setFacing(CameraSource.CAMERA_FACING_FRONT)
+                }
             } else {
                 getRuntimePermissions()
             }
@@ -495,21 +511,7 @@ class SelfiCheckInActivity : AppCompatActivity(), CompoundButton.OnCheckedChange
                               }
                           }*/
 
-                    if (SessionManager.getSelectedCameraFacing(context!!) != null) {
-                        if (SessionManager.getSelectedCameraFacing(context!!)
-                                .equals(resources.getString(R.string.front_facing))
-                        ) {
-                            if (cameraSource != null) {
-                                cameraSource!!.setFacing(CameraSource.CAMERA_FACING_FRONT)
-                            }
-                        } else {
-                            if (cameraSource != null) {
-                                cameraSource!!.setFacing(CameraSource.CAMERA_FACING_BACK)
-                            }
-                        }
-                    } else {
-                        cameraSource!!.setFacing(CameraSource.CAMERA_FACING_FRONT)
-                    }
+
 
                 } catch (e: IOException) {
                     Log.e(TAG, "Unable to start camera source.", e)
@@ -682,7 +684,14 @@ class SelfiCheckInActivity : AppCompatActivity(), CompoundButton.OnCheckedChange
                         "address:",
                         address
                     )
-                    tvLocationDR.text = "Location: $address"
+                    if (SessionManager.getSelectedGPSOption(context!!) != null && SessionManager.getSelectedGPSOption(
+                            context!!
+                        ).equals("Yes")
+                    ) {
+                        tvLocationDR.text = "Location: $address"
+                    }else{
+                        tvLocationDR.text =""
+                    }
                 } catch (e: IOException) {
                     e.printStackTrace()
                 }

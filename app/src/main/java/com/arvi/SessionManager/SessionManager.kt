@@ -498,7 +498,7 @@ object SessionManager {
 
     fun getSelectedGPSOption(context: Context?): String {
         val preferences = context!!.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
-        return preferences.getString(AppPrefFields.PARAM_gpsOption, "")!!
+        return preferences.getString(AppPrefFields.PARAM_gpsOption, "Yes")!!
     }
 
 

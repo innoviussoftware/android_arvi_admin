@@ -130,6 +130,21 @@ class TakeEmployeePicActivity : AppCompatActivity(), CompoundButton.OnCheckedCha
             if (allPermissionsGranted()) {
                 createCameraSource()
                 startCameraSource()
+                if (SessionManager.getSelectedCameraFacing(context!!) != null) {
+                    if (SessionManager.getSelectedCameraFacing(context!!)
+                            .equals(resources.getString(R.string.front_facing))
+                    ) {
+                        if (cameraSource != null) {
+                            cameraSource!!.setFacing(CameraSource.CAMERA_FACING_FRONT)
+                        }
+                    } else {
+                        if (cameraSource != null) {
+                            cameraSource!!.setFacing(CameraSource.CAMERA_FACING_BACK)
+                        }
+                    }
+                } else {
+                    cameraSource!!.setFacing(CameraSource.CAMERA_FACING_FRONT)
+                }
             } else {
                 getRuntimePermissions()
             }
@@ -572,21 +587,7 @@ class TakeEmployeePicActivity : AppCompatActivity(), CompoundButton.OnCheckedCha
                     faceCapturePreview!!.start(cameraSource, facePreviewOverlay)
 
 
-                    if (SessionManager.getSelectedCameraFacing(context!!) != null) {
-                        if (SessionManager.getSelectedCameraFacing(context!!)
-                                .equals(resources.getString(R.string.front_facing))
-                        ) {
-                            if (cameraSource != null) {
-                                cameraSource!!.setFacing(CameraSource.CAMERA_FACING_FRONT)
-                            }
-                        } else {
-                            if (cameraSource != null) {
-                                cameraSource!!.setFacing(CameraSource.CAMERA_FACING_BACK)
-                            }
-                        }
-                    } else {
-                        cameraSource!!.setFacing(CameraSource.CAMERA_FACING_FRONT)
-                    }
+
                 } catch (e: IOException) {
                     Log.e(TAG, "Unable to start camera source.", e)
                     cameraSource!!.release()

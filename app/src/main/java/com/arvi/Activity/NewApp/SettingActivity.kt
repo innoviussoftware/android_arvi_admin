@@ -65,12 +65,15 @@ class SettingActivity : AppCompatActivity(), View.OnClickListener {
 
             if (!strSelectedGPSOption.isNullOrEmpty()) {
                 if (strSelectedGPSOption.equals("Yes")) {
-                    rbYesTrackSA!!.isSelected = true
-                    rbNoTrackSA!!.isSelected = false
+                    rbYesTrackSA!!.isChecked = true
+                    rbNoTrackSA!!.isChecked = false
                 } else {
-                    rbYesTrackSA!!.isSelected = false
-                    rbNoTrackSA!!.isSelected = true
+                    rbYesTrackSA!!.isChecked = false
+                    rbNoTrackSA!!.isChecked = true
                 }
+            } else {
+                rbYesTrackSA!!.isChecked = true
+                rbNoTrackSA!!.isChecked = false
             }
 
             //setDefaultServerURLSpinnerData()

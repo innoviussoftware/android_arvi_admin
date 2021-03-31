@@ -138,7 +138,6 @@
                 android:id="@+id/rgGPSTrackSA"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:checkedButton="@id/rbYesTrackSA"
                 android:layout_marginTop="@dimen/_5sdp"
                 android:orientation="horizontal">
                 <RadioButton

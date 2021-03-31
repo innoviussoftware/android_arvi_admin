@@ -10,21 +10,59 @@ import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.arvi.Activity.NewApp.AllDataAttendanceActivity
+import com.arvi.Model.GetCalendarEventsResponseItem
 import com.arvi.R
+import java.text.SimpleDateFormat
 
 class SetAllDataAdapter(
-    var context: Context
+    var context: Context,
+    var alCalendarEvent: ArrayList<GetCalendarEventsResponseItem>
 ) : RecyclerView.Adapter<SetAllDataAdapter.ViewHolder>() {
 
-    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView),
+        View.OnClickListener {
         var tvDayADR = itemView.findViewById(R.id.tvDayADR) as TextView
         var tvDateADR = itemView.findViewById(R.id.tvDateADR) as TextView
         var tvAbsentADR = itemView.findViewById(R.id.tvAbsentADR) as TextView
         var tvMissedADR = itemView.findViewById(R.id.tvMissedADR) as TextView
         var tvPresentADR = itemView.findViewById(R.id.tvPresentADR) as TextView
+        var tvLeaveADR = itemView.findViewById(R.id.tvLeaveADR) as TextView
+        var tvVisitorADR = itemView.findViewById(R.id.tvVisitorADR) as TextView
+        var tvHolidayADR = itemView.findViewById(R.id.tvHolidayADR) as TextView
+
+
         var rlAbsentADR = itemView.findViewById(R.id.rlAbsentADR) as RelativeLayout
         var rlMissedADR = itemView.findViewById(R.id.rlMissedADR) as RelativeLayout
         var rlPresentADR = itemView.findViewById(R.id.rlPresentADR) as RelativeLayout
+        var rlLeaveADR = itemView.findViewById(R.id.rlLeaveADR) as RelativeLayout
+        var rlVisitorADR = itemView.findViewById(R.id.rlVisitorADR) as RelativeLayout
+        var rlHolidayADR = itemView.findViewById(R.id.rlHolidayADR) as RelativeLayout
+
+        init {
+            rlAbsentADR.setOnClickListener(this)
+            rlMissedADR.setOnClickListener(this)
+            rlVisitorADR.setOnClickListener(this)
+            rlPresentADR.setOnClickListener(this)
+            rlHolidayADR.setOnClickListener(this)
+            rlLeaveADR.setOnClickListener(this)
+
+        }
+
+        override fun onClick(v: View?) {
+            when (v!!.id){
+                R.id.rlAbsentADR->{openPage()}
+                R.id.rlPresentADR->{openPage()}
+                R.id.rlLeaveADR->{openPage()}
+                R.id.rlHolidayADR->{openPage()}
+                R.id.rlVisitorADR->{openPage()}
+                R.id.rlMissedADR->{openPage()}
+            }
+        }
+    }
+
+    private fun openPage() {
+        var intent = Intent(context!!,AllDataAttendanceActivity::class.java)
+        context.startActivity(intent)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -38,7 +76,7 @@ class SetAllDataAdapter(
     }
 
     override fun getItemCount(): Int {
-        return 10
+        return alCalendarEvent.size
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -46,19 +84,64 @@ class SetAllDataAdapter(
             holder.tvAbsentADR.setPaintFlags(holder.tvAbsentADR.getPaintFlags() or Paint.UNDERLINE_TEXT_FLAG)
             holder.tvMissedADR.setPaintFlags(holder.tvMissedADR.getPaintFlags() or Paint.UNDERLINE_TEXT_FLAG)
             holder.tvPresentADR.setPaintFlags(holder.tvPresentADR.getPaintFlags() or Paint.UNDERLINE_TEXT_FLAG)
+            holder.tvLeaveADR.setPaintFlags(holder.tvPresentADR.getPaintFlags() or Paint.UNDERLINE_TEXT_FLAG)
+            holder.tvVisitorADR.setPaintFlags(holder.tvPresentADR.getPaintFlags() or Paint.UNDERLINE_TEXT_FLAG)
+            holder.tvHolidayADR.setPaintFlags(holder.tvPresentADR.getPaintFlags() or Paint.UNDERLINE_TEXT_FLAG)
 
-            holder.rlPresentADR.setOnClickListener {
-                var intent = Intent(context!!,AllDataAttendanceActivity::class.java)
-                context.startActivity(intent)
+            if(alCalendarEvent.get(position).A!=null){
+                holder.rlAbsentADR.visibility = View.VISIBLE
+                holder.tvAbsentADR.setText(alCalendarEvent.get(position).A.text+": "+alCalendarEvent.get(position).A.metric.toString())
+            }else{
+                holder.rlAbsentADR.visibility = View.GONE
             }
-            holder.rlAbsentADR.setOnClickListener {
-                var intent = Intent(context!!,AllDataAttendanceActivity::class.java)
-                context.startActivity(intent)
+
+            if(alCalendarEvent.get(position).MISS!=null){
+                holder.rlMissedADR.visibility = View.VISIBLE
+                holder.tvMissedADR.setText(alCalendarEvent.get(position).MISS.text+": "+alCalendarEvent.get(position).MISS.metric.toString())
+            }else{
+                holder.rlMissedADR.visibility = View.GONE
             }
-            holder.rlMissedADR.setOnClickListener {
-                var intent = Intent(context!!,AllDataAttendanceActivity::class.java)
-                context.startActivity(intent)
+
+            if(alCalendarEvent.get(position).P!=null){
+                holder.rlPresentADR.visibility = View.VISIBLE
+                holder.tvPresentADR.setText(alCalendarEvent.get(position).P.text+": "+alCalendarEvent.get(position).P.metric.toString())
+            }else{
+                holder.rlPresentADR.visibility = View.GONE
             }
+
+            if(alCalendarEvent.get(position).L!=null){
+                holder.rlLeaveADR.visibility = View.VISIBLE
+                holder.tvLeaveADR.setText(alCalendarEvent.get(position).L.text+": "+alCalendarEvent.get(position).L.metric.toString())
+            }else{
+                holder.rlLeaveADR.visibility = View.GONE
+            }
+
+            if(alCalendarEvent.get(position).VISITOR!=null){
+                holder.rlVisitorADR.visibility = View.VISIBLE
+                holder.tvVisitorADR.setText(alCalendarEvent.get(position).VISITOR.text+": "+alCalendarEvent.get(position).VISITOR.metric.toString())
+            }else{
+                holder.rlVisitorADR.visibility = View.GONE
+            }
+
+            if(alCalendarEvent.get(position).HOL!=null){
+                holder.rlHolidayADR.visibility = View.VISIBLE
+                holder.tvHolidayADR.setText(alCalendarEvent.get(position).HOL.text+": "+alCalendarEvent.get(position).HOL.metric.toString())
+            }else{
+                holder.rlHolidayADR.visibility = View.GONE
+            }
+
+
+            var strDate = alCalendarEvent.get(position).date
+            val outputDate = SimpleDateFormat("dd MMM, yyyy")
+            val outputDay = SimpleDateFormat("EEEE")
+            val input = SimpleDateFormat("dd-MM-yyyy")
+            var formateStartdate = input.parse(strDate)
+            var showDate = outputDate.format(formateStartdate)
+            var showDay = outputDay.format(formateStartdate)
+
+            holder.tvDateADR.setText(showDate)
+            holder.tvDayADR.setText(showDay)
+
         } catch (e: Exception) {
             e.printStackTrace()
         }

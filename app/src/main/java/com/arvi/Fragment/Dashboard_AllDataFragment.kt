@@ -1,7 +1,6 @@
 package com.arvi.Fragment
 
 import android.annotation.SuppressLint
-import android.app.DatePickerDialog
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
@@ -13,11 +12,7 @@ import android.widget.*
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.arvi.Adapter.SetAllDataAdapter
-import com.arvi.Adapter.SetAllDataAttendanceAdapter
-import com.arvi.Model.GetGroupListResponse
-import com.arvi.Model.GetGroupListResponseItem
-import com.arvi.Model.GetWorkShiftListResponse
-import com.arvi.Model.GetWorkShiftListResponseItem
+import com.arvi.Model.*
 
 import com.arvi.R
 import com.arvi.RetrofitApiCall.APIService
@@ -29,6 +24,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.ArrayList
 
 
 class Dashboard_AllDataFragment : Fragment(), View.OnClickListener {
@@ -46,6 +42,7 @@ class Dashboard_AllDataFragment : Fragment(), View.OnClickListener {
 
     var alWorkShift : ArrayList<GetWorkShiftListResponseItem> = ArrayList()
     var isFirst :Boolean= true
+    var alCalendarEvent : ArrayList<GetCalendarEventsResponseItem> = ArrayList()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,8 +60,8 @@ class Dashboard_AllDataFragment : Fragment(), View.OnClickListener {
         try {
             setIds(view)
             setListeners()
-            setData()
             getDefaultDates()
+            callCalendarEventApi()
             callGroupListApi()
             setPeriodSpinnerData()
             callGetWorkShiftApi()
@@ -72,6 +69,51 @@ class Dashboard_AllDataFragment : Fragment(), View.OnClickListener {
             e.printStackTrace()
         }
         return view
+    }
+
+    private fun callCalendarEventApi() {
+        try {
+            var mAPIService: APIService? = null
+            mAPIService = ApiUtils.apiService
+
+            mAPIService!!.getCalendarEvent(
+                AppConstants.BEARER_TOKEN + SessionManager.getToken(appContext!!),1,startDate!!,endDate!!
+            )
+                .enqueue(object : Callback<GetCalendarEventsResponse> {
+
+                    override fun onResponse(
+                        call: Call<GetCalendarEventsResponse>,
+                        response: Response<GetCalendarEventsResponse>
+                    ) {
+
+                        try {
+                            if (response.code() == 200) {
+                                if (response.body() != null) {
+                                    alCalendarEvent = ArrayList()
+                                    alCalendarEvent.addAll(response.body())
+                                    setData()
+                                }
+                            } else if (response.code() == 401) {
+
+                            } else {
+                            }
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+
+                        }
+                    }
+
+                    override fun onFailure(
+                        call: Call<GetCalendarEventsResponse>,
+                        t: Throwable
+                    ) {
+
+                    }
+                })
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
     }
 
     private fun callGetWorkShiftApi() {
@@ -324,10 +366,12 @@ class Dashboard_AllDataFragment : Fragment(), View.OnClickListener {
     @SuppressLint("WrongConstant")
     private fun setData() {
         try {
-              var setVisitorDataAdapter = SetAllDataAdapter(appContext!!)
-              rVwAllDataDADF!!.layoutManager =
-                  LinearLayoutManager(appContext, LinearLayout.VERTICAL, false)
-              rVwAllDataDADF!!.setAdapter(setVisitorDataAdapter)
+            if(alCalendarEvent!=null && alCalendarEvent.size>0) {
+                var setVisitorDataAdapter = SetAllDataAdapter(appContext!!,alCalendarEvent)
+                rVwAllDataDADF!!.layoutManager =
+                    LinearLayoutManager(appContext, LinearLayout.VERTICAL, false)
+                rVwAllDataDADF!!.setAdapter(setVisitorDataAdapter)
+            }
         } catch (e: Exception) {
             e.printStackTrace()
         }

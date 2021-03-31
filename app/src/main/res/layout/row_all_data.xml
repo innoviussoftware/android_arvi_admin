@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <LinearLayout
         android:id="@+id/llMainADR"
@@ -44,12 +44,13 @@
                 android:id="@+id/rlAbsentADR"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
-                <ImageView
+                <com.makeramen.roundedimageview.RoundedImageView
                     android:id="@+id/imgVwAbsentADR"
+                    app:riv_oval="true"
                     android:layout_width="@dimen/_12sdp"
                     android:layout_height="@dimen/_12sdp"
                     android:layout_centerVertical="true"
-                    android:src="@drawable/late_status"
+                    android:src="@color/absent_clr"
                     />
                 <TextView
                     android:id="@+id/tvAbsentADR"
@@ -69,12 +70,13 @@
                 android:layout_marginTop="@dimen/_3sdp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
-                <ImageView
+                <com.makeramen.roundedimageview.RoundedImageView
                     android:id="@+id/imgVwMissCheckInADR"
+                    app:riv_oval="true"
                     android:layout_width="@dimen/_12sdp"
                     android:layout_height="@dimen/_12sdp"
                     android:layout_centerVertical="true"
-                    android:src="@drawable/wfh_status"
+                    android:src="@color/miss_clr"
                     />
                 <TextView
                     android:id="@+id/tvMissedADR"
@@ -90,15 +92,68 @@
                     />
             </RelativeLayout>
             <RelativeLayout
+                android:id="@+id/rlLeaveADR"
+                android:layout_marginTop="@dimen/_3sdp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <com.makeramen.roundedimageview.RoundedImageView
+                    android:id="@+id/imgVwLeaveADR"
+                    app:riv_oval="true"
+                    android:layout_width="@dimen/_12sdp"
+                    android:layout_height="@dimen/_12sdp"
+                    android:layout_centerVertical="true"
+                    android:src="@color/leave_clr"
+                    />
+                <TextView
+                    android:id="@+id/tvLeaveADR"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_toEndOf="@+id/imgVwLeaveADR"
+                    android:text="Leave: 0"
+                    android:textColor="@color/app_bg"
+                    android:layout_marginStart="@dimen/_5sdp"
+                    android:textSize="@dimen/_11ssp"
+                    android:fontFamily="@font/gotham_medium"
+                    />
+            </RelativeLayout>
+            <RelativeLayout
+                android:id="@+id/rlVisitorADR"
+                android:layout_marginTop="@dimen/_3sdp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <com.makeramen.roundedimageview.RoundedImageView
+                    android:id="@+id/imgVwVisitorADR"
+                    app:riv_oval="true"
+                    android:layout_width="@dimen/_12sdp"
+                    android:layout_height="@dimen/_12sdp"
+                    android:layout_centerVertical="true"
+                    android:src="@color/visitor_clr"
+                    />
+                <TextView
+                    android:id="@+id/tvVisitorADR"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_toEndOf="@+id/imgVwVisitorADR"
+                    android:text="Visitor: 0"
+                    android:textColor="@color/app_bg"
+                    android:layout_marginStart="@dimen/_5sdp"
+                    android:textSize="@dimen/_11ssp"
+                    android:fontFamily="@font/gotham_medium"
+                    />
+            </RelativeLayout>
+            <RelativeLayout
                 android:id="@+id/rlPresentADR"
                 android:layout_marginTop="@dimen/_3sdp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
-                <ImageView
+                <com.makeramen.roundedimageview.RoundedImageView
                     android:id="@+id/imgVwPresentADR"
                     android:layout_width="@dimen/_12sdp"
                     android:layout_height="@dimen/_12sdp"
-                    android:src="@drawable/present_status"
+                    app:riv_oval="true"
+                    android:src="@color/present_clr"
                     android:layout_centerVertical="true"
                     />
                 <TextView
@@ -108,6 +163,33 @@
                     android:layout_centerVertical="true"
                     android:layout_toEndOf="@+id/imgVwPresentADR"
                     android:text="Present: 0"
+                    android:textColor="@color/app_bg"
+                    android:layout_marginStart="@dimen/_5sdp"
+                    android:textSize="@dimen/_11ssp"
+                    android:fontFamily="@font/gotham_medium"
+                    />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/rlHolidayADR"
+                android:layout_marginTop="@dimen/_3sdp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <com.makeramen.roundedimageview.RoundedImageView
+                    app:riv_oval="true"
+                    android:id="@+id/imgVwHolidayADR"
+                    android:layout_width="@dimen/_12sdp"
+                    android:layout_height="@dimen/_12sdp"
+                    android:layout_centerVertical="true"
+                    android:src="@color/holiday_clr"
+                    />
+                <TextView
+                    android:id="@+id/tvHolidayADR"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_toEndOf="@+id/imgVwHolidayADR"
+                    android:text="Holiday: 0"
                     android:textColor="@color/app_bg"
                     android:layout_marginStart="@dimen/_5sdp"
                     android:textSize="@dimen/_11ssp"

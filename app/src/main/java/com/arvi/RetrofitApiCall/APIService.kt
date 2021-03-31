@@ -250,4 +250,12 @@ interface APIService {
         @Header("Authorization") auth:String
     ):Call<GetWorkShiftListResponse>
 
+    //todo:: get calendar event  = all data
+    @GET("dashboard/calender_events")
+    fun getCalendarEvent(
+        @Header("Authorization") auth:String,
+        @Query("fromApp")fromApp:Int,
+        @Query("startDate") startDate:String,
+        @Query("endDate")endDate:String
+    ):Call<GetCalendarEventsResponse>
 }

@@ -68,23 +68,33 @@ class AddRegularizationRequestActivity : AppCompatActivity(), View.OnClickListen
                     var formateDateOn = input.parse(requestData!!.dateOn)
                     var showDateOn = output.format(formateDateOn)
                     tvAttenDateARRA!!.setText(showDateOn)
-
+                    val timeZone: TimeZone = TimeZone.getTimeZone("IST")
                     if (requestData!!.inAt != null) {
                         var inDateTime = requestData!!.inAt
                         val input = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.s'Z'")
+                        input.timeZone  = timeZone
                         val output = SimpleDateFormat("hh:mm a")
                         var formateStartdate = input.parse(inDateTime)
                         var showInTime = output.format(formateStartdate)
                         tvCheckInTimeARRA!!.setText(showInTime)
+
+                        val outputDate = SimpleDateFormat("dd/MM/yyyy")
+                        var showInDate = outputDate.format(formateStartdate)
+                        tvInDateARRA!!.setText(showInDate)
                     }
 
                     if (requestData!!.outAt != null) {
                         var outDateTime = requestData!!.outAt
                         val input = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.s'Z'")
+                        input.timeZone  = timeZone
                         val output = SimpleDateFormat("hh:mm a")
                         var formateEnddate = input.parse(outDateTime)
                         var showOutTime = output.format(formateEnddate)
                         tvCheckOutTimeARRA!!.setText(showOutTime)
+
+                        val outputDate = SimpleDateFormat("dd/MM/yyyy")
+                        var showOutDate = outputDate.format(formateEnddate)
+                        tvOutDateARRA!!.setText(showOutDate)
                     }
                 }
             }
@@ -176,6 +186,8 @@ class AddRegularizationRequestActivity : AppCompatActivity(), View.OnClickListen
                                 //println("date2 is Greater than my date1")
 
                                 val output = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.s'Z'")
+                                val timeZone: TimeZone = TimeZone.getTimeZone("IST")
+                                output.timeZone  = timeZone
                                 val input = SimpleDateFormat("dd/MM/yyyy hh:mm a")
                                 var formateInDate = input.parse(strIn)
                                 var sendInAt = output.format(formateInDate)
