@@ -13,7 +13,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.arvi.Adapter.SetAllDataAdapter
 import com.arvi.Adapter.SetAllDataAttendanceAdapter
+import com.arvi.Model.GetCalendarEventsResponseItem
 import com.arvi.R
+import java.text.SimpleDateFormat
 
 class AllDataAttendanceActivity : AppCompatActivity(), View.OnClickListener {
     var imgVwBackADAA: ImageView? = null
@@ -23,12 +25,28 @@ class AllDataAttendanceActivity : AppCompatActivity(), View.OnClickListener {
     var context: Context? = null
     var snackbarView: View? = null
 
+    var alCalendarEvent: GetCalendarEventsResponseItem?=null
+    var groupName:String?=""
+    var from:String="" //from = Absent,present,leave,miss,visitor,holiday
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_all_data_attendance)
         try {
             setIds()
             setListeners()
+            if(intent.extras!=null){
+                alCalendarEvent = intent.getParcelableExtra("alCalendarEvent")
+                groupName = intent.getStringExtra("groupName")
+                from = intent.getStringExtra("from")
+
+                val outputDate = SimpleDateFormat("dd MMM, yyyy")
+                val input = SimpleDateFormat("dd-MM-yyyy")
+                var formateStartdate = input.parse(alCalendarEvent!!.date)
+                var showDate = outputDate.format(formateStartdate)
+
+                tvDetailADAA!!.setText("Date: "+showDate+", Group: "+groupName)
+            }
             setData()
         } catch (e: Exception) {
             e.printStackTrace()

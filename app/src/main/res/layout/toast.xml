@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/toast_layout_root"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="10dp"
+    android:background="#A9000000" >
+
+    <TextView android:id="@+id/text"
+        android:layout_width="match_parent"
+        android:layout_margin="@dimen/_10sdp"
+        android:fontFamily="@font/gotham_book_regular"
+        android:textSize="@dimen/_12ssp"
+        android:padding="@dimen/_10sdp"
+        android:layout_height="match_parent"
+        android:textColor="#FFF" />
+
+</LinearLayout>

@@ -150,7 +150,7 @@ class ProfileFragment : Fragment(), View.OnClickListener {
             R.id.rlProfilePicFP -> {
                 try {
                     if (checkPermission()) {
-                        CropImage.startPickImageActivity(requireActivity())
+                        CropImage.startPickImageActivity(requireActivity(),this)
                     }
                 } catch (e: Exception) {
                     e.printStackTrace();
@@ -159,7 +159,7 @@ class ProfileFragment : Fragment(), View.OnClickListener {
             R.id.ivChooseProfilePicFP -> {
                 try {
                     if (checkPermission()) {
-                        CropImage.startPickImageActivity(requireActivity())
+                        CropImage.startPickImageActivity(requireActivity(),this)
                     }
                 } catch (e: Exception) {
                     e.printStackTrace();
@@ -334,7 +334,7 @@ class ProfileFragment : Fragment(), View.OnClickListener {
     @TargetApi(Build.VERSION_CODES.M)
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
+//        super.onActivityResult(requestCode, resultCode, data)
         try {
             if (resultCode == Activity.RESULT_OK) {
                 try {

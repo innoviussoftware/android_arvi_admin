@@ -217,7 +217,8 @@ interface APIService {
     fun getAttendanceSummary(
         @Header("Authorization") auth:String,
         @Query("startDate") startDate:String,
-        @Query("endDate")endDate:String
+        @Query("endDate")endDate:String,
+        @Query("groupId")groupId:Int
     ):Call<GetAttendanceSummaryResponse>
 
     //todo:: get Key metrics
@@ -225,7 +226,8 @@ interface APIService {
     fun getKeyMetrics(
         @Header("Authorization") auth:String,
         @Query("startDate") startDate:String,
-        @Query("endDate")endDate:String
+        @Query("endDate")endDate:String,
+        @Query("groupId")groupId:Int
     ):Call<GetKeyMetricsResponse>
 
     //todo:: get regularisation list
@@ -257,5 +259,15 @@ interface APIService {
         @Query("fromApp")fromApp:Int,
         @Query("startDate") startDate:String,
         @Query("endDate")endDate:String
+    ):Call<GetCalendarEventsResponse>
+
+    //todo:: get calendar event with group filter
+    @GET("dashboard/calender_events")
+    fun getCalendarEventWithGroup(
+        @Header("Authorization") auth:String,
+        @Query("fromApp")fromApp:Int,
+        @Query("startDate") startDate:String,
+        @Query("endDate")endDate:String,
+        @Query("groupId")groupId:Int
     ):Call<GetCalendarEventsResponse>
 }

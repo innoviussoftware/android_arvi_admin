@@ -9,10 +9,32 @@ import android.os.Build
 import android.os.Environment
 import android.provider.DocumentsContract
 import android.provider.MediaStore
+import android.util.Log
 import java.io.ByteArrayOutputStream
+import java.io.File
+import java.io.FileOutputStream
 import java.util.*
 
 object FileUtil {
+
+    fun getImageUriAndPath(
+        inContext: Context,
+        inImage: Bitmap
+    ): String? {
+        val bytes = ByteArrayOutputStream()
+        inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes)
+       var root = createDirectoryAndSaveFile(inImage,"IMG_" + Calendar.getInstance().getTime()+".jpg")
+
+        /*val imgSaved = MediaStore.Images.Media.insertImage(
+            inContext.getContentResolver(),
+            root.absolutePath,
+            UUID.randomUUID().toString() + ".png",
+            "drawing"
+        )*/
+        Log.e("Path:",root.absolutePath)
+     //   val path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(), inImage, "IMG_" + Calendar.getInstance().getTime(), null)
+        return root.absolutePath
+    }
 
     fun getImageUri(
         inContext: Context,
@@ -20,8 +42,35 @@ object FileUtil {
     ): Uri? {
         val bytes = ByteArrayOutputStream()
         inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes)
-        val path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(), inImage, "IMG_" + Calendar.getInstance().getTime(), null)
+           val path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(), inImage, "IMG_" + Calendar.getInstance().getTime(), null)
         return Uri.parse(path)
+    }
+
+
+    fun createDirectoryAndSaveFile(
+        imgSave: Bitmap,
+        fileName: String
+    ):File {
+        val direct = File(
+            Environment.getExternalStorageDirectory().toString() + "/Arvi"
+        )
+        if (!direct.exists()) {
+            val imageDirectory = File("/sdcard/Arvi/")
+            imageDirectory.mkdirs()
+        }
+        val file = File(File("/sdcard/Arvi/"), fileName)
+        if (file.exists()) {
+            file.delete()
+        }
+        try {
+            val out = FileOutputStream(file)
+            imgSave.compress(Bitmap.CompressFormat.JPEG, 100, out)
+            out.flush()
+            out.close()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+         return file
     }
 
     fun getPath(context: Context, uri: Uri): String? {
@@ -35,7 +84,8 @@ object FileUtil {
                 val type = split[0]
 
                 if ("primary".equals(type, ignoreCase = true)) {
-                    return Environment.getExternalStorageDirectory().toString() + "/" + split[1]
+
+                    return Environment.getExternalStorageDirectory().toString() + "/" +  split[1]
                 }
 
                 // TODO handle non-primary volumes

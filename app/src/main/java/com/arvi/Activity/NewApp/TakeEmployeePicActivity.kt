@@ -346,8 +346,10 @@ class TakeEmployeePicActivity : AppCompatActivity(), CompoundButton.OnCheckedCha
         try {
 
             imgCount = imgCount + 1
+            val tempUri = FileUtil.getImageUriAndPath(this@TakeEmployeePicActivity, face)
+            val profilePath = tempUri/*
             val tempUri = getImageUri(context!!, face)
-            val profilePath = FileUtil.getPath(context!!, tempUri)
+            val profilePath = FileUtil.getPath(context!!, tempUri)*/
             Log.e("path ", profilePath!!)
             callStorePersonPicApi(profilePath)
             if (imgCount == 4) {

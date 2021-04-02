@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.os.Environment
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
@@ -16,6 +17,7 @@ import com.arvi.Utils.AppConstants.BASE_URL
 import com.crashlytics.android.Crashlytics
 import com.google.firebase.FirebaseApp
 import io.fabric.sdk.android.Fabric
+import java.io.File
 import java.util.*
 
 
@@ -45,8 +47,8 @@ class SplashActivity : AppCompatActivity() {
             context = SplashActivity@ this
 
             //todo:: priyanka 31/11/2020
-            //todo:: restart app code start
-//            setHandlerData()
+            //todo:: delete photos after this time
+            setHandlerData()
             //todo:: restart app code end
 
 
@@ -63,10 +65,81 @@ class SplashActivity : AppCompatActivity() {
         }
     }
 
+    private fun setHandlerData() {
+
+        try {
+            h = Handler(Looper.getMainLooper())
+            r = object : Runnable {
+                override fun run() {
+
+                    //current time
+
+                    val c: Calendar = Calendar.getInstance()
+                    val hour: Int = c.get(Calendar.HOUR_OF_DAY)
+                    val min: Int = c.get(Calendar.MINUTE)
+                    val sec: Int = c.get(Calendar.SECOND)
+
+                    var showHour = "11"
+                    var showMinute = "59"
+                    var showSec = "00"
+
+
+
+                    if (hour < 10) {
+                        if (hour == 0) {
+                            showHour = "24"
+                        } else {
+                            showHour = "0" + hour.toString()
+                        }
+                    } else {
+                        showHour = hour.toString()
+                    }
+
+                    if (min < 10) {
+                        showMinute = "0" + min.toString()
+                    } else {
+                        showMinute = min.toString()
+                    }
+
+                    if (sec < 10) {
+                        showSec = "0" + sec.toString()
+                    } else {
+                        showSec = sec.toString()
+                    }
+
+
+                    val currenttime =
+                        "$showHour : $showMinute : $showSec"
+                    Log.e("time:", currenttime)
+                    if (currenttime.equals("12 : 00 : 00") || currenttime.equals("23 : 59 : 59")) {
+                        Log.e("restart", "true")
+                        //restarting the activity
+                        val dir = File(
+                            Environment.getExternalStorageDirectory().toString() + "/Arvi"
+                        )
+                        if (dir.isDirectory()) {
+                            val children: Array<String> = dir.list()
+                            for (i in children.indices) {
+                                File(dir, children[i]).delete()
+                            }
+                        }
+
+                    }
+                    h!!.postDelayed(this, delayMillis)
+                }
+            }
+
+            h!!.post(r)
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+        }
+    }
 
     private fun gotoNextPage() {
         try {
             if (SessionManager.getIsUserLoggedin(context!!)) {
+
+
                 BASE_URL = SessionManager.getSelectedServerURL(context!!)
                 if(SessionManager.getSelectedDefaultScreen(context!!).equals(resources.getString(R.string.page_dashboard))) {
                     var intent = Intent(context, DashboardActivity::class.java)

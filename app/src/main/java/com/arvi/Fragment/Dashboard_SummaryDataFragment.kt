@@ -1,8 +1,11 @@
 package com.arvi.Fragment
 
+import android.app.DatePickerDialog
+import android.app.Dialog
 import android.content.Context
 import android.os.Bundle
 import android.util.Log
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,9 +17,12 @@ import com.arvi.RetrofitApiCall.APIService
 import com.arvi.RetrofitApiCall.ApiUtils
 import com.arvi.SessionManager.SessionManager
 import com.arvi.Utils.AppConstants
+import com.arvi.Utils.MyProgressDialog
+import com.arvi.Utils.SnackBar
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
@@ -41,9 +47,10 @@ class Dashboard_SummaryDataFragment : Fragment() {
     var alAttendanceSummary: ArrayList<GetAttendanceSummaryResponseItem> = ArrayList()
     var alGroupList: ArrayList<GetGroupListResponseItem> = ArrayList()
 
-    var alWorkShift : ArrayList<GetWorkShiftListResponseItem> = ArrayList()
-    var isFirst :Boolean= true
-
+    var alWorkShift: ArrayList<GetWorkShiftListResponseItem> = ArrayList()
+    var isFirst: Boolean = true
+    var group_id: Int = 0
+    var snackbarView:View?=null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,6 +68,7 @@ class Dashboard_SummaryDataFragment : Fragment() {
         try {
             setIds(view)
             getDefaultDates()
+//            showProgressDialog()
             callAttendanceSummaryDataApi()
             callGetKeyMetricsDataApi()
             callGroupListApi()
@@ -92,8 +100,9 @@ class Dashboard_SummaryDataFragment : Fragment() {
                                 if (response.body() != null) {
                                     alWorkShift = ArrayList()
                                     alWorkShift.addAll(response.body())
-                                    alWorkShift.add(0,
-                                        GetWorkShiftListResponseItem("",null,0,"All","","")
+                                    alWorkShift.add(
+                                        0,
+                                        GetWorkShiftListResponseItem("", null, 0, "All", "", "")
                                     )
                                     setWorkShiftList()
                                 }
@@ -169,21 +178,20 @@ class Dashboard_SummaryDataFragment : Fragment() {
                     parent: AdapterView<*>,
                     view: View, position: Int, id: Long
                 ) {
-                    Log.e("Period:-",periodOption[position])
-                    if(!isFirst) {
+                    Log.e("Period:-", periodOption[position])
+                    if (!isFirst) {
                         if (periodOption[position].equals(resources.getString(R.string.previous_month))) {
                             getPreviousMonth()
-                            callAttendanceSummaryDataApi()
-                            callGetKeyMetricsDataApi()
                         } else if (periodOption[position].equals(resources.getString(R.string.this_month))) {
                             getDefaultDates()
-                            callAttendanceSummaryDataApi()
-                            callGetKeyMetricsDataApi()
                         } else {
-
+                            getCustomDates()
                         }
-                        Toast.makeText(context!!, "Work In Progress", Toast.LENGTH_LONG).show()
-                    }else{
+                        showProgressDialog()
+                        callAttendanceSummaryDataApi()
+                        callGetKeyMetricsDataApi()
+//                        Toast.makeText(context!!, "Work In Progress", Toast.LENGTH_LONG).show()
+                    } else {
                         isFirst = false
                     }
                 }
@@ -196,6 +204,138 @@ class Dashboard_SummaryDataFragment : Fragment() {
             e.printStackTrace()
         }
 
+    }
+
+    private fun showProgressDialog() {
+        MyProgressDialog.showProgressDialog(appContext!!)
+        val delayInMillis: Long = 1000
+        val timer = Timer()
+        timer.schedule(object : TimerTask() {
+            override fun run() {
+                MyProgressDialog.hideProgressDialog()
+            }
+        }, delayInMillis)
+    }
+
+    private fun getCustomDates() {
+        try {
+            var dialog = Dialog(appContext!!)
+            dialog.setCancelable(false)
+            dialog.setContentView(R.layout.dialog_select_custom_date)
+            dialog!!.window!!.setBackgroundDrawableResource(android.R.color.transparent)
+            var etStartDateDSCD = dialog.findViewById(R.id.etStartDateDSCD) as EditText
+            var etEndDateDSCD = dialog.findViewById(R.id.etEndDateDSCD) as EditText
+            var tvOkDSCD = dialog.findViewById(R.id.tvOkDSCD) as TextView
+            var tvCancelDSCD = dialog.findViewById(R.id.tvCancelDSCD) as TextView
+
+            val calendar: Calendar = Calendar.getInstance()
+            calendar.add(Calendar.MONTH, 0)
+            calendar.set(Calendar.DATE, calendar.getActualMinimum(Calendar.DAY_OF_MONTH))
+            val monthFirstDay: Date = calendar.getTime()
+            calendar.set(Calendar.DATE, calendar.getActualMaximum(Calendar.DAY_OF_MONTH))
+            val monthLastDay: Date = calendar.getTime()
+
+            val df = SimpleDateFormat("yyyy-MM-dd")
+            startDate = df.format(monthFirstDay)
+            endDate = df.format(monthLastDay)
+
+            etStartDateDSCD.setText(startDate)
+            etEndDateDSCD.setText(endDate)
+
+            etStartDateDSCD.setOnClickListener {
+                openGetDateDialog(etStartDateDSCD,"start")
+            }
+            etEndDateDSCD.setOnClickListener {
+                openGetDateDialog(etEndDateDSCD,"end")
+            }
+            tvCancelDSCD.setOnClickListener {
+                dialog.dismiss()
+            }
+            tvOkDSCD.setOnClickListener {
+                try {
+                    var formatter = SimpleDateFormat("yyyy-MM-dd")
+                    var dateStart = formatter.parse(startDate)
+                    var dateEnd = formatter.parse(endDate)
+                    if (dateEnd.compareTo(dateStart) < 0) {
+    //                    SnackBar.showValidationError(appContext!!,snackbarView!!,"End date must be greater than Start date")
+    //                   Toast.makeText(appContext, "End date must be greater than Start date", Toast.LENGTH_SHORT).show()
+                        showToast()
+
+                    } else {
+                        dialog.dismiss()
+                        showProgressDialog()
+                        callAttendanceSummaryDataApi()
+                        callGetKeyMetricsDataApi()
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+            dialog.show()
+            dialog!!.window!!.setLayout(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            )
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun showToast() {
+        try {
+            val inflater = layoutInflater
+            val layout: View = inflater.inflate( R.layout.toast, requireView().findViewById(R.id.toast_layout_root) as ViewGroup?)
+
+            val text = layout.findViewById<View>(R.id.text) as TextView
+            text.text = "End date must be greater than Start date"
+
+            val toast = Toast(appContext)
+//        toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0)
+            toast.duration = Toast.LENGTH_LONG
+            toast.view = layout
+            toast.show()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+
+    private fun openGetDateDialog(etStartDateDSCD: EditText,from:String) {
+
+        val calendar: Calendar = Calendar.getInstance()
+        var mYear = calendar.get(Calendar.YEAR)
+        var mMonth = calendar.get(Calendar.MONTH)
+        var mDay = calendar.get(Calendar.DAY_OF_MONTH)
+        val strDate: String = etStartDateDSCD.text.toString()
+        mYear = strDate.substring(0, 4).toInt()
+        mMonth = strDate.substring(5, 7).toInt()
+        mMonth = mMonth - 1
+        mDay = strDate.substring(8, 10).toInt()
+
+        val datePickerDialog = DatePickerDialog(
+            appContext!!,
+            DatePickerDialog.OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
+                // Display Selected date in textbox
+                val mFormat = DecimalFormat("00")
+                if(from.equals("start")) {
+                    startDate =
+                        year.toString() + "-" + mFormat.format((monthOfYear + 1).toDouble()) + "-" + mFormat.format(
+                            (dayOfMonth).toDouble()
+                        )
+                    etStartDateDSCD.setText(startDate)
+                }else{
+                    endDate =
+                        year.toString() + "-" + mFormat.format((monthOfYear + 1).toDouble()) + "-" + mFormat.format(
+                            (dayOfMonth).toDouble()
+                        )
+                    etStartDateDSCD.setText(endDate)
+                }
+            },
+            mYear,
+            mMonth,
+            mDay
+        )
+        datePickerDialog.show()
     }
 
     private fun getPreviousMonth() {
@@ -225,7 +365,7 @@ class Dashboard_SummaryDataFragment : Fragment() {
             mAPIService!!.getKeyMetrics(
                 AppConstants.BEARER_TOKEN + SessionManager.getToken(
                     appContext!!
-                ), startDate!!, endDate!!
+                ), startDate!!, endDate!!, group_id
             )
                 .enqueue(object : Callback<GetKeyMetricsResponse> {
 
@@ -280,6 +420,7 @@ class Dashboard_SummaryDataFragment : Fragment() {
     private fun setIds(view: View) {
         try {
             appContext = activity
+            snackbarView = requireActivity().findViewById(android.R.id.content)
             tvPresentCountDSDF = view.findViewById(R.id.tvPresentCountDSDF)
             tvAbsentCountDSDF = view.findViewById(R.id.tvAbsentCountDSDF)
             tvTotalWorkHrDSDF = view.findViewById(R.id.tvTotalWorkHrDSDF)
@@ -333,8 +474,9 @@ class Dashboard_SummaryDataFragment : Fragment() {
                                 if (response.body() != null) {
                                     alGroupList = ArrayList()
                                     alGroupList.addAll(response.body())
-                                    alGroupList.add(0,
-                                        GetGroupListResponseItem("","","",0,0,"All","")
+                                    alGroupList.add(
+                                        0,
+                                        GetGroupListResponseItem("", "", "", 0, 0, "All", "")
                                     )
                                     setGroupList()
                                 }
@@ -377,7 +519,11 @@ class Dashboard_SummaryDataFragment : Fragment() {
                     ) {
                         try {
                             var strGroupName = alGroupList.get(position).name
-                            var group_id = alGroupList.get(position).id
+
+                            group_id = alGroupList.get(position).id
+                        //    showProgressDialog()
+                            callGetKeyMetricsDataApi()
+                            callAttendanceSummaryDataApi()
                         } catch (e: Exception) {
                             e.printStackTrace()
                         }
@@ -401,10 +547,11 @@ class Dashboard_SummaryDataFragment : Fragment() {
             var mAPIService: APIService? = null
             mAPIService = ApiUtils.apiService
 //            MyProgressDialog.showProgressDialog(context!!)
+
             mAPIService!!.getAttendanceSummary(
                 AppConstants.BEARER_TOKEN + SessionManager.getToken(
                     appContext!!
-                ), startDate!!, endDate!!
+                ), startDate!!, endDate!!, group_id
             )
                 .enqueue(object : Callback<GetAttendanceSummaryResponse> {
 

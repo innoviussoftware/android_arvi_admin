@@ -1,27 +1,34 @@
 package com.arvi.Fragment
 
 import android.annotation.SuppressLint
+import android.app.DatePickerDialog
+import android.app.Dialog
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.arvi.Activity.NewApp.AllDataAttendanceActivity
 import com.arvi.Adapter.SetAllDataAdapter
+import com.arvi.Interfaces.AttendanceItemClickListener
+import com.arvi.Interfaces.RecyclerViewItemClicked
 import com.arvi.Model.*
-
 import com.arvi.R
 import com.arvi.RetrofitApiCall.APIService
 import com.arvi.RetrofitApiCall.ApiUtils
 import com.arvi.SessionManager.SessionManager
 import com.arvi.Utils.AppConstants
+import com.arvi.Utils.MyProgressDialog
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
@@ -43,6 +50,8 @@ class Dashboard_AllDataFragment : Fragment(), View.OnClickListener {
     var alWorkShift : ArrayList<GetWorkShiftListResponseItem> = ArrayList()
     var isFirst :Boolean= true
     var alCalendarEvent : ArrayList<GetCalendarEventsResponseItem> = ArrayList()
+    var group_id: Int =0
+    var strGroupName: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -75,11 +84,25 @@ class Dashboard_AllDataFragment : Fragment(), View.OnClickListener {
         try {
             var mAPIService: APIService? = null
             mAPIService = ApiUtils.apiService
-
-            mAPIService!!.getCalendarEvent(
-                AppConstants.BEARER_TOKEN + SessionManager.getToken(appContext!!),1,startDate!!,endDate!!
-            )
-                .enqueue(object : Callback<GetCalendarEventsResponse> {
+            showProgressDialog()
+            var apiCall: Call<GetCalendarEventsResponse> ?=null
+            if(group_id>0) {
+                apiCall = mAPIService.getCalendarEventWithGroup(
+                    AppConstants.BEARER_TOKEN + SessionManager.getToken(appContext!!),
+                    1,
+                    startDate!!,
+                    endDate!!,
+                    group_id
+                )
+            }else{
+                apiCall = mAPIService.getCalendarEvent(
+                    AppConstants.BEARER_TOKEN + SessionManager.getToken(appContext!!),
+                    1,
+                    startDate!!,
+                    endDate!!
+                )
+            }
+            apiCall.enqueue(object : Callback<GetCalendarEventsResponse> {
 
                     override fun onResponse(
                         call: Call<GetCalendarEventsResponse>,
@@ -114,6 +137,17 @@ class Dashboard_AllDataFragment : Fragment(), View.OnClickListener {
             e.printStackTrace()
         }
 
+    }
+
+    private fun showProgressDialog() {
+       MyProgressDialog.showProgressDialog(appContext!!)
+        val delayInMillis: Long = 1000
+        val timer = Timer()
+        timer.schedule(object : TimerTask() {
+            override fun run() {
+                MyProgressDialog.hideProgressDialog()
+            }
+        }, delayInMillis)
     }
 
     private fun callGetWorkShiftApi() {
@@ -222,9 +256,9 @@ class Dashboard_AllDataFragment : Fragment(), View.OnClickListener {
                             getDefaultDates()
 
                         } else {
-
+                            getCustomDates()
                         }
-                        Toast.makeText(context!!, "Work In Progress", Toast.LENGTH_LONG).show()
+                        callCalendarEventApi()
                     }else{
                         isFirst = false
                     }
@@ -239,6 +273,123 @@ class Dashboard_AllDataFragment : Fragment(), View.OnClickListener {
         }
 
     }
+
+    private fun getCustomDates() {
+        try {
+            var dialog = Dialog(appContext!!)
+            dialog.setCancelable(false)
+            dialog.setContentView(R.layout.dialog_select_custom_date)
+            dialog!!.window!!.setBackgroundDrawableResource(android.R.color.transparent)
+            var etStartDateDSCD = dialog.findViewById(R.id.etStartDateDSCD) as EditText
+            var etEndDateDSCD = dialog.findViewById(R.id.etEndDateDSCD) as EditText
+            var tvOkDSCD = dialog.findViewById(R.id.tvOkDSCD) as TextView
+            var tvCancelDSCD = dialog.findViewById(R.id.tvCancelDSCD) as TextView
+
+            val calendar: Calendar = Calendar.getInstance()
+            calendar.add(Calendar.MONTH, 0)
+            calendar.set(Calendar.DATE, calendar.getActualMinimum(Calendar.DAY_OF_MONTH))
+            val monthFirstDay: Date = calendar.getTime()
+            calendar.set(Calendar.DATE, calendar.getActualMaximum(Calendar.DAY_OF_MONTH))
+            val monthLastDay: Date = calendar.getTime()
+
+            val df = SimpleDateFormat("yyyy-MM-dd")
+            startDate = df.format(monthFirstDay)
+            endDate = df.format(monthLastDay)
+
+            etStartDateDSCD.setText(startDate)
+            etEndDateDSCD.setText(endDate)
+
+            etStartDateDSCD.setOnClickListener {
+                openGetDateDialog(etStartDateDSCD,"start")
+            }
+            etEndDateDSCD.setOnClickListener {
+                openGetDateDialog(etEndDateDSCD,"end")
+            }
+            tvCancelDSCD.setOnClickListener {
+                dialog.dismiss()
+            }
+            tvOkDSCD.setOnClickListener {
+                try {
+                    var formatter = SimpleDateFormat("yyyy-MM-dd")
+                    var dateStart = formatter.parse(startDate)
+                    var dateEnd = formatter.parse(endDate)
+                    if (dateEnd.compareTo(dateStart) < 0) {
+                        showToast()
+
+                    } else {
+                        dialog.dismiss()
+                        callCalendarEventApi()
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+            dialog.show()
+            dialog!!.window!!.setLayout(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            )
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun showToast() {
+        try {
+            val inflater = layoutInflater
+            val layout: View = inflater.inflate( R.layout.toast, requireView().findViewById(R.id.toast_layout_root) as ViewGroup?)
+
+            val text = layout.findViewById<View>(R.id.text) as TextView
+            text.text = "End date must be greater than Start date"
+
+            val toast = Toast(appContext)
+//        toast.setGravity(Gravity.CENTER_VERTICAL, 0, 0)
+            toast.duration = Toast.LENGTH_LONG
+            toast.view = layout
+            toast.show()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun openGetDateDialog(etStartDateDSCD: EditText,from:String) {
+
+        val calendar: Calendar = Calendar.getInstance()
+        var mYear = calendar.get(Calendar.YEAR)
+        var mMonth = calendar.get(Calendar.MONTH)
+        var mDay = calendar.get(Calendar.DAY_OF_MONTH)
+        val strDate: String = etStartDateDSCD.text.toString()
+        mYear = strDate.substring(0, 4).toInt()
+        mMonth = strDate.substring(5, 7).toInt()
+        mMonth = mMonth - 1
+        mDay = strDate.substring(8, 10).toInt()
+
+        val datePickerDialog = DatePickerDialog(
+            appContext!!,
+            DatePickerDialog.OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
+                // Display Selected date in textbox
+                val mFormat = DecimalFormat("00")
+                if(from.equals("start")) {
+                    startDate =
+                        year.toString() + "-" + mFormat.format((monthOfYear + 1).toDouble()) + "-" + mFormat.format(
+                            (dayOfMonth).toDouble()
+                        )
+                    etStartDateDSCD.setText(startDate)
+                }else{
+                    endDate =
+                        year.toString() + "-" + mFormat.format((monthOfYear + 1).toDouble()) + "-" + mFormat.format(
+                            (dayOfMonth).toDouble()
+                        )
+                    etStartDateDSCD.setText(endDate)
+                }
+            },
+            mYear,
+            mMonth,
+            mDay
+        )
+        datePickerDialog.show()
+    }
+
 
     private fun getPreviousMonth() {
         try {
@@ -323,8 +474,9 @@ class Dashboard_AllDataFragment : Fragment(), View.OnClickListener {
                         view: View, position: Int, id: Long
                     ) {
                         try {
-                            var strGroupName = alGroupList.get(position).name
-                            var group_id = alGroupList.get(position).id
+                            strGroupName = alGroupList.get(position).name
+                            group_id = alGroupList.get(position).id
+                            callCalendarEventApi()
                         } catch (e: Exception) {
                             e.printStackTrace()
                         }
@@ -367,7 +519,17 @@ class Dashboard_AllDataFragment : Fragment(), View.OnClickListener {
     private fun setData() {
         try {
             if(alCalendarEvent!=null && alCalendarEvent.size>0) {
-                var setVisitorDataAdapter = SetAllDataAdapter(appContext!!,alCalendarEvent)
+                 var listener = object : AttendanceItemClickListener {
+                     override fun onClick(view: View, position: Int, from: String) {
+                         var intent = Intent(appContext,AllDataAttendanceActivity::class.java)
+                         intent.putExtra("groupName",strGroupName)
+                         intent.putExtra("alCalendarEvent",alCalendarEvent.get(position))
+                         intent.putExtra("from",from)
+                         startActivity(intent)
+                     }
+                 }
+
+                var setVisitorDataAdapter = SetAllDataAdapter(appContext!!,alCalendarEvent,listener)
                 rVwAllDataDADF!!.layoutManager =
                     LinearLayoutManager(appContext, LinearLayout.VERTICAL, false)
                 rVwAllDataDADF!!.setAdapter(setVisitorDataAdapter)

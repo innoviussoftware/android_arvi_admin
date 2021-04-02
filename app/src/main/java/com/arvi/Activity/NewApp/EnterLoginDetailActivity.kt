@@ -69,7 +69,7 @@ class EnterLoginDetailActivity : AppCompatActivity(), View.OnClickListener {
             etPasswordLDA = findViewById(R.id.etPasswordLDA)
             rlLoginLDA = findViewById(R.id.rlLoginLDA)
             ivPassWordShowAELD=findViewById(R.id.ivPassWordShowAELD)
-            ivPassWordShowAELD.setImageResource(R.drawable.ic_pw_show_blk)
+            ivPassWordShowAELD.setImageResource(R.drawable.ic_pw_dont_show_blk)
         } catch (e: Exception) {
             e.printStackTrace()
         }

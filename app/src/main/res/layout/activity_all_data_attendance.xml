@@ -15,6 +15,7 @@
             android:layout_width="@dimen/_30sdp"
             android:layout_height="@dimen/_30sdp"
             android:layout_centerVertical="true"
+            android:layout_marginStart="@dimen/_5sdp"
             android:padding="@dimen/_8sdp"
             android:src="@drawable/ic_back_black" />
 
@@ -43,7 +44,7 @@
         android:textColor="@color/black"
         android:textSize="@dimen/_12ssp"
         android:fontFamily="@font/gotham_book_regular"
-        android:layout_margin="@dimen/_5sdp"
+        android:layout_margin="@dimen/_10sdp"
         android:layout_below="@+id/rlHeaderADAA"
         />
     <EditText
@@ -54,6 +55,7 @@
         android:layout_below="@+id/tvDetailADAA"
         android:paddingStart="@dimen/_10sdp"
         android:layout_margin="@dimen/_5sdp"
+        android:layout_marginStart="@dimen/_5sdp"
         android:hint="Employee Name"
         android:textSize="@dimen/_12ssp"
         android:fontFamily="@font/gotham_book_regular"

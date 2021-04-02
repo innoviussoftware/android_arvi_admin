@@ -431,8 +431,11 @@ class AddVisitorPhotoActivity : AppCompatActivity(), CompoundButton.OnCheckedCha
         try {
 
             imgCount = imgCount + 1
-            val tempUri = getImageUri(context!!, face)
-            val profilePath = FileUtil.getPath(context!!, tempUri)
+/*            val tempUri = getImageUri(context!!, face)
+            val profilePath = FileUtil.getPath(context!!, tempUri)*/
+
+            val tempUri = FileUtil.getImageUriAndPath(this@AddVisitorPhotoActivity, face)
+            val profilePath = tempUri
             Log.e("path ", profilePath!!)
             callStorePersonPicApi(profilePath)
             if (imgCount == 4) {

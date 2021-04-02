@@ -51,69 +51,73 @@
                            android:layout_centerVertical="true" />
                    </RelativeLayout>
                </RelativeLayout>
-
                <RelativeLayout
+
                    android:layout_width="0dp"
-                   android:layout_height="wrap_content"
                    android:layout_gravity="center_vertical"
+                   android:layout_height="wrap_content"
                    android:layout_marginStart="@dimen/_5sdp"
                    android:layout_weight="1">
 
                    <TextView
-                       android:id="@+id/tvShiftTitleDADF"
+                       android:id="@+id/tvGroupTitleDADF"
                        android:layout_width="wrap_content"
                        android:layout_height="wrap_content"
                        android:fontFamily="@font/gotham_book_regular"
-                       android:text="Shift Wise: "
+                       android:text="Group Wise: "
                        android:textSize="@dimen/_12ssp" />
 
                    <RelativeLayout
                        android:layout_width="wrap_content"
                        android:layout_height="wrap_content"
-                       android:layout_below="@+id/tvShiftTitleDADF"
+                       android:layout_below="@+id/tvGroupTitleDADF"
                        android:background="@drawable/edit_left_border_bg">
 
                        <Spinner
-                           android:id="@+id/spShiftDADF"
+                           android:id="@+id/spGroupDADF"
                            android:layout_width="wrap_content"
-                           android:layout_height="wrap_content" />
+                           android:layout_height="wrap_content"
+                           android:layout_centerVertical="true" />
                    </RelativeLayout>
+
+
                </RelativeLayout>
+
+
            </LinearLayout>
            <RelativeLayout
                android:id="@+id/rlFilter2DADF"
                android:layout_width="wrap_content"
                android:layout_height="wrap_content"
+               android:layout_gravity="center_vertical"
                android:layout_below="@+id/llFilter1DADF"
+               android:layout_marginTop="@dimen/_10sdp"
+               android:visibility="gone"
                android:layout_centerHorizontal="true"
-               android:layout_marginTop="@dimen/_10sdp">
+               android:layout_marginStart="@dimen/_5sdp"
+               android:layout_weight="1">
 
                <TextView
-                   android:id="@+id/tvGroupTitleDADF"
+                   android:id="@+id/tvShiftTitleDADF"
                    android:layout_width="wrap_content"
                    android:layout_height="wrap_content"
-                   android:layout_centerVertical="true"
-                   android:layout_marginStart="@dimen/_5sdp"
                    android:fontFamily="@font/gotham_book_regular"
-                   android:text="Group Wise: "
+                   android:text="Shift Wise: "
                    android:textSize="@dimen/_12ssp" />
 
                <RelativeLayout
                    android:layout_width="wrap_content"
                    android:layout_height="wrap_content"
-                   android:layout_centerVertical="true"
-                   android:layout_toEndOf="@+id/tvGroupTitleDADF"
+                   android:layout_toEndOf="@+id/tvShiftTitleDADF"
                    android:background="@drawable/edit_left_border_bg">
 
                    <Spinner
-                       android:id="@+id/spGroupDADF"
+                       android:id="@+id/spShiftDADF"
                        android:layout_width="wrap_content"
-                       android:layout_height="wrap_content"
-                       android:layout_centerVertical="true" />
+                       android:layout_height="wrap_content" />
                </RelativeLayout>
-
-
            </RelativeLayout>
+
 
            <RelativeLayout
                android:layout_width="match_parent"

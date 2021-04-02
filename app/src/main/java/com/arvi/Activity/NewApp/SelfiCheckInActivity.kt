@@ -1,28 +1,28 @@
 package com.arvi.Activity.NewApp
 
 import android.app.Dialog
-import android.content.*
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.ServiceConnection
 import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.hardware.Camera
 import android.location.Address
 import android.location.Geocoder
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import android.os.IBinder
-import android.provider.MediaStore
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.annotation.RequiresApi
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.arvi.Activity.ScanQRCodeActivity
 import com.arvi.Model.DetectFaceNewResponse
 import com.arvi.R
 import com.arvi.RetrofitApiCall.APIService
@@ -33,10 +33,8 @@ import com.arvi.SessionManager.SessionManager.getKioskID
 import com.arvi.SessionManager.SessionManager.getKioskModel
 import com.arvi.SessionManager.SessionManager.getOxiScanOption
 import com.arvi.SessionManager.SessionManager.getSanitizerOption
-import com.arvi.SessionManager.SessionManager.getScreeningMode
 import com.arvi.SessionManager.SessionManager.getToken
 import com.arvi.Utils.AppConstants.BEARER_TOKEN
-import com.arvi.Utils.GoSettingScreen.openSettingScreen
 import com.arvi.Utils.SingleShotLocationProvider
 import com.arvi.btScan.common.CameraSource
 import com.arvi.btScan.common.CameraSourcePreview
@@ -51,6 +49,7 @@ import com.arvi.btScan.java.services.SlaveService
 import com.arvi.btScan.java.services.SlaveService.MyServiceBinder
 import com.google.gson.JsonObject
 import com.societyguard.Utils.FileUtil.getImageUri
+import com.societyguard.Utils.FileUtil.getImageUriAndPath
 import com.societyguard.Utils.FileUtil.getPath
 import okhttp3.MediaType
 import okhttp3.MultipartBody
@@ -59,8 +58,8 @@ import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.io.ByteArrayOutputStream
 import java.io.File
+import java.io.FileOutputStream
 import java.io.IOException
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -177,6 +176,28 @@ class SelfiCheckInActivity : AppCompatActivity(), CompoundButton.OnCheckedChange
                 startActivity(intent)
             }
 
+
+
+            SingleShotLocationProvider.requestSingleUpdate(
+                applicationContext
+            ) { location ->
+                Log.e(
+                    "location:",
+                    location.latitude.toString() + " , " + location.longitude
+                )
+                var latitude = location.latitude.toDouble()
+                var longitude = location.longitude.toDouble()
+                val geocoder: Geocoder
+                val addresses: List<Address>
+                geocoder = Geocoder(applicationContext, Locale.getDefault())
+                try {
+                    addresses = geocoder.getFromLocation(latitude, longitude, 1)
+                    val address = addresses[0].getAddressLine(0)
+                    Log.e("address:",address)
+                } catch (e: IOException) {
+                    e.printStackTrace()
+                }
+            }
 
         } catch (e: Exception) {
             e.printStackTrace()
@@ -356,9 +377,9 @@ class SelfiCheckInActivity : AppCompatActivity(), CompoundButton.OnCheckedChange
     private fun callDetectFaceAPI(face: Bitmap) {
         try {
             isApiCalled = true
-            val tempUri = getImageUri(this@SelfiCheckInActivity, face)
-            val profilePath =
-                getPath(this@SelfiCheckInActivity, tempUri!!)
+
+            val tempUri = getImageUriAndPath(this@SelfiCheckInActivity, face)
+            val profilePath = tempUri
             Log.e("path ", profilePath)
             try {
                 file1 = if (profilePath!!.isEmpty()) {
