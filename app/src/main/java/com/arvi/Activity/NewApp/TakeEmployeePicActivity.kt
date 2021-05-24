@@ -27,7 +27,9 @@ import com.arvi.RetrofitApiCall.ApiUtils.apiService
 import com.arvi.SessionManager.SessionManager
 import com.arvi.SessionManager.SessionManager.getToken
 import com.arvi.Utils.AppConstants.BEARER_TOKEN
+import com.arvi.Utils.ConnectivityDetector
 import com.arvi.Utils.MyProgressDialog.hideProgressDialog
+import com.arvi.Utils.SnackBar
 import com.arvi.btScan.common.CameraSource
 import com.arvi.btScan.common.CameraSourcePreview
 import com.arvi.btScan.common.GraphicOverlay
@@ -104,6 +106,7 @@ class TakeEmployeePicActivity : AppCompatActivity(), CompoundButton.OnCheckedCha
     private var strEmail: String? = ""
     var alPhotoDetail: ArrayList<UploadPhotoData>? = null
     var emp_edit_id: Int? = 0
+    var snackbarView: View? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -112,6 +115,7 @@ class TakeEmployeePicActivity : AppCompatActivity(), CompoundButton.OnCheckedCha
             alPhotoDetail = ArrayList()
             context = this@TakeEmployeePicActivity
             ArviAudioPlaybacks.init(this.applicationContext)
+            snackbarView = findViewById(android.R.id.content)
             facingSwitch = findViewById(R.id.facingSwitch)
             faceCapturePreview = findViewById(R.id.faceCapturePreview)
             facePreviewOverlay = findViewById(R.id.facePreviewOverlay)
@@ -229,7 +233,7 @@ class TakeEmployeePicActivity : AppCompatActivity(), CompoundButton.OnCheckedCha
                     }
                 }
             }
-            bindService(serviceIntent, serviceConnection!!, Context.BIND_AUTO_CREATE)
+            //bindService(serviceIntent, serviceConnection!!, Context.BIND_AUTO_CREATE)
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -351,7 +355,14 @@ class TakeEmployeePicActivity : AppCompatActivity(), CompoundButton.OnCheckedCha
             val tempUri = getImageUri(context!!, face)
             val profilePath = FileUtil.getPath(context!!, tempUri)*/
             Log.e("path ", profilePath!!)
-            callStorePersonPicApi(profilePath)
+
+            if (ConnectivityDetector.isConnectingToInternet(context!!)) {
+                callStorePersonPicApi(profilePath)
+            } else {
+                SnackBar.showInternetError(context!!, snackbarView!!)
+            }
+
+
             if (imgCount == 4) {
                 if (cameraSource != null) {
                     cameraSource!!.stop()
@@ -360,8 +371,12 @@ class TakeEmployeePicActivity : AppCompatActivity(), CompoundButton.OnCheckedCha
                 }
 
                 if (emp_edit_id==0) {
+                    if (ConnectivityDetector.isConnectingToInternet(context!!)) {
+                        callStoreWithId(alPhotoDetail!!)
+                    } else {
+                        SnackBar.showInternetError(context!!, snackbarView!!)
+                    }
 
-                    callStoreWithId(alPhotoDetail!!)
 
                     var message = "Welcome " + strName + " , Your onboarding is complete"
                     val builder = AlertDialog.Builder(this)
@@ -372,8 +387,7 @@ class TakeEmployeePicActivity : AppCompatActivity(), CompoundButton.OnCheckedCha
                             dialog.dismiss()
                             val intent =
                                 Intent(applicationContext, DashboardActivity::class.java)
-                            intent.flags =
-                                Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+                            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
                             startActivity(intent)
                         } catch (e: Exception) {
                             e.printStackTrace()
@@ -384,7 +398,12 @@ class TakeEmployeePicActivity : AppCompatActivity(), CompoundButton.OnCheckedCha
 
 
                 }else{
-                    callUpdateEmployeePhoto()
+                    if (ConnectivityDetector.isConnectingToInternet(context!!)) {
+                        callUpdateEmployeePhoto()
+                    } else {
+                        SnackBar.showInternetError(context!!, snackbarView!!)
+                    }
+
                 }
 
 
@@ -440,8 +459,7 @@ class TakeEmployeePicActivity : AppCompatActivity(), CompoundButton.OnCheckedCha
                             dialog.dismiss()
                             val intent =
                                 Intent(applicationContext, DashboardActivity::class.java)
-                            intent.flags =
-                                Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+                            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
                             startActivity(intent)
                         } catch (e: Exception) {
                             e.printStackTrace()
@@ -853,8 +871,8 @@ class TakeEmployeePicActivity : AppCompatActivity(), CompoundButton.OnCheckedCha
         Log.d(TAG, "onResume")
         super.onResume()
         try {
-            startService(serviceIntent)
-            bindService()
+          //  startService(serviceIntent)
+           // bindService()
             faceDetected = false
         } catch (e: Exception) {
             e.printStackTrace()
@@ -901,5 +919,8 @@ class TakeEmployeePicActivity : AppCompatActivity(), CompoundButton.OnCheckedCha
     override fun every100ms() {
     }
 
+    override fun onBackPressed() {
+        finish()
+    }
 
 }

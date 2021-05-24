@@ -38,7 +38,7 @@
                     android:layout_marginEnd="@dimen/_10sdp"
                     android:layout_weight="1"
                     android:fontFamily="@font/gotham_book_regular"
-                    android:text="Name"
+                    android:text=""
                     android:textColor="@color/black"
                     android:textSize="@dimen/_12ssp" />
 
@@ -47,7 +47,7 @@
                     android:layout_width="@dimen/_15sdp"
                     android:layout_height="@dimen/_15sdp"
                     android:layout_gravity="center_vertical"
-                    android:background="@drawable/wfh_status" />
+                    android:src="@color/absent_clr" />
             </LinearLayout>
 
             <TextView
@@ -57,11 +57,12 @@
                 android:layout_marginTop="@dimen/_5sdp"
                 android:layout_marginEnd="@dimen/_10sdp"
                 android:fontFamily="@font/gotham_book_regular"
-                android:text="Today, Dec 9"
+                android:text=""
                 android:textColor="@color/black"
                 android:textSize="@dimen/_12ssp" />
 
             <LinearLayout
+                android:id="@+id/llTimeRAD"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/_5sdp"
@@ -73,7 +74,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:fontFamily="@font/gotham_book_regular"
-                    android:text="09:00"
+                    android:text=""
                     android:textColor="@color/black"
                     android:textSize="@dimen/_12ssp" />
 
@@ -89,21 +90,22 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:fontFamily="@font/gotham_book_regular"
-                    android:text="17:00"
+                    android:text=""
                     android:textColor="@color/black"
                     android:textSize="@dimen/_12ssp" />
 
-                <TextView
-                    android:id="@+id/tvTotalHrRAD"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="(9 Hrs)"
-                    android:textSize="@dimen/_12ssp"
-                    android:textColor="@color/black"
-                    android:fontFamily="@font/gotham_bold"
-                    android:layout_marginStart="@dimen/_5sdp"
-                    />
             </LinearLayout>
+            <TextView
+                android:id="@+id/tvTotalHrRAD"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:textSize="@dimen/_12ssp"
+                android:textColor="@color/black"
+                android:layout_marginTop="@dimen/_3sdp"
+                android:fontFamily="@font/gotham_bold"
+                />
+
         </LinearLayout>
     </LinearLayout>
 

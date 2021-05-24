@@ -11,14 +11,12 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.RelativeLayout
 import com.arvi.Model.GetLoginResponse
+import com.arvi.Model.UserLoginResponse
 import com.arvi.R
 import com.arvi.RetrofitApiCall.APIService
 import com.arvi.RetrofitApiCall.ApiUtils
 import com.arvi.SessionManager.SessionManager
-import com.arvi.Utils.ConnectivityDetector
-import com.arvi.Utils.KeyboardUtility
-import com.arvi.Utils.MyProgressDialog
-import com.arvi.Utils.SnackBar
+import com.arvi.Utils.*
 import com.arvi.btScan.java.arvi.Settings_Activity_organised
 import com.google.gson.JsonObject
 import retrofit2.Call
@@ -35,16 +33,17 @@ class EnterLoginDetailActivity : AppCompatActivity(), View.OnClickListener {
 
     var companyId: String? = null
     var empId: String? = null
+    var emailID: String? = null
     var password: String? = null
 
-    lateinit var ivPassWordShowAELD:ImageView
+    lateinit var ivPassWordShowAELD: ImageView
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_enter_login_detail)
         try {
             setIds()
             setListeners()
-            if(intent.extras!=null){
+            if (intent.extras != null) {
                 companyId = intent.getStringExtra("companyId")
             }
         } catch (e: Exception) {
@@ -68,7 +67,7 @@ class EnterLoginDetailActivity : AppCompatActivity(), View.OnClickListener {
             etEmpIdLDA = findViewById(R.id.etEmpIdLDA)
             etPasswordLDA = findViewById(R.id.etPasswordLDA)
             rlLoginLDA = findViewById(R.id.rlLoginLDA)
-            ivPassWordShowAELD=findViewById(R.id.ivPassWordShowAELD)
+            ivPassWordShowAELD = findViewById(R.id.ivPassWordShowAELD)
             ivPassWordShowAELD.setImageResource(R.drawable.ic_pw_dont_show_blk)
         } catch (e: Exception) {
             e.printStackTrace()
@@ -85,7 +84,7 @@ class EnterLoginDetailActivity : AppCompatActivity(), View.OnClickListener {
         try {
             when (view!!.id) {
                 R.id.rlLoginLDA -> {
-                    KeyboardUtility.hideKeyboard(context!!,rlLoginLDA!!)
+                    KeyboardUtility.hideKeyboard(context!!, rlLoginLDA!!)
                     if (isValidInput()) {
                         if (ConnectivityDetector.isConnectingToInternet(context!!)) {
                             callNewLoginApi()
@@ -96,7 +95,7 @@ class EnterLoginDetailActivity : AppCompatActivity(), View.OnClickListener {
                     }
                 }
 
-                R.id.ivPassWordShowAELD->{
+                R.id.ivPassWordShowAELD -> {
                     try {
                         if (flag_pwd == 1) {
                             //show password
@@ -106,7 +105,8 @@ class EnterLoginDetailActivity : AppCompatActivity(), View.OnClickListener {
                             flag_pwd = 0
                         } else {
                             //hide password
-                            etPasswordLDA!!.transformationMethod = HideReturnsTransformationMethod.getInstance()
+                            etPasswordLDA!!.transformationMethod =
+                                HideReturnsTransformationMethod.getInstance()
                             ivPassWordShowAELD.setImageResource(R.drawable.ic_pw_show_blk)
                             flag_pwd = 1
                         }
@@ -124,34 +124,41 @@ class EnterLoginDetailActivity : AppCompatActivity(), View.OnClickListener {
         try {
             var jsonObject = JsonObject()
 
-            jsonObject.addProperty("companyId", companyId)
-            jsonObject.addProperty("employeeId", empId)
+            /* jsonObject.addProperty("companyId", companyId)
+             jsonObject.addProperty("employeeId", empId)
+             jsonObject.addProperty("password", password)*/
+
+            jsonObject.addProperty("username", emailID)
             jsonObject.addProperty("password", password)
-
-
 
             var mAPIService: APIService? = null
             mAPIService = ApiUtils.apiService
             MyProgressDialog.showProgressDialog(context!!)
-            mAPIService!!.getLogin(
-                "application/json", jsonObject
+            mAPIService!!.setUserLogin("application/json", jsonObject)
 
-            )
-
-                .enqueue(object : Callback<GetLoginResponse> {
+                .enqueue(object : Callback<UserLoginResponse> {
 
                     override fun onResponse(
-                        call: Call<GetLoginResponse>,
-                        response: Response<GetLoginResponse>
+                        call: Call<UserLoginResponse>,
+                        response: Response<UserLoginResponse>
                     ) {
                         MyProgressDialog.hideProgressDialog()
                         try {
                             if (response.code() == 200) {
-                                SessionManager.setIsUserLoggedin(context!!,true)
-                                SessionManager.setToken(context!!,response.body().accessToken)
-                                SessionManager.setKioskID(context!!,response.body().user.employeeId)
+                                SessionManager.setIsUserLoggedin(context!!, true)
+                                SessionManager.setToken(context!!, response.body().accessToken)
+
+                                //MM Changed: 06/04/2021 After Login Flow changed id to emailID
+                                SessionManager.setKioskID(context!!, response.body().user.id.toString())
                                 var intent = Intent(context, DashboardActivity::class.java)
+                                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
                                 startActivity(intent)
+                            } else if (response.code() == 401) {
+                                SnackBar.showError(
+                                    context!!,
+                                    snackbarView!!,
+                                    "User not found."
+                                )
                             } else {
                                 SnackBar.showError(
                                     context!!,
@@ -166,7 +173,7 @@ class EnterLoginDetailActivity : AppCompatActivity(), View.OnClickListener {
                     }
 
                     override fun onFailure(
-                        call: Call<GetLoginResponse>,
+                        call: Call<UserLoginResponse>,
                         t: Throwable
                     ) {
                         MyProgressDialog.hideProgressDialog()
@@ -183,19 +190,18 @@ class EnterLoginDetailActivity : AppCompatActivity(), View.OnClickListener {
 
 
     private fun isValidInput(): Boolean {
-        empId = etEmpIdLDA!!.text.toString()
+        emailID = etEmpIdLDA!!.text.toString()
+        // empId = etEmpIdLDA!!.text.toString()
         password = etPasswordLDA!!.text.toString()
-        if (empId.isNullOrEmpty())
-        {
-            SnackBar.showError(
-                context!!,
-                snackbarView!!,
-                "Please enter Employee ID."
-            )
+        if (emailID.isNullOrEmpty()) {
+            SnackBar.showError(context!!, snackbarView!!, "Please enter Email Id.")
             etEmpIdLDA!!.requestFocus()
             return false
-        }else if (password.isNullOrEmpty())
-        {
+        } else if (!GlobalMethods.isEmailValid(emailID!!)) {
+            SnackBar.showError(context!!, snackbarView!!, "Please enter valid Email Id.")
+            etEmpIdLDA!!.requestFocus()
+            return false
+        } else if (password.isNullOrEmpty()) {
             SnackBar.showError(
                 context!!,
                 snackbarView!!,

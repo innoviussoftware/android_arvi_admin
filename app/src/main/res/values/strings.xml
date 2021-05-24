@@ -154,7 +154,7 @@
 
     <string-array name="default_leave_type">
         <item>All Day</item>
-        <item>Half Day</item>
+        <!--<item>Half Day</item>-->
     </string-array>
 
     <string-array name="default_server_url">
@@ -163,6 +163,33 @@
     </string-array>
 
 
+    <string-array name="default_screen_admin_lite">
+        <item>@string/page_dashboard</item>
+        <item>@string/page_selfiCheckIn</item>
+        <!--<item>@string/page_visitor</item>-->
+        <!-- <item>@string/page_request</item>-->
+        <item>@string/page_profile</item>
+    </string-array>
+
+    <string-array name="default_screen_visitor_mode">
+        <item>@string/page_dashboard</item>
+        <!--        <item>@string/page_selfiCheckIn</item>-->
+        <item>@string/page_visitor</item>
+        <!--<item>@string/page_request</item>-->
+        <item>@string/page_profile</item>
+    </string-array>
+
+    <string-array name="default_app_mode">
+        <item>@string/full_mode</item>
+        <!--        <item>@string/page_selfiCheckIn</item>-->
+        <item>@string/admin_lite_mode</item>
+        <!--<item>@string/page_request</item>-->
+        <item>@string/visitor_lite_mode</item>
+    </string-array>
+
+    <string name="full_mode">Full Admin</string>
+    <string name="admin_lite_mode">Admin Lite</string>
+    <string name="visitor_lite_mode">Visitor Lite</string>
     <string-array name="default_screen_option">
         <item>@string/page_dashboard</item>
         <item>@string/page_selfiCheckIn</item>
@@ -179,6 +206,9 @@
     <string name="this_month">This Month</string>
     <string name="previous_month">Previous Month</string>
     <string name="custom_date">Custom Date</string>
+    <string name="leave_ttl">Leave</string>
+    <string name="wfh_ttl">WFH</string>
+    <string name="regularization_ttl">Regularization</string>
 
     <string-array name="period_array">
         <item>@string/this_month</item>

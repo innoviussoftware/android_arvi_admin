@@ -3,6 +3,7 @@ package com.arvi.Fragment
 import android.app.DatePickerDialog
 import android.app.Dialog
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.Gravity
@@ -11,12 +12,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.fragment.app.Fragment
+import com.arvi.Activity.NewApp.EnterCompanyDetailActivity
 import com.arvi.Model.*
 import com.arvi.R
 import com.arvi.RetrofitApiCall.APIService
 import com.arvi.RetrofitApiCall.ApiUtils
 import com.arvi.SessionManager.SessionManager
 import com.arvi.Utils.AppConstants
+import com.arvi.Utils.ConnectivityDetector
 import com.arvi.Utils.MyProgressDialog
 import com.arvi.Utils.SnackBar
 import retrofit2.Call
@@ -50,7 +53,7 @@ class Dashboard_SummaryDataFragment : Fragment() {
     var alWorkShift: ArrayList<GetWorkShiftListResponseItem> = ArrayList()
     var isFirst: Boolean = true
     var group_id: Int = 0
-    var snackbarView:View?=null
+    var snackbarView: View? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -69,11 +72,17 @@ class Dashboard_SummaryDataFragment : Fragment() {
             setIds(view)
             getDefaultDates()
 //            showProgressDialog()
-            callAttendanceSummaryDataApi()
-            callGetKeyMetricsDataApi()
-            callGroupListApi()
-            setPeriodSpinnerData()
-            callGetWorkShiftApi()
+
+            if (ConnectivityDetector.isConnectingToInternet(appContext!!)) {
+                callAttendanceSummaryDataApi()
+                callGetKeyMetricsDataApi()
+                callGroupListApi()
+                setPeriodSpinnerData()
+                callGetWorkShiftApi()
+            } else {
+                SnackBar.showInternetError(appContext!!, snackbarView!!)
+            }
+
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -107,7 +116,12 @@ class Dashboard_SummaryDataFragment : Fragment() {
                                     setWorkShiftList()
                                 }
                             } else if (response.code() == 401) {
-
+                                var intent =
+                                    Intent(appContext!!, EnterCompanyDetailActivity::class.java)
+                                intent.flags =
+                                    Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+                                startActivity(intent)
+                                SessionManager.clearAppSession(appContext!!)
                             } else {
                             }
                         } catch (e: Exception) {
@@ -188,8 +202,15 @@ class Dashboard_SummaryDataFragment : Fragment() {
                             getCustomDates()
                         }
                         showProgressDialog()
-                        callAttendanceSummaryDataApi()
-                        callGetKeyMetricsDataApi()
+
+                        if (ConnectivityDetector.isConnectingToInternet(context!!)) {
+                            callAttendanceSummaryDataApi()
+                            callGetKeyMetricsDataApi()
+
+                        } else {
+                            SnackBar.showInternetError(context!!, snackbarView!!)
+                        }
+
 //                        Toast.makeText(context!!, "Work In Progress", Toast.LENGTH_LONG).show()
                     } else {
                         isFirst = false
@@ -243,10 +264,10 @@ class Dashboard_SummaryDataFragment : Fragment() {
             etEndDateDSCD.setText(endDate)
 
             etStartDateDSCD.setOnClickListener {
-                openGetDateDialog(etStartDateDSCD,"start")
+                openGetDateDialog(etStartDateDSCD, "start")
             }
             etEndDateDSCD.setOnClickListener {
-                openGetDateDialog(etEndDateDSCD,"end")
+                openGetDateDialog(etEndDateDSCD, "end")
             }
             tvCancelDSCD.setOnClickListener {
                 dialog.dismiss()
@@ -257,15 +278,21 @@ class Dashboard_SummaryDataFragment : Fragment() {
                     var dateStart = formatter.parse(startDate)
                     var dateEnd = formatter.parse(endDate)
                     if (dateEnd.compareTo(dateStart) < 0) {
-    //                    SnackBar.showValidationError(appContext!!,snackbarView!!,"End date must be greater than Start date")
-    //                   Toast.makeText(appContext, "End date must be greater than Start date", Toast.LENGTH_SHORT).show()
+                        //                    SnackBar.showValidationError(appContext!!,snackbarView!!,"End date must be greater than Start date")
+                        //                   Toast.makeText(appContext, "End date must be greater than Start date", Toast.LENGTH_SHORT).show()
                         showToast()
 
                     } else {
                         dialog.dismiss()
                         showProgressDialog()
-                        callAttendanceSummaryDataApi()
-                        callGetKeyMetricsDataApi()
+
+                        if (ConnectivityDetector.isConnectingToInternet(appContext!!)) {
+                            callAttendanceSummaryDataApi()
+                            callGetKeyMetricsDataApi()
+                        } else {
+                            SnackBar.showInternetError(appContext!!, snackbarView!!)
+                        }
+
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()
@@ -284,7 +311,10 @@ class Dashboard_SummaryDataFragment : Fragment() {
     private fun showToast() {
         try {
             val inflater = layoutInflater
-            val layout: View = inflater.inflate( R.layout.toast, requireView().findViewById(R.id.toast_layout_root) as ViewGroup?)
+            val layout: View = inflater.inflate(
+                R.layout.toast,
+                requireView().findViewById(R.id.toast_layout_root) as ViewGroup?
+            )
 
             val text = layout.findViewById<View>(R.id.text) as TextView
             text.text = "End date must be greater than Start date"
@@ -300,7 +330,7 @@ class Dashboard_SummaryDataFragment : Fragment() {
     }
 
 
-    private fun openGetDateDialog(etStartDateDSCD: EditText,from:String) {
+    private fun openGetDateDialog(etStartDateDSCD: EditText, from: String) {
 
         val calendar: Calendar = Calendar.getInstance()
         var mYear = calendar.get(Calendar.YEAR)
@@ -317,13 +347,13 @@ class Dashboard_SummaryDataFragment : Fragment() {
             DatePickerDialog.OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
                 // Display Selected date in textbox
                 val mFormat = DecimalFormat("00")
-                if(from.equals("start")) {
+                if (from.equals("start")) {
                     startDate =
                         year.toString() + "-" + mFormat.format((monthOfYear + 1).toDouble()) + "-" + mFormat.format(
                             (dayOfMonth).toDouble()
                         )
                     etStartDateDSCD.setText(startDate)
-                }else{
+                } else {
                     endDate =
                         year.toString() + "-" + mFormat.format((monthOfYear + 1).toDouble()) + "-" + mFormat.format(
                             (dayOfMonth).toDouble()
@@ -362,55 +392,64 @@ class Dashboard_SummaryDataFragment : Fragment() {
             var mAPIService: APIService? = null
             mAPIService = ApiUtils.apiService
 //            MyProgressDialog.showProgressDialog(context!!)
-            mAPIService!!.getKeyMetrics(
-                AppConstants.BEARER_TOKEN + SessionManager.getToken(
-                    appContext!!
-                ), startDate!!, endDate!!, group_id
-            )
-                .enqueue(object : Callback<GetKeyMetricsResponse> {
+            var apiCall: Call<GetKeyMetricsResponse>? = null
+            if (group_id == 0) {
+                apiCall = mAPIService!!.getKeyMetrics(
+                    AppConstants.BEARER_TOKEN + SessionManager.getToken(
+                        appContext!!
+                    ), startDate!!, endDate!!
+                )
+            } else {
+                apiCall = mAPIService!!.getKeyMetricsWithGroup(
+                    AppConstants.BEARER_TOKEN + SessionManager.getToken(
+                        appContext!!
+                    ), startDate!!, endDate!!, group_id
+                )
+            }
+            apiCall!!.enqueue(object : Callback<GetKeyMetricsResponse> {
 
-                    override fun onResponse(
-                        call: Call<GetKeyMetricsResponse>,
-                        response: Response<GetKeyMetricsResponse>
-                    ) {
+                override fun onResponse(
+                    call: Call<GetKeyMetricsResponse>,
+                    response: Response<GetKeyMetricsResponse>
+                ) {
 //                        MyProgressDialog.hideProgressDialog()
-                        try {
-                            if (response.code() == 200) {
-                                if (response.body() != null) {
-                                    try {
-                                        if (response.body().workHours != null) {
-                                            tvTotalWorkHrDSDF!!.setText(response.body().workHours.value.toString())
-                                        }
-
-                                        if (response.body().avgHours != null) {
-                                            tvAvgHrsDSDF!!.setText(response.body().avgHours.value.toString())
-                                        }
-
-                                        if (response.body().workDays != null) {
-
-                                        }
-
-                                    } catch (e: Exception) {
-                                        e.printStackTrace()
+                    try {
+                        if (response.code() == 200) {
+                            if (response.body() != null) {
+                                try {
+                                    if (response.body().workHours != null) {
+                                        tvTotalWorkHrDSDF!!.setText(response.body().workHours.value.toString())
                                     }
 
+                                    if (response.body().avgHours != null) {
+                                        tvAvgHrsDSDF!!.setText(response.body().avgHours.value.toString())
+                                    }
+
+                                    if (response.body().workDays != null) {
+
+                                    }
+
+                                } catch (e: Exception) {
+                                    e.printStackTrace()
                                 }
-                            } else {
 
                             }
-                        } catch (e: Exception) {
-                            e.printStackTrace()
+                        } else {
 
                         }
-                    }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
 
-                    override fun onFailure(
-                        call: Call<GetKeyMetricsResponse>,
-                        t: Throwable
-                    ) {
-//                        MyProgressDialog.hideProgressDialog()
                     }
-                })
+                }
+
+                override fun onFailure(
+                    call: Call<GetKeyMetricsResponse>,
+                    t: Throwable
+                ) {
+//                        MyProgressDialog.hideProgressDialog()
+                }
+            })
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -481,7 +520,12 @@ class Dashboard_SummaryDataFragment : Fragment() {
                                     setGroupList()
                                 }
                             } else if (response.code() == 401) {
-
+                                var intent =
+                                    Intent(appContext!!, EnterCompanyDetailActivity::class.java)
+                                intent.flags =
+                                    Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+                                startActivity(intent)
+                                SessionManager.clearAppSession(appContext!!)
                             } else {
                             }
                         } catch (e: Exception) {
@@ -521,9 +565,16 @@ class Dashboard_SummaryDataFragment : Fragment() {
                             var strGroupName = alGroupList.get(position).name
 
                             group_id = alGroupList.get(position).id
-                        //    showProgressDialog()
-                            callGetKeyMetricsDataApi()
-                            callAttendanceSummaryDataApi()
+                            //    showProgressDialog()
+
+                            if (ConnectivityDetector.isConnectingToInternet(context!!)) {
+                                callGetKeyMetricsDataApi()
+                                callAttendanceSummaryDataApi()
+                            } else {
+                                SnackBar.showInternetError(context!!, snackbarView!!)
+                            }
+
+
                         } catch (e: Exception) {
                             e.printStackTrace()
                         }
@@ -548,84 +599,96 @@ class Dashboard_SummaryDataFragment : Fragment() {
             mAPIService = ApiUtils.apiService
 //            MyProgressDialog.showProgressDialog(context!!)
 
-            mAPIService!!.getAttendanceSummary(
-                AppConstants.BEARER_TOKEN + SessionManager.getToken(
-                    appContext!!
-                ), startDate!!, endDate!!, group_id
-            )
-                .enqueue(object : Callback<GetAttendanceSummaryResponse> {
+            var apiCall: Call<GetAttendanceSummaryResponse>? = null
+            if (group_id == 0) {
+                apiCall =
+                    mAPIService!!.getAttendanceSummary(
+                        AppConstants.BEARER_TOKEN + SessionManager.getToken(
+                            appContext!!
+                        ), startDate!!, endDate!!
+                    )
+            } else {
 
-                    override fun onResponse(
-                        call: Call<GetAttendanceSummaryResponse>,
-                        response: Response<GetAttendanceSummaryResponse>
-                    ) {
+                apiCall = mAPIService!!.getAttendanceSummaryWithGroup(
+                    AppConstants.BEARER_TOKEN + SessionManager.getToken(
+                        appContext!!
+                    ), startDate!!, endDate!!, group_id
+                )
+            }
+
+            apiCall!!.enqueue(object : Callback<GetAttendanceSummaryResponse> {
+
+                override fun onResponse(
+                    call: Call<GetAttendanceSummaryResponse>,
+                    response: Response<GetAttendanceSummaryResponse>
+                ) {
 //                        MyProgressDialog.hideProgressDialog()
-                        try {
-                            if (response.code() == 200) {
-                                if (response.body() != null) {
-                                    try {
-                                        alAttendanceSummary = ArrayList()
-                                        alAttendanceSummary.addAll(response.body())
-                                        if (!alAttendanceSummary.isNullOrEmpty() && alAttendanceSummary.size > 0) {
-                                            for (i in alAttendanceSummary.indices) {
-                                                if (alAttendanceSummary.get(i).label.toLowerCase()
-                                                        .equals("present")
-                                                ) {
-                                                    tvPresentCountDSDF!!.setText(
-                                                        alAttendanceSummary.get(
-                                                            i
-                                                        ).metric
-                                                    )
-                                                }
-                                                if (alAttendanceSummary.get(i).label.toLowerCase()
-                                                        .equals("absent")
-                                                ) {
-                                                    tvAbsentCountDSDF!!.setText(
-                                                        alAttendanceSummary.get(
-                                                            i
-                                                        ).metric
-                                                    )
-                                                }
-                                                if (alAttendanceSummary.get(i).label.toLowerCase()
-                                                        .equals("late checkin")
-                                                ) {
-                                                    tvTotalLateDSDF!!.setText(
-                                                        alAttendanceSummary.get(
-                                                            i
-                                                        ).metric
-                                                    )
-                                                }
+                    try {
+                        if (response.code() == 200) {
+                            if (response.body() != null) {
+                                try {
+                                    alAttendanceSummary = ArrayList()
+                                    alAttendanceSummary.addAll(response.body())
+                                    if (!alAttendanceSummary.isNullOrEmpty() && alAttendanceSummary.size > 0) {
+                                        for (i in alAttendanceSummary.indices) {
+                                            if (alAttendanceSummary.get(i).label.toLowerCase()
+                                                    .equals("present")
+                                            ) {
+                                                tvPresentCountDSDF!!.setText(
+                                                    alAttendanceSummary.get(
+                                                        i
+                                                    ).metric
+                                                )
+                                            }
+                                            if (alAttendanceSummary.get(i).label.toLowerCase()
+                                                    .equals("absent")
+                                            ) {
+                                                tvAbsentCountDSDF!!.setText(
+                                                    alAttendanceSummary.get(
+                                                        i
+                                                    ).metric
+                                                )
+                                            }
+                                            if (alAttendanceSummary.get(i).label.toLowerCase()
+                                                    .equals("late checkin")
+                                            ) {
+                                                tvTotalLateDSDF!!.setText(
+                                                    alAttendanceSummary.get(
+                                                        i
+                                                    ).metric
+                                                )
+                                            }
 
-                                                if (alAttendanceSummary.get(i).label.toLowerCase()
-                                                        .equals("missed checkins")
-                                                ) {
-                                                    tvTotalPendingRegularization!!.setText(
-                                                        alAttendanceSummary.get(i).metric
-                                                    )
-                                                }
+                                            if (alAttendanceSummary.get(i).label.toLowerCase()
+                                                    .equals("missed checkins")
+                                            ) {
+                                                tvTotalPendingRegularization!!.setText(
+                                                    alAttendanceSummary.get(i).metric
+                                                )
                                             }
                                         }
-                                    } catch (e: Exception) {
-                                        e.printStackTrace()
                                     }
-
+                                } catch (e: Exception) {
+                                    e.printStackTrace()
                                 }
-                            } else {
 
                             }
-                        } catch (e: Exception) {
-                            e.printStackTrace()
+                        } else {
 
                         }
-                    }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
 
-                    override fun onFailure(
-                        call: Call<GetAttendanceSummaryResponse>,
-                        t: Throwable
-                    ) {
-//                        MyProgressDialog.hideProgressDialog()
                     }
-                })
+                }
+
+                override fun onFailure(
+                    call: Call<GetAttendanceSummaryResponse>,
+                    t: Throwable
+                ) {
+//                        MyProgressDialog.hideProgressDialog()
+                }
+            })
         } catch (e: Exception) {
             e.printStackTrace()
         }

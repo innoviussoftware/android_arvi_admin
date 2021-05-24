@@ -15,6 +15,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.arvi.Activity.NewApp.AllDataAttendanceActivity
+import com.arvi.Activity.NewApp.EnterCompanyDetailActivity
 import com.arvi.Adapter.SetAllDataAdapter
 import com.arvi.Interfaces.AttendanceItemClickListener
 import com.arvi.Interfaces.RecyclerViewItemClicked
@@ -24,7 +25,9 @@ import com.arvi.RetrofitApiCall.APIService
 import com.arvi.RetrofitApiCall.ApiUtils
 import com.arvi.SessionManager.SessionManager
 import com.arvi.Utils.AppConstants
+import com.arvi.Utils.ConnectivityDetector
 import com.arvi.Utils.MyProgressDialog
+import com.arvi.Utils.SnackBar
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -40,6 +43,7 @@ class Dashboard_AllDataFragment : Fragment(), View.OnClickListener {
     var spShiftDADF: Spinner? = null
     var spGroupDADF: Spinner? = null
     var rVwAllDataDADF: RecyclerView? = null
+    var tvNoDataDADF:TextView?=null
 
     var appContext: Context? = null
     var snackbarView: View? = null
@@ -47,10 +51,10 @@ class Dashboard_AllDataFragment : Fragment(), View.OnClickListener {
     var endDate: String? = null
     var alGroupList: ArrayList<GetGroupListResponseItem> = ArrayList()
 
-    var alWorkShift : ArrayList<GetWorkShiftListResponseItem> = ArrayList()
-    var isFirst :Boolean= true
-    var alCalendarEvent : ArrayList<GetCalendarEventsResponseItem> = ArrayList()
-    var group_id: Int =0
+    var alWorkShift: ArrayList<GetWorkShiftListResponseItem> = ArrayList()
+    var isFirst: Boolean = true
+    var alCalendarEvent: ArrayList<GetCalendarEventsResponseItem> = ArrayList()
+    var group_id: Int = 0
     var strGroupName: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -61,8 +65,8 @@ class Dashboard_AllDataFragment : Fragment(), View.OnClickListener {
     }
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+            inflater: LayoutInflater, container: ViewGroup?,
+            savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
         var view = inflater.inflate(R.layout.fragment_dashboard__all_data, container, false)
@@ -70,10 +74,18 @@ class Dashboard_AllDataFragment : Fragment(), View.OnClickListener {
             setIds(view)
             setListeners()
             getDefaultDates()
-            callCalendarEventApi()
-            callGroupListApi()
-            setPeriodSpinnerData()
-            callGetWorkShiftApi()
+
+            if (ConnectivityDetector.isConnectingToInternet(appContext!!)) {
+                callCalendarEventApi()
+                callGroupListApi()
+                setPeriodSpinnerData()
+                callGetWorkShiftApi()
+
+            } else {
+                SnackBar.showInternetError(appContext!!, snackbarView!!)
+            }
+
+
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -85,54 +97,60 @@ class Dashboard_AllDataFragment : Fragment(), View.OnClickListener {
             var mAPIService: APIService? = null
             mAPIService = ApiUtils.apiService
             showProgressDialog()
-            var apiCall: Call<GetCalendarEventsResponse> ?=null
-            if(group_id>0) {
+            var apiCall: Call<GetCalendarEventsResponse>? = null
+            if (group_id > 0) {
                 apiCall = mAPIService.getCalendarEventWithGroup(
-                    AppConstants.BEARER_TOKEN + SessionManager.getToken(appContext!!),
-                    1,
-                    startDate!!,
-                    endDate!!,
-                    group_id
+                        AppConstants.BEARER_TOKEN + SessionManager.getToken(appContext!!),
+                        1,
+                        startDate!!,
+                        endDate!!,
+                        group_id,
+                        strGroupName
                 )
-            }else{
+            } else {
                 apiCall = mAPIService.getCalendarEvent(
-                    AppConstants.BEARER_TOKEN + SessionManager.getToken(appContext!!),
-                    1,
-                    startDate!!,
-                    endDate!!
+                        AppConstants.BEARER_TOKEN + SessionManager.getToken(appContext!!),
+                        1,
+                        startDate!!,
+                        endDate!!,
+                        strGroupName
                 )
             }
             apiCall.enqueue(object : Callback<GetCalendarEventsResponse> {
 
-                    override fun onResponse(
+                override fun onResponse(
                         call: Call<GetCalendarEventsResponse>,
                         response: Response<GetCalendarEventsResponse>
-                    ) {
+                ) {
 
-                        try {
-                            if (response.code() == 200) {
-                                if (response.body() != null) {
-                                    alCalendarEvent = ArrayList()
-                                    alCalendarEvent.addAll(response.body())
-                                    setData()
-                                }
-                            } else if (response.code() == 401) {
-
-                            } else {
+                    try {
+                        if (response.code() == 200) {
+                            if (response.body() != null) {
+                                alCalendarEvent = ArrayList()
+                                alCalendarEvent.addAll(response.body())
+                                setData()
                             }
-                        } catch (e: Exception) {
-                            e.printStackTrace()
-
+                        } else if (response.code() == 401) {
+                            var intent = Intent(appContext!!, EnterCompanyDetailActivity::class.java)
+                            intent.flags =
+                                    Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+                            startActivity(intent)
+                            SessionManager.clearAppSession(appContext!!)
+                        } else {
                         }
-                    }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
 
-                    override fun onFailure(
+                    }
+                }
+
+                override fun onFailure(
                         call: Call<GetCalendarEventsResponse>,
                         t: Throwable
-                    ) {
+                ) {
 
-                    }
-                })
+                }
+            })
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -140,7 +158,7 @@ class Dashboard_AllDataFragment : Fragment(), View.OnClickListener {
     }
 
     private fun showProgressDialog() {
-       MyProgressDialog.showProgressDialog(appContext!!)
+        MyProgressDialog.showProgressDialog(appContext!!)
         val delayInMillis: Long = 1000
         val timer = Timer()
         timer.schedule(object : TimerTask() {
@@ -156,60 +174,65 @@ class Dashboard_AllDataFragment : Fragment(), View.OnClickListener {
             mAPIService = ApiUtils.apiService
 
             mAPIService!!.getWorkShifts(
-                AppConstants.BEARER_TOKEN + SessionManager.getToken(appContext!!)
+                    AppConstants.BEARER_TOKEN + SessionManager.getToken(appContext!!)
             )
-                .enqueue(object : Callback<GetWorkShiftListResponse> {
+                    .enqueue(object : Callback<GetWorkShiftListResponse> {
 
-                    override fun onResponse(
-                        call: Call<GetWorkShiftListResponse>,
-                        response: Response<GetWorkShiftListResponse>
-                    ) {
+                        override fun onResponse(
+                                call: Call<GetWorkShiftListResponse>,
+                                response: Response<GetWorkShiftListResponse>
+                        ) {
 
-                        try {
-                            if (response.code() == 200) {
-                                if (response.body() != null) {
-                                    alWorkShift = ArrayList()
-                                    alWorkShift.addAll(response.body())
-                                    alWorkShift.add(0,
-                                        GetWorkShiftListResponseItem("",null,0,"All","","")
-                                    )
-                                    setWorkShiftList()
+                            try {
+                                if (response.code() == 200) {
+                                    if (response.body() != null) {
+                                        alWorkShift = ArrayList()
+                                        alWorkShift.addAll(response.body())
+                                        alWorkShift.add(0,
+                                                GetWorkShiftListResponseItem("", null, 0, "All", "", "")
+                                        )
+                                        setWorkShiftList()
+                                    }
+                                } else if (response.code() == 401) {
+                                    var intent = Intent(appContext!!, EnterCompanyDetailActivity::class.java)
+                                    intent.flags =
+                                            Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+                                    startActivity(intent)
+                                    SessionManager.clearAppSession(appContext!!)
+                                } else {
                                 }
-                            } else if (response.code() == 401) {
+                            } catch (e: Exception) {
+                                e.printStackTrace()
 
-                            } else {
                             }
-                        } catch (e: Exception) {
-                            e.printStackTrace()
+                        }
+
+                        override fun onFailure(
+                                call: Call<GetWorkShiftListResponse>,
+                                t: Throwable
+                        ) {
 
                         }
-                    }
-
-                    override fun onFailure(
-                        call: Call<GetWorkShiftListResponse>,
-                        t: Throwable
-                    ) {
-
-                    }
-                })
+                    })
         } catch (e: Exception) {
             e.printStackTrace()
         }
 
     }
+
     private fun setWorkShiftList() {
         try {
             if (!alWorkShift.isNullOrEmpty()) {
                 val adapter = ArrayAdapter(
-                    appContext!!,
-                    android.R.layout.simple_spinner_dropdown_item, alWorkShift
+                        appContext!!,
+                        android.R.layout.simple_spinner_dropdown_item, alWorkShift
                 )
                 spShiftDADF!!.adapter = adapter
                 spShiftDADF!!.onItemSelectedListener = object :
-                    AdapterView.OnItemSelectedListener {
+                        AdapterView.OnItemSelectedListener {
                     override fun onItemSelected(
-                        parent: AdapterView<*>,
-                        view: View, position: Int, id: Long
+                            parent: AdapterView<*>,
+                            view: View, position: Int, id: Long
                     ) {
                         try {
                             var strShiftName = alWorkShift.get(position).name
@@ -236,19 +259,19 @@ class Dashboard_AllDataFragment : Fragment(), View.OnClickListener {
         try {
             val periodOption = resources.getStringArray(R.array.period_array)
             val adapter = ArrayAdapter(
-                appContext!!,
-                android.R.layout.simple_spinner_dropdown_item, periodOption
+                    appContext!!,
+                    android.R.layout.simple_spinner_dropdown_item, periodOption
             )
             spPeriodDADF!!.adapter = adapter
 
             spPeriodDADF!!.onItemSelectedListener = object :
-                AdapterView.OnItemSelectedListener {
+                    AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(
-                    parent: AdapterView<*>,
-                    view: View, position: Int, id: Long
+                        parent: AdapterView<*>,
+                        view: View, position: Int, id: Long
                 ) {
-                    Log.e("Period:-",periodOption[position])
-                    if(!isFirst) {
+                    Log.e("Period:-", periodOption[position])
+                    if (!isFirst) {
                         if (periodOption[position].equals(resources.getString(R.string.previous_month))) {
                             getPreviousMonth()
 
@@ -258,8 +281,15 @@ class Dashboard_AllDataFragment : Fragment(), View.OnClickListener {
                         } else {
                             getCustomDates()
                         }
-                        callCalendarEventApi()
-                    }else{
+
+                        if (ConnectivityDetector.isConnectingToInternet(context!!)) {
+                            callCalendarEventApi()
+                        } else {
+                            SnackBar.showInternetError(context!!, snackbarView!!)
+                        }
+
+
+                    } else {
                         isFirst = false
                     }
                 }
@@ -300,10 +330,10 @@ class Dashboard_AllDataFragment : Fragment(), View.OnClickListener {
             etEndDateDSCD.setText(endDate)
 
             etStartDateDSCD.setOnClickListener {
-                openGetDateDialog(etStartDateDSCD,"start")
+                openGetDateDialog(etStartDateDSCD, "start")
             }
             etEndDateDSCD.setOnClickListener {
-                openGetDateDialog(etEndDateDSCD,"end")
+                openGetDateDialog(etEndDateDSCD, "end")
             }
             tvCancelDSCD.setOnClickListener {
                 dialog.dismiss()
@@ -318,7 +348,11 @@ class Dashboard_AllDataFragment : Fragment(), View.OnClickListener {
 
                     } else {
                         dialog.dismiss()
-                        callCalendarEventApi()
+                        if (ConnectivityDetector.isConnectingToInternet(appContext!!)) {
+                            callCalendarEventApi()
+                        } else {
+                            SnackBar.showInternetError(appContext!!, snackbarView!!)
+                        }
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()
@@ -326,8 +360,8 @@ class Dashboard_AllDataFragment : Fragment(), View.OnClickListener {
             }
             dialog.show()
             dialog!!.window!!.setLayout(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
             )
         } catch (e: Exception) {
             e.printStackTrace()
@@ -337,7 +371,7 @@ class Dashboard_AllDataFragment : Fragment(), View.OnClickListener {
     private fun showToast() {
         try {
             val inflater = layoutInflater
-            val layout: View = inflater.inflate( R.layout.toast, requireView().findViewById(R.id.toast_layout_root) as ViewGroup?)
+            val layout: View = inflater.inflate(R.layout.toast, requireView().findViewById(R.id.toast_layout_root) as ViewGroup?)
 
             val text = layout.findViewById<View>(R.id.text) as TextView
             text.text = "End date must be greater than Start date"
@@ -352,7 +386,7 @@ class Dashboard_AllDataFragment : Fragment(), View.OnClickListener {
         }
     }
 
-    private fun openGetDateDialog(etStartDateDSCD: EditText,from:String) {
+    private fun openGetDateDialog(etStartDateDSCD: EditText, from: String) {
 
         val calendar: Calendar = Calendar.getInstance()
         var mYear = calendar.get(Calendar.YEAR)
@@ -365,27 +399,27 @@ class Dashboard_AllDataFragment : Fragment(), View.OnClickListener {
         mDay = strDate.substring(8, 10).toInt()
 
         val datePickerDialog = DatePickerDialog(
-            appContext!!,
-            DatePickerDialog.OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
-                // Display Selected date in textbox
-                val mFormat = DecimalFormat("00")
-                if(from.equals("start")) {
-                    startDate =
-                        year.toString() + "-" + mFormat.format((monthOfYear + 1).toDouble()) + "-" + mFormat.format(
-                            (dayOfMonth).toDouble()
-                        )
-                    etStartDateDSCD.setText(startDate)
-                }else{
-                    endDate =
-                        year.toString() + "-" + mFormat.format((monthOfYear + 1).toDouble()) + "-" + mFormat.format(
-                            (dayOfMonth).toDouble()
-                        )
-                    etStartDateDSCD.setText(endDate)
-                }
-            },
-            mYear,
-            mMonth,
-            mDay
+                appContext!!,
+                DatePickerDialog.OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
+                    // Display Selected date in textbox
+                    val mFormat = DecimalFormat("00")
+                    if (from.equals("start")) {
+                        startDate =
+                                year.toString() + "-" + mFormat.format((monthOfYear + 1).toDouble()) + "-" + mFormat.format(
+                                        (dayOfMonth).toDouble()
+                                )
+                        etStartDateDSCD.setText(startDate)
+                    } else {
+                        endDate =
+                                year.toString() + "-" + mFormat.format((monthOfYear + 1).toDouble()) + "-" + mFormat.format(
+                                        (dayOfMonth).toDouble()
+                                )
+                        etStartDateDSCD.setText(endDate)
+                    }
+                },
+                mYear,
+                mMonth,
+                mDay
         )
         datePickerDialog.show()
     }
@@ -417,42 +451,46 @@ class Dashboard_AllDataFragment : Fragment(), View.OnClickListener {
             mAPIService = ApiUtils.apiService
 
             mAPIService!!.getGroupList(
-                AppConstants.BEARER_TOKEN + SessionManager.getToken(appContext!!)
+                    AppConstants.BEARER_TOKEN + SessionManager.getToken(appContext!!)
             )
-                .enqueue(object : Callback<GetGroupListResponse> {
+                    .enqueue(object : Callback<GetGroupListResponse> {
 
-                    override fun onResponse(
-                        call: Call<GetGroupListResponse>,
-                        response: Response<GetGroupListResponse>
-                    ) {
+                        override fun onResponse(
+                                call: Call<GetGroupListResponse>,
+                                response: Response<GetGroupListResponse>
+                        ) {
 
-                        try {
-                            if (response.code() == 200) {
-                                if (response.body() != null) {
-                                    alGroupList = ArrayList()
-                                    alGroupList.addAll(response.body())
-                                    alGroupList.add(0,
-                                        GetGroupListResponseItem("","","",0,0,"All","")
-                                    )
-                                    setGroupList()
+                            try {
+                                if (response.code() == 200) {
+                                    if (response.body() != null) {
+                                        alGroupList = ArrayList()
+                                        alGroupList.addAll(response.body())
+                                        alGroupList.add(0,
+                                                GetGroupListResponseItem("", "", "", 0, 0, "All", "")
+                                        )
+                                        setGroupList()
+                                    }
+                                } else if (response.code() == 401) {
+                                    var intent = Intent(appContext!!, EnterCompanyDetailActivity::class.java)
+                                    intent.flags =
+                                            Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+                                    startActivity(intent)
+                                    SessionManager.clearAppSession(appContext!!)
+                                } else {
                                 }
-                            } else if (response.code() == 401) {
+                            } catch (e: Exception) {
+                                e.printStackTrace()
 
-                            } else {
                             }
-                        } catch (e: Exception) {
-                            e.printStackTrace()
+                        }
+
+                        override fun onFailure(
+                                call: Call<GetGroupListResponse>,
+                                t: Throwable
+                        ) {
 
                         }
-                    }
-
-                    override fun onFailure(
-                        call: Call<GetGroupListResponse>,
-                        t: Throwable
-                    ) {
-
-                    }
-                })
+                    })
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -463,20 +501,24 @@ class Dashboard_AllDataFragment : Fragment(), View.OnClickListener {
         try {
             if (!alGroupList.isNullOrEmpty()) {
                 val adapter = ArrayAdapter(
-                    appContext!!,
-                    android.R.layout.simple_spinner_dropdown_item, alGroupList
+                        appContext!!,
+                        android.R.layout.simple_spinner_dropdown_item, alGroupList
                 )
                 spGroupDADF!!.adapter = adapter
                 spGroupDADF!!.onItemSelectedListener = object :
-                    AdapterView.OnItemSelectedListener {
+                        AdapterView.OnItemSelectedListener {
                     override fun onItemSelected(
-                        parent: AdapterView<*>,
-                        view: View, position: Int, id: Long
+                            parent: AdapterView<*>,
+                            view: View, position: Int, id: Long
                     ) {
                         try {
                             strGroupName = alGroupList.get(position).name
                             group_id = alGroupList.get(position).id
-                            callCalendarEventApi()
+                            if (ConnectivityDetector.isConnectingToInternet(context!!)) {
+                                callCalendarEventApi()
+                            } else {
+                                SnackBar.showInternetError(context!!, snackbarView!!)
+                            }
                         } catch (e: Exception) {
                             e.printStackTrace()
                         }
@@ -518,21 +560,28 @@ class Dashboard_AllDataFragment : Fragment(), View.OnClickListener {
     @SuppressLint("WrongConstant")
     private fun setData() {
         try {
-            if(alCalendarEvent!=null && alCalendarEvent.size>0) {
-                 var listener = object : AttendanceItemClickListener {
-                     override fun onClick(view: View, position: Int, from: String) {
-                         var intent = Intent(appContext,AllDataAttendanceActivity::class.java)
-                         intent.putExtra("groupName",strGroupName)
-                         intent.putExtra("alCalendarEvent",alCalendarEvent.get(position))
-                         intent.putExtra("from",from)
-                         startActivity(intent)
-                     }
-                 }
+            if (alCalendarEvent != null && alCalendarEvent.size > 0) {
+                tvNoDataDADF!!.visibility = View.GONE
+                rVwAllDataDADF!!.visibility = View.VISIBLE
+                var listener = object : AttendanceItemClickListener {
+                    override fun onClick(view: View, position: Int, from: String) {
+                        var intent = Intent(appContext, AllDataAttendanceActivity::class.java)
+                        intent.putExtra("groupId",group_id)
+                        intent.putExtra("groupName", strGroupName)
+                        intent.putExtra("alCalendarEvent", alCalendarEvent.get(position))
+                        intent.putExtra("status", from)
 
-                var setVisitorDataAdapter = SetAllDataAdapter(appContext!!,alCalendarEvent,listener)
+                        startActivity(intent)
+                    }
+                }
+
+                var setVisitorDataAdapter = SetAllDataAdapter(appContext!!, alCalendarEvent, listener)
                 rVwAllDataDADF!!.layoutManager =
-                    LinearLayoutManager(appContext, LinearLayout.VERTICAL, false)
+                        LinearLayoutManager(appContext, LinearLayout.VERTICAL, false)
                 rVwAllDataDADF!!.setAdapter(setVisitorDataAdapter)
+            }else{
+                tvNoDataDADF!!.visibility = View.VISIBLE
+                rVwAllDataDADF!!.visibility = View.GONE
             }
         } catch (e: Exception) {
             e.printStackTrace()
@@ -559,7 +608,7 @@ class Dashboard_AllDataFragment : Fragment(), View.OnClickListener {
         try {
             appContext = activity
             snackbarView = activity?.findViewById(android.R.id.content)
-
+            tvNoDataDADF = view.findViewById(R.id.tvNoDataDADF)
             spPeriodDADF = view.findViewById(R.id.spPeriodDADF)
             spShiftDADF = view.findViewById(R.id.spShiftDADF)
             spGroupDADF = view.findViewById(R.id.spGroupDADF)
@@ -586,10 +635,10 @@ class Dashboard_AllDataFragment : Fragment(), View.OnClickListener {
     companion object {
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
-            Dashboard_AllDataFragment().apply {
-                arguments = Bundle().apply {
+                Dashboard_AllDataFragment().apply {
+                    arguments = Bundle().apply {
 
+                    }
                 }
-            }
     }
 }

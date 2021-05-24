@@ -3,9 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/white"
-    tools:context=".Activity.NewApp.EnterLoginDetailActivity">
+    android:layout_height="wrap_content"
+    android:background="@color/white">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -18,7 +17,7 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/tvTitleLDA"
+                android:id="@+id/tvTitleDL"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -37,7 +36,7 @@
                 android:background="@drawable/light_blue_rounded_bg">
 
                 <EditText
-                    android:id="@+id/etEmpIdLDA"
+                    android:id="@+id/etEmpIdDL"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginLeft="@dimen/_20sdp"
@@ -65,7 +64,7 @@
 
                 <EditText
                     android:imeOptions="actionDone"
-                    android:id="@+id/etPasswordLDA"
+                    android:id="@+id/etPasswordDL"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginStart="@dimen/_20sdp"
@@ -94,7 +93,7 @@
 
 
             <RelativeLayout
-                android:id="@+id/rlLoginLDA"
+                android:id="@+id/rlLoginDL"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/_40sdp"
                 android:layout_gravity="center_horizontal"

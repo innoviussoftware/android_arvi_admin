@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#e6e6e6"
+    tools:context=".Fragment.RegularizationRequestFragment">
+
+    <RelativeLayout
+        android:id="@+id/rlHeaderRRLA"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_50sdp">
+
+        <ImageView
+            android:id="@+id/imgVwBackRRLA"
+            android:layout_width="@dimen/_30sdp"
+            android:layout_height="@dimen/_30sdp"
+            android:layout_centerVertical="true"
+            android:padding="@dimen/_8sdp"
+            android:visibility="gone"
+            android:src="@drawable/ic_back_black" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@+id/imgVwBackRRLA"
+            android:visibility="gone"
+            android:fontFamily="@font/gotham_bold"
+            android:text="Regularization Request"
+            android:textColor="@color/black"
+            android:textSize="@dimen/_14ssp" />
+
+        <EditText
+            android:id="@+id/etEmpNameRRF"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/edit_left_border_bg"
+            android:paddingStart="@dimen/_10sdp"
+            android:paddingEnd="@dimen/_10sdp"
+            android:paddingTop="@dimen/_5sdp"
+            android:paddingBottom="@dimen/_5sdp"
+            android:layout_margin="@dimen/_5sdp"
+            android:layout_marginStart="@dimen/_5sdp"
+            android:hint="Search Employee by Name or Employee Id"
+            android:layout_toStartOf="@+id/imgVwCalendarRRF"
+            android:textSize="@dimen/_12ssp"
+            android:maxLines="2"
+            android:fontFamily="@font/gotham_book_regular"
+            />
+
+
+        <ImageView
+            android:id="@+id/imgVwCalendarRRF"
+            android:layout_width="@dimen/_25sdp"
+            android:layout_height="@dimen/_25sdp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="@dimen/_10sdp"
+            android:src="@drawable/ic_calendar_leave" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_alignParentBottom="true"
+            android:background="@color/view_bg" />
+    </RelativeLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rVwRequestRRLA"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/rlHeaderRRLA" />
+
+    <TextView
+        android:id="@+id/tvNoVisitorRRLA"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fontFamily="@font/avenir_next_bold"
+        android:gravity="center"
+        android:text="Regularization request list is empty"
+        android:textColor="@color/app_bg"
+        android:textSize="@dimen/_14ssp"
+        android:visibility="gone" />
+
+
+    <ImageView
+        android:id="@+id/imgVwAddRequestRRLA"
+        android:layout_width="@dimen/_50sdp"
+        android:layout_height="@dimen/_50sdp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="@dimen/_10sdp"
+        android:elevation="@dimen/_2sdp"
+        android:src="@mipmap/ic_add_round"
+        android:visibility="gone" />
+</RelativeLayout>

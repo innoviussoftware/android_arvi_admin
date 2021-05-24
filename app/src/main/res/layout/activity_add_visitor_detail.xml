@@ -77,9 +77,30 @@
                 android:hint="To Meet"
                 android:maxLines="1"
                 android:singleLine="true"
+                android:visibility="gone"
                 android:textColor="@color/black"
                 android:textSize="@dimen/_12ssp" />
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_5sdp"
+                android:text="To Meet"
+                android:textColor="@color/black"
+                android:textSize="@dimen/_12ssp"
+                android:fontFamily="@font/gotham_book_regular"
+                />
+            <Spinner
+                android:id="@+id/spMeetAVDA"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_3sdp"
+                />
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/view_bg"
+                />
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/tILVisitDateAVDA"
                 android:layout_width="match_parent"
@@ -178,6 +199,13 @@
                     android:textSize="@dimen/_12ssp" />
             </com.google.android.material.textfield.TextInputLayout>
 
+            <ImageView
+                android:layout_width="@dimen/_120sdp"
+                android:layout_height="@dimen/_120sdp"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:id="@+id/imgVwSVisitorPhotoAVDA"
+                android:visibility="gone"
+                />
             <TextView
                 android:id="@+id/tvSaveAVDA"
                 android:layout_width="match_parent"

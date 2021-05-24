@@ -1,6 +1,7 @@
 package com.arvi.SessionManager
 
 import android.content.Context
+import com.arvi.R
 
 object SessionManager {
 
@@ -501,6 +502,24 @@ object SessionManager {
         return preferences.getString(AppPrefFields.PARAM_gpsOption, "Yes")!!
     }
 
+    fun setSelectedAppMode(context: Context, option: String) {
+        try {
+            val preferences = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+
+            val editor = preferences.edit()
+            editor.putString(AppPrefFields.PARAM_appMode, option)
+            editor.commit()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+    }
+
+
+    fun getSelectedAppMode(context: Context): String? {
+        val preferences = context!!.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+        return preferences.getString(AppPrefFields.PARAM_appMode, context.resources.getString(R.string.full_mode))!!
+    }
 
 
 }

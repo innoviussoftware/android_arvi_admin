@@ -19,6 +19,7 @@ import com.arvi.RetrofitApiCall.APIService
 import com.arvi.RetrofitApiCall.ApiUtils
 import com.arvi.SessionManager.SessionManager
 import com.arvi.Utils.AppConstants
+import com.arvi.Utils.ConnectivityDetector
 import com.arvi.Utils.MyProgressDialog
 import com.arvi.Utils.SnackBar
 import retrofit2.Call
@@ -50,7 +51,13 @@ class LeaveRequestListActivity : AppCompatActivity(), View.OnClickListener {
     override fun onResume() {
         super.onResume()
         try {
-            callGetLeaveRequestApi()
+            if (ConnectivityDetector.isConnectingToInternet(context!!)) {
+                callGetLeaveRequestApi()
+            } else {
+                SnackBar.showInternetError(context!!, snackbarView!!)
+            }
+
+
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -78,7 +85,7 @@ class LeaveRequestListActivity : AppCompatActivity(), View.OnClickListener {
                                 if (response.body() != null) {
                                     try {
                                         alLeaveRequests = ArrayList()
-                                        alLeaveRequests.addAll(response.body().leaves)
+                                        alLeaveRequests.addAll(response.body().leaves!!)
                                         setLeaveRequestData()
                                     } catch (e: Exception) {
                                         e.printStackTrace()

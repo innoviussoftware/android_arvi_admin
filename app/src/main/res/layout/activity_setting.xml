@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Activity.NewApp.SettingActivity">
+
     <RelativeLayout
         android:id="@+id/rlHeaderSA"
         android:layout_width="match_parent"
@@ -19,25 +20,26 @@
             android:background="@drawable/ic_back_black" />
 
         <TextView
-            android:fontFamily="@font/gotham_bold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
+            android:fontFamily="@font/gotham_bold"
             android:text="Setting"
             android:textColor="@color/black"
             android:textSize="@dimen/_13ssp" />
+
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/view_bg"
             android:layout_alignParentBottom="true"
-            />
+            android:background="@color/view_bg" />
     </RelativeLayout>
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/rlHeaderSA">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -47,117 +49,148 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Enter server pointing URL"
-                android:textSize="@dimen/_12ssp"
-                android:fontFamily="@font/gotham_book_regular"
                 android:layout_marginTop="@dimen/_5sdp"
+                android:fontFamily="@font/gotham_book_regular"
+                android:text="Enter server pointing URL"
                 android:textColor="@color/black"
-                />
+                android:textSize="@dimen/_12ssp" />
 
             <Spinner
                 android:id="@+id/spServerUrlSA"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/_3sdp"
-                android:visibility="gone"
-                />
+                android:visibility="gone" />
 
             <EditText
                 android:id="@+id/etServerUrlSA"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@null"
-                android:hint="write at here..."
-                android:textSize="@dimen/_12ssp"
-                android:fontFamily="@font/gotham_book_regular"
                 android:layout_marginTop="@dimen/_8sdp"
-                />
+                android:background="@null"
+                android:fontFamily="@font/gotham_book_regular"
+                android:hint="write at here..."
+                android:textSize="@dimen/_12ssp" />
+
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="@color/view_bg"
                 android:layout_marginTop="@dimen/_5sdp"
-                />
+                android:background="@color/view_bg" />
+
+            <LinearLayout
+                android:id="@+id/llModeOptionSA"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:fontFamily="@font/gotham_book_regular"
+                    android:text="Select App Mode"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_12ssp" />
+
+                <Spinner
+                    android:id="@+id/spAppModeSA"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_3sdp" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/view_bg" />
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/llLaunchOptionSA"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:fontFamily="@font/gotham_book_regular"
+                    android:text="Select default launching screen"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_12ssp" />
+
+                <Spinner
+                    android:id="@+id/spScreensSA"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_3sdp" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/view_bg" />
+            </LinearLayout>
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Select default launching screen"
-                android:textSize="@dimen/_12ssp"
-                android:fontFamily="@font/gotham_book_regular"
                 android:layout_marginTop="@dimen/_10sdp"
-                android:textColor="@color/black"
-                />
-
-            <Spinner
-                android:id="@+id/spScreensSA"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_3sdp"
-                />
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/view_bg"
-                />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:fontFamily="@font/gotham_book_regular"
                 android:text="Select default camera facing"
-                android:textSize="@dimen/_12ssp"
-                android:fontFamily="@font/gotham_book_regular"
-                android:layout_marginTop="@dimen/_10sdp"
                 android:textColor="@color/black"
-                />
+                android:textSize="@dimen/_12ssp" />
 
             <Spinner
                 android:id="@+id/spCameraFacingSA"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_3sdp"
-                />
+                android:layout_marginTop="@dimen/_3sdp" />
+
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="@color/view_bg"
-                />
+                android:background="@color/view_bg" />
 
-
-            <TextView
+            <LinearLayout
+                android:id="@+id/llGpsSA"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Do you want GPS location tracking?"
-                android:textSize="@dimen/_12ssp"
-                android:fontFamily="@font/gotham_book_regular"
-                android:layout_marginTop="@dimen/_10sdp"
-                android:textColor="@color/black"
-                />
+                android:orientation="vertical">
 
-            <RadioGroup
-                android:id="@+id/rgGPSTrackSA"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_5sdp"
-                android:orientation="horizontal">
-                <RadioButton
-                    android:id="@+id/rbYesTrackSA"
-                    android:layout_width="wrap_content"
+                <TextView
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Yes"
+                    android:layout_marginTop="@dimen/_10sdp"
                     android:fontFamily="@font/gotham_book_regular"
-                    android:textSize="@dimen/_12ssp"
-                    />
-                <RadioButton
-                    android:id="@+id/rbNoTrackSA"
-                    android:layout_width="wrap_content"
+                    android:text="Do you want GPS location tracking?"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_12ssp" />
+
+                <RadioGroup
+                    android:id="@+id/rgGPSTrackSA"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="No"
-                    android:layout_marginStart="@dimen/_20sdp"
-                    android:fontFamily="@font/gotham_book_regular"
-                    android:textSize="@dimen/_12ssp"
-                    />
-            </RadioGroup>
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:orientation="horizontal">
+
+                    <RadioButton
+                        android:id="@+id/rbYesTrackSA"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/gotham_book_regular"
+                        android:text="Yes"
+                        android:textSize="@dimen/_12ssp" />
+
+                    <RadioButton
+                        android:id="@+id/rbNoTrackSA"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/_20sdp"
+                        android:fontFamily="@font/gotham_book_regular"
+                        android:text="No"
+                        android:textSize="@dimen/_12ssp" />
+                </RadioGroup>
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/tvSaveSA"
@@ -165,13 +198,12 @@
                 android:layout_height="@dimen/_40sdp"
                 android:layout_margin="@dimen/_10sdp"
                 android:background="@drawable/btn_bg"
-                android:text="Save"
-                android:gravity="center"
                 android:fontFamily="@font/gotham_medium"
-                android:textColor="@color/white"
-                android:textSize="@dimen/_14ssp"
+                android:gravity="center"
+                android:text="Save"
                 android:textAllCaps="true"
-                />
+                android:textColor="@color/white"
+                android:textSize="@dimen/_14ssp" />
         </LinearLayout>
     </ScrollView>
 </RelativeLayout>

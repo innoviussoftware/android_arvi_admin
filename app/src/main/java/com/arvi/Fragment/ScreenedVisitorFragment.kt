@@ -123,7 +123,7 @@ var imgVwAddVisitorVLF: ImageView? = null
 
             var mAPIService: APIService? = null
             mAPIService = ApiUtils.apiService
-            MyProgressDialog.showProgressDialog(appContext!!)
+          //  MyProgressDialog.showProgressDialog(appContext!!)
 //{{hostname}}/v1/companies/visitor/entries?status=closed
             mAPIService!!.getVisitorsList("application/json",token, "closed")
                 .enqueue(object : Callback<GetVisitorListResponse> {

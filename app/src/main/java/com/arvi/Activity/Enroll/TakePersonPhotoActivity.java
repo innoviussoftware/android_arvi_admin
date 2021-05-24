@@ -35,7 +35,10 @@ import com.arvi.RetrofitApiCall.APIService;
 import com.arvi.RetrofitApiCall.ApiUtils;
 import com.arvi.SessionManager.SessionManager;
 import com.arvi.Utils.AppConstants;
+import com.arvi.Utils.ConnectivityDetector;
+import com.arvi.Utils.ConnectivityDetectorJava;
 import com.arvi.Utils.MyProgressDialog;
+import com.arvi.Utils.SnackBar;
 import com.arvi.btScan.common.CameraSource;
 import com.arvi.btScan.common.CameraSourcePreview;
 import com.arvi.btScan.common.GraphicOverlay;
@@ -103,6 +106,7 @@ public class TakePersonPhotoActivity extends AppCompatActivity implements Compou
     int imgCount = 0;
     String name = "";
     Context context;
+    View snackBarView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -111,6 +115,7 @@ public class TakePersonPhotoActivity extends AppCompatActivity implements Compou
         try {
             context = TakePersonPhotoActivity.this;
             ArviAudioPlaybacks.init(this.getApplicationContext());
+            snackBarView = findViewById(android.R.id.content);
             facingSwitch = findViewById(R.id.facingSwitch);
             faceCapturePreview = findViewById(R.id.faceCapturePreview);
             facePreviewOverlay = findViewById(R.id.facePreviewOverlay);
@@ -473,7 +478,13 @@ public class TakePersonPhotoActivity extends AppCompatActivity implements Compou
             Uri tempUri = getImageUri(TakePersonPhotoActivity.this, face);
             String profilePath = FileUtil.INSTANCE.getPath(TakePersonPhotoActivity.this, tempUri);
             Log.e("path ", profilePath);
-            callStorePersonPicApi(profilePath);
+
+            if (ConnectivityDetectorJava.isConnectingToInternet(context)) {
+                callStorePersonPicApi(profilePath);
+            } else {
+                ConnectivityDetectorJava.showInternetError(context, snackBarView);
+            }
+
             if (imgCount == 4) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(this, R.style.AlertDialogTheme);
                 builder.setCancelable(false);
@@ -523,7 +534,13 @@ public class TakePersonPhotoActivity extends AppCompatActivity implements Compou
                     Log.e("Upload", "success");
                     ArrayList<UploadPhotoData>  alPhotoDetail = new ArrayList<>();
                     alPhotoDetail.addAll(response.body().getData());
-                    callStoreWithId(alPhotoDetail);
+
+                    if (ConnectivityDetectorJava.isConnectingToInternet(context)) {
+                        callStoreWithId(alPhotoDetail);
+                    } else {
+                        ConnectivityDetectorJava.showInternetError(context, snackBarView);
+                    }
+
                 }
 
                 @Override
@@ -782,7 +799,7 @@ public class TakePersonPhotoActivity extends AppCompatActivity implements Compou
                     }
                 };
             }
-            bindService(serviceIntent, serviceConnection, Context.BIND_AUTO_CREATE);
+        //    bindService(serviceIntent, serviceConnection, Context.BIND_AUTO_CREATE);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -828,8 +845,8 @@ public class TakePersonPhotoActivity extends AppCompatActivity implements Compou
         Log.d(TAG, "onResume");
         super.onResume();
         try {
-            startService(serviceIntent);
-            bindService();
+           // startService(serviceIntent);
+           // bindService();
             faceDetected = false;
         } catch (Exception e) {
             e.printStackTrace();

@@ -1,11 +1,15 @@
 package com.arvi.Adapter
 
 import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
+import android.widget.RelativeLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.arvi.Activity.NewApp.AddLeaveRequestActivity
 import com.arvi.R
 import com.crashlytics.android.Crashlytics
 import java.text.ParseException
@@ -21,6 +25,10 @@ class SetLeaveRequestDataAdapter(
         var tvNameRLR = itemView.findViewById(R.id.tvNameRLR) as TextView
         var tvDateRLR = itemView.findViewById(R.id.tvDateRLR) as TextView
         var tvLeaveTypeRLR = itemView.findViewById(R.id.tvLeaveTypeRLR) as TextView
+        var llMainRLR = itemView.findViewById(R.id.llMainRLR) as LinearLayout
+       /* init {
+            rlLeaveRLR.setOnClickListener(this)
+        }*/
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -41,7 +49,7 @@ class SetLeaveRequestDataAdapter(
         try {
             var dateFrom = alLeaveRequests.get(position).dateFrom
             var dateTo = alLeaveRequests.get(position).dateTo
-            var name = alLeaveRequests.get(position).user.name
+            var name = alLeaveRequests.get(position).user!!.name
 
             val input = SimpleDateFormat("yyyy-MM-dd")
             val output = SimpleDateFormat("MMM dd")
@@ -61,6 +69,12 @@ class SetLeaveRequestDataAdapter(
             } catch (e: ParseException) {
                 e.printStackTrace()
                 Crashlytics.log(e.toString())
+            }
+
+            holder.llMainRLR.setOnClickListener {
+                var intent = Intent(context, AddLeaveRequestActivity::class.java)
+                intent.putExtra("leaveDetail",alLeaveRequests.get(position))
+                context.startActivity(intent)
             }
         } catch (e: Exception) {
             e.printStackTrace()

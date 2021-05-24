@@ -100,11 +100,13 @@ public class GraphicOverlay extends View {
      * Adjusts the x coordinate from the preview's coordinate system to the view coordinate system.
      */
     public float translateX(float x) {
+      //todo:: Priyanka 20-04 start
       if (overlay.facing == CameraSource.CAMERA_FACING_FRONT) {
-        return overlay.getWidth() - scaleX(x);
+        return /*overlay.getWidth() -*/ scaleX(x);
       } else {
         return scaleX(x);
       }
+      //todo:: Priyanka 20-04 end
     }
 
     /**

@@ -109,6 +109,82 @@ class GlobalMethods {
             return formatedDate!!
         }
 
+        // To convert from UTC/ISO string to IST string
+        fun convertUTCToISTDate(sendDate: String): String {
+            var dateArray = sendDate.split(".") // this will handle 2021-04-16T17:15:00.0+05:30
+            var newsDate = dateArray[0]
+
+            var format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
+            format.timeZone = TimeZone.getTimeZone("UTC")
+
+            val newDate = format.parse(newsDate)
+            format = SimpleDateFormat("MMM dd HH:mm:ss")
+            format.timeZone = TimeZone.getTimeZone("Asia/Kolkata")
+            var formatedDate = format.format(newDate)
+
+            return formatedDate!!
+        }
+
+
+        fun convertUTCToISTTime(sendDate: String): String {
+            var dateArray = sendDate.split(".") // this will handle 2021-04-16T17:15:00.0+05:30
+            var newsDate = dateArray[0]
+
+            var format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
+            format.timeZone = TimeZone.getTimeZone("UTC")
+
+            val newDate = format.parse(newsDate)
+            format = SimpleDateFormat("hh:mm a")
+            format.timeZone = TimeZone.getTimeZone("Asia/Kolkata")
+            var formatedDate = format.format(newDate)
+
+            return formatedDate!!
+        }
+
+        fun convertISTToUTCDate(sendDate: String): String {
+            var dateArray = sendDate.split(".") // this will handle 2021-04-16T17:15:00.0+05:30
+            var newsDate = dateArray[0]
+
+            var format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
+            format.timeZone = TimeZone.getTimeZone("Asia/Kolkata")
+
+            val newDate = format.parse(newsDate)
+
+            format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.s'Z'")
+            format.timeZone = TimeZone.getTimeZone("UTC")
+            var formatedDate = format.format(newDate)
+
+            return formatedDate!!
+        }
+
+
+        fun convertHourFormat(sendDate: String): String {
+            var format = SimpleDateFormat("HH:mm:ss")
+            val newsDate = sendDate
+            var formatedDate: String? = ""
+            if (newsDate != null) {
+                val newDate = format.parse(newsDate)
+                format = SimpleDateFormat("HH:mm")
+                formatedDate = format.format(newDate)
+            }
+            return formatedDate!!
+        }
+
+
+        fun convertUTCDateTimeformate(sendDate: String): String {
+            var format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.s'Z'")
+            val newsDate = sendDate
+            var formatedDate: String? = ""
+            if (newsDate != null) {
+                val newDate = format.parse(newsDate)
+                format = SimpleDateFormat("MMM dd, hh:mm a")
+                formatedDate = format.format(newDate)
+            }
+            return formatedDate!!
+        }
+
+
+
         fun convertUTCDateformate(sendDate: String): String {
             var format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.s'Z'")
             val newsDate = sendDate

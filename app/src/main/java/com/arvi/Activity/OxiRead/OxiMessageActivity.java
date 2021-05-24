@@ -24,6 +24,7 @@ import com.arvi.RetrofitApiCall.APIService;
 import com.arvi.RetrofitApiCall.ApiUtils;
 import com.arvi.SessionManager.SessionManager;
 import com.arvi.Utils.AppConstants;
+import com.arvi.Utils.ConnectivityDetectorJava;
 import com.arvi.Utils.GoSettingScreen;
 import com.arvi.Utils.SnackBar;
 import com.arvi.btScan.java.DafaultActivity;
@@ -31,6 +32,7 @@ import com.arvi.btScan.java.arvi.ArviAudioPlaybacks;
 import com.arvi.btScan.java.services.SlaveListener;
 import com.arvi.btScan.java.services.SlaveService;
 import com.google.gson.JsonObject;
+
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -47,7 +49,7 @@ public class OxiMessageActivity extends AppCompatActivity implements SlaveListen
     TextView tvTitleOMA;
     ImageView gifSGA;
 
-    private static enum STATE {UNKNOWN, INIT,WAIT_OPERATE_LED, SHOW_RESULT_SCREEN, DELAY, WAIT_FOR_EXIT, WAIT_SANITIZER_ON, WAIT_SANITIZER_OFF, READ_OXIMETER, WAIT_OXIMETER_REPLY, SHOW_OXIMETER_READING}
+    private static enum STATE {UNKNOWN, INIT, WAIT_OPERATE_LED, SHOW_RESULT_SCREEN, DELAY, WAIT_FOR_EXIT, WAIT_SANITIZER_ON, WAIT_SANITIZER_OFF, READ_OXIMETER, WAIT_OXIMETER_REPLY, SHOW_OXIMETER_READING}
 
     ;
     private static SlaveService slaveService;
@@ -61,9 +63,9 @@ public class OxiMessageActivity extends AppCompatActivity implements SlaveListen
     private STATE state = STATE.UNKNOWN;
     private STATE previousState = STATE.UNKNOWN;
     private Toast resultToast;
-    String strUserId,strTemp;
+    String strUserId, strTemp;
     View snackBarView;
-
+    Context context;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,13 +73,15 @@ public class OxiMessageActivity extends AppCompatActivity implements SlaveListen
         setContentView(R.layout.activity_oxi_message);
         try {
             ArviAudioPlaybacks.init(this.getApplicationContext());
+
+            context=OxiMessageActivity.this;
             snackBarView = findViewById(android.R.id.content);
             tvTitleOMA = findViewById(R.id.tvTitleOMA);
             gifSGA = findViewById(R.id.gifSGA);
             ArviAudioPlaybacks.forcePlay(R.raw.salli_insert_finger);
             isServiceBound = false;
             serviceIntent = new Intent(getApplicationContext(), SlaveService.class);
-            if(getIntent().getExtras()!=null){
+            if (getIntent().getExtras() != null) {
                 strUserId = getIntent().getStringExtra("strUserId");
                 strTemp = getIntent().getStringExtra("strTemp");
             }
@@ -94,7 +98,7 @@ public class OxiMessageActivity extends AppCompatActivity implements SlaveListen
                 if (oxiValue > SessionManager.INSTANCE.getOxiLevel(getApplicationContext())) {
                     ArviAudioPlaybacks.forcePlay(R.raw.salli_bo_normal_san);
                     oxiLevel = "Normal";
-                }else{
+                } else {
                     ArviAudioPlaybacks.forcePlay(R.raw.salli_bo_low_san);
                     oxiLevel = "Low";
                 }
@@ -102,11 +106,11 @@ public class OxiMessageActivity extends AppCompatActivity implements SlaveListen
                 if (oxiValue > SessionManager.INSTANCE.getOxiLevel(getApplicationContext())) {
                     ArviAudioPlaybacks.forcePlay(R.raw.salli_bo_normal);
                     oxiLevel = "Normal";
-                }else{
+                } else {
                     ArviAudioPlaybacks.forcePlay(R.raw.salli_bo_low);
                     oxiLevel = "Low";
                 }
-           }
+            }
 
             dialog = new Dialog(this);
             dialog.setCancelable(false);
@@ -239,21 +243,34 @@ public class OxiMessageActivity extends AppCompatActivity implements SlaveListen
                                                 gifSGA.setVisibility(View.GONE);
 
                                                 //todo::Priyanka 06-07 start
-                                                if(SessionManager.INSTANCE.getFaceRecognizeOption(getApplicationContext()).equals("ON")) {
+                                                if (SessionManager.INSTANCE.getFaceRecognizeOption(getApplicationContext()).equals("ON")) {
                                                     if (strUserId != null) {
                                                         if (!strUserId.equals("")) {
-                                                            callStoreRecordApi(val);
+                                                            if (ConnectivityDetectorJava.isConnectingToInternet(context)) {
+                                                                callStoreRecordApi(val);
+                                                            } else {
+                                                                ConnectivityDetectorJava.showInternetError(context, snackBarView);
+                                                            }
+
                                                         } else {
                                                             strUserId = "";
-                                                            callStoreRecordApi(val);
+                                                            if (ConnectivityDetectorJava.isConnectingToInternet(context)) {
+                                                                callStoreRecordApi(val);
+                                                            } else {
+                                                                ConnectivityDetectorJava.showInternetError(context, snackBarView);
+                                                            }
                                                         }
                                                     } else {
                                                         strUserId = "";
-                                                        callStoreRecordApi(val);
+                                                        if (ConnectivityDetectorJava.isConnectingToInternet(context)) {
+                                                            callStoreRecordApi(val);
+                                                        } else {
+                                                            ConnectivityDetectorJava.showInternetError(context, snackBarView);
+                                                        }
                                                     }
                                                 }
                                                 //todo:: 06-07 end
-    //                                            SnackBar.INSTANCE.showValidationError(OxiMessageActivity.this, snackBarView, "Scan Completed");
+                                                //                                            SnackBar.INSTANCE.showValidationError(OxiMessageActivity.this, snackBarView, "Scan Completed");
                                             }
                                         });
                                         slaveService.sanitizerSpray(0, 50);
@@ -357,16 +374,16 @@ public class OxiMessageActivity extends AppCompatActivity implements SlaveListen
                             }
                         }
 
-                    if (resultToastTimeout == 0) {
-                        resultToastTimeout = 5;
-                        Log.d(TAG, "repeat toast");
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                //showToast(tempNormal,temperature,message);
-                            }
-                        });
-                    }
+                        if (resultToastTimeout == 0) {
+                            resultToastTimeout = 5;
+                            Log.d(TAG, "repeat toast");
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    //showToast(tempNormal,temperature,message);
+                                }
+                            });
+                        }
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -456,12 +473,12 @@ public class OxiMessageActivity extends AppCompatActivity implements SlaveListen
             jsonObject.addProperty("temperature", strTemp);
             //todo:: 06-07 end
 
-            Log.e("storeBO:-",jsonObject.toString());
+            Log.e("storeBO:-", jsonObject.toString());
 
             APIService mAPIService = null;
             mAPIService = ApiUtils.INSTANCE.getApiService();
             Context context = OxiMessageActivity.this;
-            Call<ResponseBody> call = mAPIService.recordUserTemperature(AppConstants.INSTANCE.getBEARER_TOKEN() +  SessionManager.INSTANCE.getToken(context),"application/json", jsonObject);
+            Call<ResponseBody> call = mAPIService.recordUserTemperature(AppConstants.INSTANCE.getBEARER_TOKEN() + SessionManager.INSTANCE.getToken(context), "application/json", jsonObject);
             call.enqueue(new Callback<ResponseBody>() {
                 @Override
                 public void onResponse(Call<ResponseBody> call, Response<ResponseBody> response) {
@@ -504,7 +521,7 @@ public class OxiMessageActivity extends AppCompatActivity implements SlaveListen
                     }
                 };
             }
-            bindService(serviceIntent, serviceConnection, Context.BIND_AUTO_CREATE);
+           // bindService(serviceIntent, serviceConnection, Context.BIND_AUTO_CREATE);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -555,8 +572,8 @@ public class OxiMessageActivity extends AppCompatActivity implements SlaveListen
         Log.d(TAG, "onResume");
         super.onResume();
         try {
-            startService(serviceIntent);
-            bindService();
+         //   startService(serviceIntent);
+           // bindService();
         } catch (Exception e) {
             e.printStackTrace();
         }

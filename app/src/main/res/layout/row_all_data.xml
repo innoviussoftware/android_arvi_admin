@@ -70,14 +70,13 @@
                 android:layout_marginTop="@dimen/_3sdp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
+
                 <com.makeramen.roundedimageview.RoundedImageView
                     android:id="@+id/imgVwMissCheckInADR"
-                    app:riv_oval="true"
                     android:layout_width="@dimen/_12sdp"
                     android:layout_height="@dimen/_12sdp"
-                    android:layout_centerVertical="true"
                     android:src="@color/miss_clr"
-                    />
+                    app:riv_oval="true" />
                 <TextView
                     android:id="@+id/tvMissedADR"
                     android:layout_width="match_parent"

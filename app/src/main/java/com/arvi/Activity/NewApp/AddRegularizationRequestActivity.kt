@@ -15,10 +15,7 @@ import com.arvi.R
 import com.arvi.RetrofitApiCall.APIService
 import com.arvi.RetrofitApiCall.ApiUtils
 import com.arvi.SessionManager.SessionManager
-import com.arvi.Utils.AppConstants
-import com.arvi.Utils.KeyboardUtility
-import com.arvi.Utils.MyProgressDialog
-import com.arvi.Utils.SnackBar
+import com.arvi.Utils.*
 import com.crashlytics.android.Crashlytics
 import com.google.gson.JsonObject
 import okhttp3.ResponseBody
@@ -196,7 +193,14 @@ class AddRegularizationRequestActivity : AppCompatActivity(), View.OnClickListen
                                 var formateOutDate = input.parse(strOut)
                                 var sendOutAt = output.format(formateOutDate)
                                 Log.e("sendOutAt:-",sendOutAt)
-                                callAddRegularisationApi(sendInAt,sendOutAt)
+
+
+                                if (ConnectivityDetector.isConnectingToInternet(context!!)) {
+                                    callAddRegularisationApi(sendInAt,sendOutAt)
+                                } else {
+                                    SnackBar.showInternetError(context!!, snackBarView!!)
+                                }
+
                             }else{
                                 SnackBar.showValidationError(context!!,snackBarView!!,"Check-Out should not be before Check-In")
                             }
@@ -408,4 +412,6 @@ class AddRegularizationRequestActivity : AppCompatActivity(), View.OnClickListen
         }
 
     }
+
+
 }

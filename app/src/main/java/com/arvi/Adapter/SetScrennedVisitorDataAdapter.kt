@@ -59,9 +59,18 @@ class SetScrennedVisitorDataAdapter(
 
             var itemData = alVisitorList[position]
 
-            holder.tvNameRV.text = itemData.name + "(" + itemData.data!!.company + ")"
+            var company =""
+            var emp_name = ""
+            if(itemData.data!=null){
+                company = itemData.data!!.comingFrom!!
 
-            holder.tvMeetPersNameRV.text = "To Meet " + itemData.data!!.employee!!.name
+                if(itemData.data!!.visitingTo!=null){
+                    emp_name = itemData.data!!.visitingTo!!.name!!
+                }
+            }
+            holder.tvNameRV.text = itemData.name + "(" + company + ")"
+
+            holder.tvMeetPersNameRV.text = "To Meet " + emp_name
             //GlobalMethods.convertOnlyDate(itemData.data.actualEntry.timeOn)
 
 
@@ -84,22 +93,24 @@ class SetScrennedVisitorDataAdapter(
 
 
         try {
-            if (alVisitorList[position].data!!.actualEntryTime != null) {
-                if (alVisitorList[position].data!!.actualEntryTime.contains("Z")) {
-                    if (alVisitorList[position].data!!.actualEntryTime.length > 21) {
+            if(alVisitorList[position].data!=null) {
+                if (alVisitorList[position].data!!.actualEntryTime != null) {
+                    if (alVisitorList[position].data!!.actualEntryTime.contains("Z")) {
+                        if (alVisitorList[position].data!!.actualEntryTime.length > 21) {
+                            holder.tvVisitorTimeRV.text =
+                                GlobalMethods.convertUTCDateformate(alVisitorList[position].data!!.actualEntryTime!!)
+                        } else {
+                            val format1 = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
+                            val dt1: Date =
+                                format1.parse(alVisitorList[position].data!!.actualEntryTime)
+                            val format2 = SimpleDateFormat("MMM dd")
+                            val finalDay: String = format2.format(dt1)
+                            holder.tvVisitorTimeRV.text = finalDay
+                        }
+                    } else {
                         holder.tvVisitorTimeRV.text =
-                            GlobalMethods.convertUTCDateformate(alVisitorList[position].data!!.actualEntryTime!!)
-                    }else{
-                        val format1 = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
-                        val dt1: Date =
-                            format1.parse(alVisitorList[position].data!!.actualEntryTime)
-                        val format2 = SimpleDateFormat("MMM dd")
-                        val finalDay: String = format2.format(dt1)
-                        holder.tvVisitorTimeRV.text = finalDay
+                            GlobalMethods.convertOnlyDate(alVisitorList[position].data!!.actualEntryTime!!)
                     }
-                } else {
-                    holder.tvVisitorTimeRV.text =
-                        GlobalMethods.convertOnlyDate(alVisitorList[position].data!!.actualEntryTime!!)
                 }
             }
         } catch (e: Exception) {
@@ -107,29 +118,32 @@ class SetScrennedVisitorDataAdapter(
         }
 
         try {
-            if (alVisitorList[position].data!!.actualEntryTime != null) {
-                if (alVisitorList[position].data!!.actualEntryTime.contains("Z")) {
-                    if (alVisitorList[position].data!!.actualEntryTime.length > 21) {
-                        val format1 = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.s'Z'")
-                        val dt1: Date =
-                            format1.parse(alVisitorList[position].data!!.actualEntryTime)
-                        val format2 = SimpleDateFormat("EEEE")
-                        val finalDay: String = format2.format(dt1)
-                        holder.tvVisitorDaysRV.text = finalDay
+            if(alVisitorList[position].data!=null) {
+                if (alVisitorList[position].data!!.actualEntryTime != null) {
+                    if (alVisitorList[position].data!!.actualEntryTime.contains("Z")) {
+                        if (alVisitorList[position].data!!.actualEntryTime.length > 21) {
+                            val format1 = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.s'Z'")
+                            val dt1: Date =
+                                format1.parse(alVisitorList[position].data!!.actualEntryTime)
+                            val format2 = SimpleDateFormat("EEEE")
+                            val finalDay: String = format2.format(dt1)
+                            holder.tvVisitorDaysRV.text = finalDay
+                        } else {
+                            val format1 = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
+                            val dt1: Date =
+                                format1.parse(alVisitorList[position].data!!.actualEntryTime)
+                            val format2 = SimpleDateFormat("EEEE")
+                            val finalDay: String = format2.format(dt1)
+                            holder.tvVisitorDaysRV.text = finalDay
+                        }
                     } else {
-                        val format1 = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
+                        val format1 = SimpleDateFormat("yyyy-MM-dd HH:mm")
                         val dt1: Date =
                             format1.parse(alVisitorList[position].data!!.actualEntryTime)
                         val format2 = SimpleDateFormat("EEEE")
                         val finalDay: String = format2.format(dt1)
                         holder.tvVisitorDaysRV.text = finalDay
                     }
-                } else {
-                    val format1 = SimpleDateFormat("yyyy-MM-dd HH:mm")
-                    val dt1: Date = format1.parse(alVisitorList[position].data!!.actualEntryTime)
-                    val format2 = SimpleDateFormat("EEEE")
-                    val finalDay: String = format2.format(dt1)
-                    holder.tvVisitorDaysRV.text = finalDay
                 }
             }
         } catch (e: Exception) {

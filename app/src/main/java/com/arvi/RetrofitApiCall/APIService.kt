@@ -20,6 +20,15 @@ interface APIService {
         @Body detail: JsonObject
     ): Call<GetLoginResponse>
 
+
+    @POST("users/login?fromApp=1")
+    fun setUserLogin(
+        @Header("Content-Type") ctype: String,
+        @Body detail: JsonObject
+    ): Call<UserLoginResponse>
+
+
+
     //todo:: add employee old
     @POST("companies/users/signup")
     fun addEmployee(
@@ -29,7 +38,7 @@ interface APIService {
     ): Call<GetAddEmployeeResponse>
 
     //todo:: get employee list
-    @GET("companies/users")
+    @GET("companies/employees?pageSize=10000")
     fun getComaniesUsersList(
         @Header("Authorization") auth: String
     ):Call<GetEmployeeListResponse>
@@ -60,8 +69,6 @@ interface APIService {
     ): Call<ResponseBody>
 
 
-
-
     //todo:: add photo of new employee
     @POST("companies/users/images?fromApp=1")
     @Multipart
@@ -85,9 +92,6 @@ interface APIService {
         @Header("Content-Type") ctype: String,
         @Body detail: JsonObject
     ): Call<ResponseBody>
-
-
-
 
     // get kiosk detail
     @GET("/kiosks/{kioskId}")
@@ -113,6 +117,12 @@ interface APIService {
         @Header("Content-Type") ctype: String,
         @Body detail: JsonObject
     ): Call<UpdateUserDetailResponse>
+
+    @GET("users/me/")
+    fun getCompanyProfileDetail(
+            @Header("Authorization") auth: String,
+            @Header("Content-Type") ctype: String
+    ): Call<GetCompanyProfileData>
 
 
     @POST("faces/search-faces-by-image/{kioskId}")
@@ -217,17 +227,35 @@ interface APIService {
     fun getAttendanceSummary(
         @Header("Authorization") auth:String,
         @Query("startDate") startDate:String,
-        @Query("endDate")endDate:String,
-        @Query("groupId")groupId:Int
+        @Query("endDate")endDate:String
     ):Call<GetAttendanceSummaryResponse>
+
+
+    //todo:: get attendance summary with group
+    @GET("dashboard/attendance_summary")
+    fun getAttendanceSummaryWithGroup(
+            @Header("Authorization") auth:String,
+            @Query("startDate") startDate:String,
+            @Query("endDate")endDate:String,
+            @Query("groupId")groupId:Int
+    ):Call<GetAttendanceSummaryResponse>
+
 
     //todo:: get Key metrics
     @GET("dashboard/key_metrics")
     fun getKeyMetrics(
         @Header("Authorization") auth:String,
         @Query("startDate") startDate:String,
-        @Query("endDate")endDate:String,
-        @Query("groupId")groupId:Int
+        @Query("endDate")endDate:String
+    ):Call<GetKeyMetricsResponse>
+
+    //todo:: get Key metrics with group filter
+    @GET("dashboard/key_metrics")
+    fun getKeyMetricsWithGroup(
+            @Header("Authorization") auth:String,
+            @Query("startDate") startDate:String,
+            @Query("endDate")endDate:String,
+            @Query("groupId")groupId:Int
     ):Call<GetKeyMetricsResponse>
 
     //todo:: get regularisation list
@@ -258,7 +286,8 @@ interface APIService {
         @Header("Authorization") auth:String,
         @Query("fromApp")fromApp:Int,
         @Query("startDate") startDate:String,
-        @Query("endDate")endDate:String
+        @Query("endDate")endDate:String,
+        @Query("groupName")groupName:String
     ):Call<GetCalendarEventsResponse>
 
     //todo:: get calendar event with group filter
@@ -268,6 +297,17 @@ interface APIService {
         @Query("fromApp")fromApp:Int,
         @Query("startDate") startDate:String,
         @Query("endDate")endDate:String,
-        @Query("groupId")groupId:Int
+        @Query("groupId")groupId:Int,
+        @Query("groupName")groupName:String
     ):Call<GetCalendarEventsResponse>
+
+    //todo:: get employee day detail all data tab
+    @GET("dashboard/emp_details_by_day")
+    fun getEmpDayDetail(
+            @Header("Authorization") auth:String,
+            @Query("date") date:String,
+/*            @Query("groupId")groupId:Int,*/
+            @Query("groupName")groupName:String,
+            @Query("status")status:String
+    ):Call<GetEmpDayDetailResponse>
 }

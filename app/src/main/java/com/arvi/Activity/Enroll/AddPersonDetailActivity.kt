@@ -194,9 +194,7 @@ class AddPersonDetailActivity : AppCompatActivity(), View.OnClickListener {
             mAPIService = ApiUtils.apiService
             MyProgressDialog.showProgressDialog(context!!)
             mAPIService!!.sendOtp(
-                "application/json", jsonObject
-
-            )
+                "application/json", jsonObject)
 
                 .enqueue(object : Callback<SendOtpResponse> {
 
@@ -314,7 +312,14 @@ class AddPersonDetailActivity : AppCompatActivity(), View.OnClickListener {
                                     startActivity(intent)*/
                                 } else {
                                     var token = response.body().accessToken
-                                    callSetUserDetailApi(token)
+
+                                    if (ConnectivityDetector.isConnectingToInternet(context!!)) {
+                                        callSetUserDetailApi(token)
+                                    } else {
+                                        SnackBar.showInternetError(context!!, snackbarView!!)
+                                    }
+
+
                                     var intent =
                                         Intent(context!!, com.arvi.Activity.Enroll.TakePersonPhotoActivity::class.java)
                                     intent.putExtra("name", strName)

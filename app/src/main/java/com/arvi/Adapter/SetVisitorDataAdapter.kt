@@ -59,7 +59,7 @@ class SetVisitorDataAdapter(
 
             var itemData = alVisitorList[position]
 
-            holder.tvNameRV.text = itemData.name + "(" + itemData.data!!.company + ")"
+            holder.tvNameRV.text = itemData.data.visitor.name + "(" + itemData.data!!.comingFrom + ")"
 
             holder.tvMeetPersNameRV.text = "To Meet " + itemData.data!!.visitingTo!!.name
 

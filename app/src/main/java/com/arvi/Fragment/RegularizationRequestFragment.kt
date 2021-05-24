@@ -1,23 +1,20 @@
-package com.arvi.Activity.NewApp
+package com.arvi.Fragment
 
 import android.annotation.SuppressLint
 import android.app.DatePickerDialog
-import android.app.DatePickerDialog.OnDateSetListener
 import android.content.Context
 import android.content.Intent
 import android.content.res.Resources
 import android.os.Bundle
 import android.util.Log
-import android.view.Gravity
-import android.view.View
-import android.view.WindowManager
+import android.view.*
+import androidx.fragment.app.Fragment
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.arvi.Activity.NewApp.AddRegularizationRequestActivity
 import com.arvi.Adapter.SetRegularizationDataAdapter
 import com.arvi.Interfaces.RecyclerViewItemClicked
 import com.arvi.Model.GetRegularisationRequestResponse
@@ -28,44 +25,64 @@ import com.arvi.RetrofitApiCall.ApiUtils
 import com.arvi.SessionManager.SessionManager
 import com.arvi.Utils.AppConstants
 import com.arvi.Utils.ConnectivityDetector
-import com.arvi.Utils.MyProgressDialog
 import com.arvi.Utils.SnackBar
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.lang.reflect.Field
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
 
+class RegularizationRequestFragment : Fragment(), View.OnClickListener {
 
-class RegularizationRequestListActivity : AppCompatActivity(), View.OnClickListener {
-
-
-    var imgVwBackRRLA: ImageView? = null
     var rVwRequestRRLA: RecyclerView? = null
     var tvNoVisitorRRLA: TextView? = null
-    var imgVwAddRequestRRLA: ImageView? = null
-    var imgVwCalendarRRLA: ImageView? = null
+//    var imgVwAddRequestRRLA: ImageView? = null
+    var imgVwCalendarRRF: ImageView? = null
 
-    var context: Context? = null
+    var appContext: Context? = null
     var snackbarView: View? = null
-    var startDate: String? = null
-    var endDate: String? = null
     var alRegularisation: ArrayList<GetRegularisationRequestResponseItem> = ArrayList()
     private var mYear: Int = 0
     private var mMonth: Int = 0
     private var mDay: Int = 0
+    var startDate: String? = null
+    var endDate: String? = null
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_regularization_request_list)
-        try {
-            setIds()
-            setListeners()
-        } catch (e: Exception) {
-            e.printStackTrace()
+        arguments?.let {
         }
+    }
 
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        // Inflate the layout for this fragment
+        var view = inflater.inflate(R.layout.fragment_regularization_request, container, false)
+        appContext = activity
+        snackbarView = view.findViewById(android.R.id.content)
+        rVwRequestRRLA = view.findViewById(R.id.rVwRequestRRLA)
+        tvNoVisitorRRLA = view.findViewById(R.id.tvNoVisitorRRLA)
+//        imgVwAddRequestRRLA = view.findViewById(R.id.imgVwCalendarRRF)
+        imgVwCalendarRRF = view.findViewById(R.id.imgVwCalendarRRF)
+//        imgVwAddRequestRRLA!!.setOnClickListener(this)
+        imgVwCalendarRRF!!.setOnClickListener(this)
+
+    /*
+
+            getDefaultDate()
+
+            if (ConnectivityDetector.isConnectingToInternet(appContext!!)) {
+                callGetRegularizationListAPI()
+            } else {
+                SnackBar.showInternetError(appContext!!, snackbarView!!)
+            }
+    */
+
+        return view
     }
 
     override fun onResume() {
@@ -73,16 +90,15 @@ class RegularizationRequestListActivity : AppCompatActivity(), View.OnClickListe
         try {
             getDefaultDate()
 
-            if (ConnectivityDetector.isConnectingToInternet(context!!)) {
+            if (ConnectivityDetector.isConnectingToInternet(appContext!!)) {
                 callGetRegularizationListAPI()
             } else {
-                SnackBar.showInternetError(context!!, snackbarView!!)
+                SnackBar.showInternetError(appContext!!, snackbarView!!)
             }
-
-
         } catch (e: Exception) {
             e.printStackTrace()
         }
+
     }
 
     private fun getDefaultDate() {
@@ -112,10 +128,10 @@ class RegularizationRequestListActivity : AppCompatActivity(), View.OnClickListe
         try {
             var mAPIService: APIService? = null
             mAPIService = ApiUtils.apiService
-           // MyProgressDialog.showProgressDialog(context!!)
+            // MyProgressDialog.showProgressDialog(context!!)
             mAPIService!!.getRegularisationlist(
                 AppConstants.BEARER_TOKEN + SessionManager.getToken(
-                    context!!
+                    appContext!!
                 ), startDate!!
             )
                 .enqueue(object : Callback<GetRegularisationRequestResponse> {
@@ -124,7 +140,7 @@ class RegularizationRequestListActivity : AppCompatActivity(), View.OnClickListe
                         call: Call<GetRegularisationRequestResponse>,
                         response: Response<GetRegularisationRequestResponse>
                     ) {
-                    //    MyProgressDialog.hideProgressDialog()
+                        //    MyProgressDialog.hideProgressDialog()
                         try {
                             if (response.code() == 200) {
                                 if (response.body() != null) {
@@ -150,7 +166,7 @@ class RegularizationRequestListActivity : AppCompatActivity(), View.OnClickListe
                         call: Call<GetRegularisationRequestResponse>,
                         t: Throwable
                     ) {
-                   //     MyProgressDialog.hideProgressDialog()
+                        //     MyProgressDialog.hideProgressDialog()
                     }
                 })
         } catch (e: Exception) {
@@ -176,7 +192,7 @@ class RegularizationRequestListActivity : AppCompatActivity(), View.OnClickListe
                 }
 
                 var setVisitorDataAdapter =
-                    SetRegularizationDataAdapter(context!!, alRegularisation, listener)
+                    SetRegularizationDataAdapter(appContext!!, alRegularisation, listener)
                 rVwRequestRRLA!!.layoutManager =
                     LinearLayoutManager(context, LinearLayout.VERTICAL, false)
                 rVwRequestRRLA!!.setAdapter(setVisitorDataAdapter)
@@ -189,45 +205,26 @@ class RegularizationRequestListActivity : AppCompatActivity(), View.OnClickListe
         }
     }
 
-    private fun setListeners() {
-        try {
-            imgVwBackRRLA!!.setOnClickListener(this)
-            imgVwAddRequestRRLA!!.setOnClickListener(this)
-            imgVwCalendarRRLA!!.setOnClickListener(this)
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-    }
+    companion object {
 
-    private fun setIds() {
-        try {
-            context = RegularizationRequestListActivity@ this
-            snackbarView = findViewById(android.R.id.content)
-            imgVwBackRRLA = findViewById(R.id.imgVwBackRRLA)
-            rVwRequestRRLA = findViewById(R.id.rVwRequestRRLA)
-            tvNoVisitorRRLA = findViewById(R.id.tvNoVisitorRRLA)
-            imgVwAddRequestRRLA = findViewById(R.id.imgVwAddRequestRRLA)
-            imgVwCalendarRRLA = findViewById(R.id.imgVwCalendarRRLA)
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-    }
+        // TODO: Rename and change types and number of parameters
+        @JvmStatic
+        fun newInstance() =
+            RegularizationRequestFragment().apply {
+                arguments = Bundle().apply {
 
-    override fun onBackPressed() {
-        finish()
-    }
-
-    override fun onClick(view: View?) {
-        try {
-            when (view!!.id) {
-                R.id.imgVwBackRRLA -> {
-                    finish()
                 }
+            }
+    }
+
+    override fun onClick(view1: View?) {
+        try {
+            when (view1!!.id) {
                 R.id.imgVwAddRequestRRLA -> {
                     var intent = Intent(context, AddRegularizationRequestActivity::class.java)
                     startActivity(intent)
                 }
-                R.id.imgVwCalendarRRLA -> {
+                R.id.imgVwCalendarRRF -> {
                     openCalendarView()
                 }
             }
@@ -235,21 +232,20 @@ class RegularizationRequestListActivity : AppCompatActivity(), View.OnClickListe
             e.printStackTrace()
         }
     }
-
     private fun openCalendarView() {
         try {
             val datePickerDialog = DatePickerDialog(
-                context!!,
+                appContext!!,
                 android.R.style.Theme_Holo_Dialog,
                 DatePickerDialog.OnDateSetListener { view, year, monthOfYear, dayOfMonth ->
                     // Display Selected date in textbox
                     startDate =
                         year.toString() + "-" + (monthOfYear + 1).toString() + "-" + dayOfMonth.toString()
 
-                    if (ConnectivityDetector.isConnectingToInternet(context!!)) {
+                    if (ConnectivityDetector.isConnectingToInternet(appContext!!)) {
                         callGetRegularizationListAPI()
                     } else {
-                        SnackBar.showInternetError(context!!, snackbarView!!)
+                        SnackBar.showInternetError(appContext!!, snackbarView!!)
                     }
 
 
@@ -266,7 +262,8 @@ class RegularizationRequestListActivity : AppCompatActivity(), View.OnClickListe
             if (years != null) {
                 years.visibility = View.GONE
             }
-            datePickerDialog.window!!.setLayout(WindowManager.LayoutParams.MATCH_PARENT,
+            datePickerDialog.window!!.setLayout(
+                WindowManager.LayoutParams.MATCH_PARENT,
                 WindowManager.LayoutParams.WRAP_CONTENT)
             datePickerDialog.window!!.setGravity(Gravity.CENTER)
         } catch (e: Exception) {

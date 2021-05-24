@@ -134,7 +134,19 @@
                    android:id="@+id/rVwAllDataDADF"
                    android:layout_width="match_parent"
                    android:layout_height="wrap_content"/>
+               <TextView
+                   android:id="@+id/tvNoDataDADF"
+                   android:layout_width="match_parent"
+                   android:layout_height="@dimen/_120sdp"
+                   android:text="No data found"
+                   android:textColor="@color/app_bg"
+                   android:textSize="@dimen/_14ssp"
+                   android:fontFamily="@font/gotham_medium"
+                   android:gravity="center"
+                   />
+
            </RelativeLayout>
+
        </RelativeLayout>
     </ScrollView>
 

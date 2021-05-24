@@ -37,6 +37,7 @@ import com.arvi.Activity.ScanQRCodeActivity;
 import com.arvi.RetrofitApiCall.APIService;
 import com.arvi.RetrofitApiCall.ApiUtils;
 import com.arvi.SessionManager.SessionManager;
+import com.arvi.Utils.ConnectivityDetectorJava;
 import com.arvi.btScan.common.CameraSource;
 import com.arvi.btScan.common.CameraSourcePreview;
 import com.arvi.btScan.common.GraphicOverlay;
@@ -120,6 +121,7 @@ public class FaceCaptureActivity extends AppCompatActivity implements CompoundBu
     Context context;
     double latitude;
     double longitude;
+    View snackbarView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -129,6 +131,7 @@ public class FaceCaptureActivity extends AppCompatActivity implements CompoundBu
             context = FaceCaptureActivity.this;
             ArviAudioPlaybacks.init(this.getApplicationContext());
             facingSwitch = findViewById(R.id.facingSwitch);
+            snackbarView = findViewById(android.R.id.content);
             faceCapturePreview = findViewById(R.id.faceCapturePreview);
             facePreviewOverlay = findViewById(R.id.facePreviewOverlay);
             facingSwitch.setOnCheckedChangeListener(this);
@@ -240,7 +243,12 @@ public class FaceCaptureActivity extends AppCompatActivity implements CompoundBu
                                     }
                                     if (facebitmap != null) {
                                         if (!isApiCalled) {
-                                            callDetectFaceAPI(facebitmap);
+                                            if (ConnectivityDetectorJava.isConnectingToInternet(context)) {
+                                                callDetectFaceAPI(facebitmap);
+                                            } else {
+                                                ConnectivityDetectorJava.showInternetError(context, snackbarView);
+                                            }
+
                                         }
                                     }
                                 } catch (Exception e) {
@@ -378,8 +386,8 @@ public class FaceCaptureActivity extends AppCompatActivity implements CompoundBu
                                 if (strUserName != null && !strUserName.equals(""))
                                     showToast(tempNormal, temperature, message, strUserName);
                                 else {
-                                    strUserId=null;
-                                    strUserName="Unknown";
+                                    strUserId = null;
+                                    strUserName = "Unknown";
                                     fullname = strUserName;
                                     showToast(tempNormal, temperature, message, strUserName);
                                 }
@@ -400,8 +408,8 @@ public class FaceCaptureActivity extends AppCompatActivity implements CompoundBu
                         if (strUserName != null)
                             showToast(tempNormal, temperature, message, strUserName);
                         else {
-                            strUserName="Unknown";
-                            strUserId=null;
+                            strUserName = "Unknown";
+                            strUserId = null;
                             fullname = strUserName;
                             showToast(tempNormal, temperature, message, strUserName);
                         }
@@ -1165,14 +1173,27 @@ public class FaceCaptureActivity extends AppCompatActivity implements CompoundBu
                             if (SessionManager.INSTANCE.getFaceRecognizeOption(getApplicationContext()).equals("ON")) {
                                 if (strUserId != null) {
                                     if (!strUserId.equals("")) {
-                                        callStoreTempApi();
+
+                                        if (ConnectivityDetectorJava.isConnectingToInternet(context)) {
+                                            callStoreTempApi();
+                                        } else {
+                                            ConnectivityDetectorJava.showInternetError(context, snackbarView);
+                                        }
                                     } else {
                                         strUserId = "";
-                                        callStoreTempApi();
+                                        if (ConnectivityDetectorJava.isConnectingToInternet(context)) {
+                                            callStoreTempApi();
+                                        } else {
+                                            ConnectivityDetectorJava.showInternetError(context, snackbarView);
+                                        }
                                     }
                                 } else {
                                     strUserId = "";
-                                    callStoreTempApi();
+                                    if (ConnectivityDetectorJava.isConnectingToInternet(context)) {
+                                        callStoreTempApi();
+                                    } else {
+                                        ConnectivityDetectorJava.showInternetError(context, snackbarView);
+                                    }
                                 }
                             }
                             //todo:: 06-07 end
@@ -1230,7 +1251,7 @@ public class FaceCaptureActivity extends AppCompatActivity implements CompoundBu
                     }
                 };
             }
-            bindService(serviceIntent, serviceConnection, Context.BIND_AUTO_CREATE);
+         //   bindService(serviceIntent, serviceConnection, Context.BIND_AUTO_CREATE);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -1283,8 +1304,9 @@ public class FaceCaptureActivity extends AppCompatActivity implements CompoundBu
         Log.d(TAG, "onResume");
         super.onResume();
         try {
-            startService(serviceIntent);
-            bindService();
+           // startService(serviceIntent);
+            //
+            // bindService();
             faceDetected = false;
         } catch (Exception e) {
             e.printStackTrace();

@@ -69,12 +69,12 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                     keyNotification = key
                     keyValues = value
 
-                    Log.e("Notification: --",keyNotification)
-                    Log.e("Notification: --",keyValues)
+                    Log.e("Notification: --",keyNotification!!)
+                    Log.e("Notification: --",keyValues!!)
 
                     if (keyNotification == "gcm.notification.bedge") {
                         var notifiCount = keyValues
-                        Log.e("Notification:notCnt-3--",notifiCount)
+                        Log.e("Notification:notCnt-3--",notifiCount!!)
                     }
                     if (keyNotification == "gcm.notification.title") {
                         notifyTitle = keyValues

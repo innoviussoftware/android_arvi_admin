@@ -12,10 +12,7 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
-import com.arvi.Fragment.DashboardFragment
-import com.arvi.Fragment.ProfileFragment
-import com.arvi.Fragment.RequestTypeFragment
-import com.arvi.Fragment.VisitorListFragment
+import com.arvi.Fragment.*
 import com.arvi.R
 import com.arvi.SessionManager.SessionManager
 import com.arvi.Utils.SnackBar
@@ -59,32 +56,62 @@ class DashboardActivity : AppCompatActivity(), View.OnClickListener {
         try {
             setIds()
             setListeners()
-
-            if(intent.extras!=null){
-                if (intent.getStringExtra("from")!=null &&  intent.getStringExtra("from")!!.equals("splash")){
+            if (SessionManager.getSelectedAppMode(context!!).equals(context!!.resources.getString(R.string.admin_lite_mode))) {
+/*for admin lite mode*/
+                rlDashboardDA!!.visibility = View.GONE
+                rlSelfiCheckInDA!!.visibility = View.VISIBLE
+                rlVisitorDA!!.visibility = View.GONE
+                rlRequestDA!!.visibility = View.GONE
+                rlProfileDA!!.visibility = View.VISIBLE
+            } else if (SessionManager.getSelectedAppMode(context!!).equals(context!!.resources.getString(R.string.full_mode))) {
+                /*for all feature mode*/
+                rlDashboardDA!!.visibility = View.VISIBLE
+                rlSelfiCheckInDA!!.visibility = View.VISIBLE
+                rlVisitorDA!!.visibility = View.VISIBLE
+                rlRequestDA!!.visibility = View.VISIBLE
+                rlProfileDA!!.visibility = View.VISIBLE
+            } else if (SessionManager.getSelectedAppMode(context!!).equals(context!!.resources.getString(R.string.visitor_lite_mode))) {
+                /*for visitor lite mode*/
+                rlDashboardDA!!.visibility = View.GONE
+                rlSelfiCheckInDA!!.visibility = View.GONE
+                rlVisitorDA!!.visibility = View.VISIBLE
+                rlRequestDA!!.visibility = View.GONE
+                rlProfileDA!!.visibility = View.VISIBLE
+            }
+            if (intent.extras != null) {
+                if (intent.getStringExtra("from") != null && intent.getStringExtra("from")!!.equals("splash")) {
                     if (SessionManager.getSelectedDefaultScreen(context!!)
-                            .equals(resources.getString(R.string.page_dashboard))
+                                    .equals(resources.getString(R.string.page_dashboard))
                     ) {
                         setDashboardPage()
                     } else if (SessionManager.getSelectedDefaultScreen(context!!)
-                            .equals(resources.getString(R.string.page_visitor))
+                                    .equals(resources.getString(R.string.page_visitor))
                     ) {
                         setVisitorPage()
                     } else if (SessionManager.getSelectedDefaultScreen(context!!)
-                            .equals(resources.getString(R.string.page_request))
+                                    .equals(resources.getString(R.string.page_request))
                     ) {
                         setRequestTypePage()
                     } else if (SessionManager.getSelectedDefaultScreen(context!!)
-                            .equals(resources.getString(R.string.page_profile))
+                                    .equals(resources.getString(R.string.page_profile))
                     ) {
                         setProfilePage()
-                    } else{
+                    } else {
                         setDashboardPage()
                     }
-                }else{
+                } else {
                     setDashboardPage()
                 }
-            }else{
+            } else {
+/*              if(SessionManager.getSelectedAppMode(context!!).equals(resources.getString(R.string.full_mode))) {
+                  setDashboardPage()
+              }else if(SessionManager.getSelectedAppMode(context!!).equals(resources.getString(R.string.admin_lite_mode))) {
+                  openSelfiCheckInPage()
+              }else if(SessionManager.getSelectedAppMode(context!!).equals(resources.getString(R.string.visitor_lite_mode))) {
+                  setVisitorPage()
+              }else{
+                  setDashboardPage()
+              }*/
                 setDashboardPage()
             }
 
@@ -102,9 +129,9 @@ class DashboardActivity : AppCompatActivity(), View.OnClickListener {
                 val fragmentManager: FragmentManager = supportFragmentManager
                 val fragmentTransaction: FragmentTransaction = fragmentManager.beginTransaction()
                 fragmentTransaction.replace(
-                    R.id.containerBody,
-                    fragment!!,
-                    DashboardFragment::class.java.getSimpleName()
+                        R.id.containerBody,
+                        fragment!!,
+                        DashboardFragment::class.java.getSimpleName()
                 )
                 fragmentStack!!.push(fragment)
                 fragmentTransaction.commit()
@@ -144,9 +171,9 @@ class DashboardActivity : AppCompatActivity(), View.OnClickListener {
                 val fragmentManager: FragmentManager = supportFragmentManager
                 val fragmentTransaction: FragmentTransaction = fragmentManager.beginTransaction()
                 fragmentTransaction.replace(
-                    R.id.containerBody,
-                    fragment!!,
-                    VisitorListFragment::class.java.getSimpleName()
+                        R.id.containerBody,
+                        fragment!!,
+                        VisitorListFragment::class.java.getSimpleName()
                 )
                 fragmentStack!!.push(fragment)
                 fragmentTransaction.commit()
@@ -182,14 +209,14 @@ class DashboardActivity : AppCompatActivity(), View.OnClickListener {
     private fun setRequestTypePage() {
         try {
             setRequestIconActive()
-            fragment = RequestTypeFragment.newInstance("", "")
+            fragment = RequestListFragment.newInstance()
             if (fragment != null) {
                 val fragmentManager: FragmentManager = supportFragmentManager
                 val fragmentTransaction: FragmentTransaction = fragmentManager.beginTransaction()
                 fragmentTransaction.replace(
-                    R.id.containerBody,
-                    fragment!!,
-                    RequestTypeFragment::class.java.getSimpleName()
+                        R.id.containerBody,
+                        fragment!!,
+                        RequestListFragment::class.java.getSimpleName()
                 )
                 fragmentStack!!.push(fragment)
                 fragmentTransaction.commit()
@@ -230,9 +257,9 @@ class DashboardActivity : AppCompatActivity(), View.OnClickListener {
                 val fragmentManager: FragmentManager = supportFragmentManager
                 val fragmentTransaction: FragmentTransaction = fragmentManager.beginTransaction()
                 fragmentTransaction.replace(
-                    R.id.containerBody,
-                    fragment!!,
-                    ProfileFragment::class.java.getSimpleName()
+                        R.id.containerBody,
+                        fragment!!,
+                        ProfileFragment::class.java.getSimpleName()
                 )
                 fragmentStack!!.push(fragment)
                 fragmentTransaction.commit()

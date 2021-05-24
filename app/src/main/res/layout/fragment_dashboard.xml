@@ -33,4 +33,17 @@
             android:layout_below="@+id/tlDashboardData" />
     </RelativeLayout>
 
+    <TextView
+        android:id="@+id/tvOtherModeTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:lineHeight="@dimen/_30sdp"
+        android:textColor="@color/app_bg"
+        android:gravity="center"
+        android:layout_centerInParent="true"
+        android:textStyle="bold"
+        android:fontFamily="@font/avenir_next_italic"
+        android:textSize="@dimen/_20ssp"
+        />
 </RelativeLayout>

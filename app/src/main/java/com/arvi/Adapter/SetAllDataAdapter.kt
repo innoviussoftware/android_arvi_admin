@@ -56,12 +56,12 @@ class SetAllDataAdapter(
 
         override fun onClick(v: View?) {
             when (v!!.id){
-                R.id.rlAbsentADR->{listener!!.onClick(v,adapterPosition, alCalendarEvent.get(adapterPosition).A!!.text!!)}
-                R.id.rlPresentADR->{listener!!.onClick(v,adapterPosition, alCalendarEvent.get(adapterPosition).P!!.text!!)}
-                R.id.rlLeaveADR->{listener!!.onClick(v,adapterPosition, alCalendarEvent.get(adapterPosition).L!!.text!!)}
-                R.id.rlHolidayADR->{listener!!.onClick(v,adapterPosition, alCalendarEvent.get(adapterPosition).HOL!!.text!!)}
-                R.id.rlVisitorADR->{listener!!.onClick(v,adapterPosition, alCalendarEvent.get(adapterPosition).VISITOR!!.text!!)}
-                R.id.rlMissedADR->{listener!!.onClick(v,adapterPosition, alCalendarEvent.get(adapterPosition).MISS!!.text!!)}
+                R.id.rlAbsentADR->{listener!!.onClick(v,adapterPosition,"A" /*alCalendarEvent.get(adapterPosition).A!!.text!!*/)}
+                R.id.rlPresentADR->{listener!!.onClick(v,adapterPosition,"P" /*alCalendarEvent.get(adapterPosition).P!!.text!!*/)}
+                R.id.rlLeaveADR->{listener!!.onClick(v,adapterPosition,"L" /*alCalendarEvent.get(adapterPosition).L!!.text!!*/)}
+                R.id.rlHolidayADR->{listener!!.onClick(v,adapterPosition, "HOL"/*alCalendarEvent.get(adapterPosition).HOL!!.text!!*/)}
+                R.id.rlVisitorADR->{listener!!.onClick(v,adapterPosition, "VISITOR"/*alCalendarEvent.get(adapterPosition).VISITOR!!.text!!*/)}
+                R.id.rlMissedADR->{listener!!.onClick(v,adapterPosition, "MISS"/*alCalendarEvent.get(adapterPosition).MISS!!.text!!*/)}
             }
         }
     }
@@ -137,7 +137,7 @@ class SetAllDataAdapter(
             var strDate = alCalendarEvent.get(position).date
             val outputDate = SimpleDateFormat("dd MMM, yyyy")
             val outputDay = SimpleDateFormat("EEEE")
-            val input = SimpleDateFormat("dd-MM-yyyy")
+            val input = SimpleDateFormat("yyyy-MM-dd")
             var formateStartdate = input.parse(strDate)
             var showDate = outputDate.format(formateStartdate)
             var showDay = outputDay.format(formateStartdate)

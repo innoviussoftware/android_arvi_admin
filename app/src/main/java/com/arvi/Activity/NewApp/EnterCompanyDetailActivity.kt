@@ -17,6 +17,7 @@ import com.arvi.RetrofitApiCall.ApiDynamicUtils
 import com.arvi.SessionManager.SessionManager
 import com.arvi.Utils.AppConstants
 import com.arvi.Utils.AppConstants.BASE_Custom_URL
+import com.arvi.Utils.ConnectivityDetector
 import com.arvi.Utils.MyProgressDialog
 import com.arvi.Utils.SnackBar
 import com.google.android.material.snackbar.Snackbar
@@ -84,7 +85,12 @@ class EnterCompanyDetailActivity : AppCompatActivity(), View.OnClickListener {
                 R.id.rlSubmitECDA -> {
                     if (isValidInput()) {
                         BASE_Custom_URL = serverUrl
-                        callCheckBaseURLAPI()
+
+                        if (ConnectivityDetector.isConnectingToInternet(context!!)) {
+                            callCheckBaseURLAPI()
+                        } else {
+                            SnackBar.showInternetError(context!!, snackbarView!!)
+                        }
 
                     }
                 }

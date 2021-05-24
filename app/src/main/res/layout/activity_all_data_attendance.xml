@@ -40,7 +40,7 @@
         android:id="@+id/tvDetailADAA"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Date: 01 Mar 21, Shift: Night, Group:G45"
+        android:text="Date: ,Group:"
         android:textColor="@color/black"
         android:textSize="@dimen/_12ssp"
         android:fontFamily="@font/gotham_book_regular"
@@ -56,11 +56,22 @@
         android:paddingStart="@dimen/_10sdp"
         android:layout_margin="@dimen/_5sdp"
         android:layout_marginStart="@dimen/_5sdp"
-        android:hint="Employee Name"
+        android:hint="Search Employee by Name or Employee Id"
         android:textSize="@dimen/_12ssp"
         android:fontFamily="@font/gotham_book_regular"
         />
 
+    <TextView
+        android:id="@+id/tvNoDataADAA"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="No data found"
+        android:gravity="center"
+        android:visibility="gone    "
+        android:textSize="@dimen/_14ssp"
+        android:fontFamily="@font/gotham_medium"
+        android:textColor="@color/app_bg"
+        />
     <androidx.recyclerview.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

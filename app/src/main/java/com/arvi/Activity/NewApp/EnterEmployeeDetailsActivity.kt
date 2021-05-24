@@ -15,11 +15,10 @@ import com.arvi.R
 import com.arvi.RetrofitApiCall.APIService
 import com.arvi.RetrofitApiCall.ApiUtils
 import com.arvi.SessionManager.SessionManager
-import com.arvi.Utils.AppConstants
-import com.arvi.Utils.MyProgressDialog
-import com.arvi.Utils.SnackBar
+import com.arvi.Utils.*
 import com.arvihealthscanner.Model.GetEmployeeListResult
 import com.google.gson.JsonObject
+import com.societyguard.Utils.FileUtil
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
@@ -80,8 +79,14 @@ class EnterEmployeeDetailsActivity : AppCompatActivity(), View.OnClickListener {
 
                     etMobileEEDA!!.setText(emp_data!!.mobile)
                     etMailEEDA!!.setText(emp_data!!.email)
-                    callGetUserDetailApi()
-                   /**/
+
+                    if (ConnectivityDetector.isConnectingToInternet(context!!)) {
+                        callGetUserDetailApi()
+                    } else {
+                        SnackBar.showInternetError(context!!, snackbarView!!)
+                    }
+
+
                 } else {
                     rVwEmployeePic!!.visibility = View.GONE
                     tvEditEEDA!!.visibility = View.GONE
@@ -91,8 +96,12 @@ class EnterEmployeeDetailsActivity : AppCompatActivity(), View.OnClickListener {
             }
 
 
-            CallGetDesignationListApi()
-            CallGroupListApi()
+            if (ConnectivityDetector.isConnectingToInternet(context!!)) {
+                CallGetDesignationListApi()
+                CallGroupListApi()
+            } else {
+                SnackBar.showInternetError(context!!, snackbarView!!)
+            }
 
         } catch (e: Exception) {
             e.printStackTrace()
@@ -432,6 +441,7 @@ class EnterEmployeeDetailsActivity : AppCompatActivity(), View.OnClickListener {
             }
             R.id.tvTakePicEEDA -> {
                 try {
+                    KeyboardUtility.hideKeyboard(context!!,tvTakePicEEDA)
                     if (isValidInput()) {
                         if (from.equals("edit")) {
                             var intent = Intent(context!!, TakeEmployeePicActivity::class.java)
@@ -455,7 +465,12 @@ class EnterEmployeeDetailsActivity : AppCompatActivity(), View.OnClickListener {
             R.id.tvEditEEDA -> {
                 try {
                     if (isValidInput()) {
-                        callEditUserDetailApi()
+                        if (ConnectivityDetector.isConnectingToInternet(context!!)) {
+                            callEditUserDetailApi()
+                        } else {
+                            SnackBar.showInternetError(context!!, snackbarView!!)
+                        }
+
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()
@@ -523,7 +538,12 @@ class EnterEmployeeDetailsActivity : AppCompatActivity(), View.OnClickListener {
             SnackBar.showValidationError(context!!, snackbarView!!, "Please enter person's name")
             etNameEEDA!!.requestFocus()
             return false
-        } else if (strEmpId!!.isEmpty()) {
+        }else if(!FileUtil.isValidName(strName!!)){
+            SnackBar.showError(context!!, snackbarView!!, "Please enter valid name.")
+            etNameEEDA!!.requestFocus()
+            return false
+        }
+        else if (strEmpId!!.isEmpty()) {
             SnackBar.showValidationError(context!!, snackbarView!!, "Please enter employee id")
             etEmployeeIDEEDA!!.requestFocus()
             return false

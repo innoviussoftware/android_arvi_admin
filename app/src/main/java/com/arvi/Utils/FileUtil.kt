@@ -14,16 +14,29 @@ import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
 import java.util.*
+import java.util.regex.Matcher
+import java.util.regex.Pattern
 
 object FileUtil {
 
+    fun isValidName(name: String): Boolean {
+        var regex  ="^(([^ ]?)(^[a-zA-Z].*[a-zA-Z]\$)([^ ]?))\$"
+        val p: Pattern = Pattern.compile(regex)
+        if (name == null) {
+            return false
+        }
+        val m: Matcher = p.matcher(name)
+        return m.matches()
+    }
+
+
     fun getImageUriAndPath(
-        inContext: Context,
-        inImage: Bitmap
+            inContext: Context,
+            inImage: Bitmap
     ): String? {
         val bytes = ByteArrayOutputStream()
         inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes)
-       var root = createDirectoryAndSaveFile(inImage,"IMG_" + Calendar.getInstance().getTime()+".jpg")
+        var root = createDirectoryAndSaveFile(inContext, inImage, "IMG_" + Calendar.getInstance().getTime() + ".jpg")
 
         /*val imgSaved = MediaStore.Images.Media.insertImage(
             inContext.getContentResolver(),
@@ -31,34 +44,39 @@ object FileUtil {
             UUID.randomUUID().toString() + ".png",
             "drawing"
         )*/
-        Log.e("Path:",root.absolutePath)
-     //   val path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(), inImage, "IMG_" + Calendar.getInstance().getTime(), null)
+        Log.e("Path:", root.absolutePath)
+        //   val path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(), inImage, "IMG_" + Calendar.getInstance().getTime(), null)
         return root.absolutePath
     }
 
     fun getImageUri(
-        inContext: Context,
-        inImage: Bitmap
+            inContext: Context,
+            inImage: Bitmap
     ): Uri? {
         val bytes = ByteArrayOutputStream()
         inImage.compress(Bitmap.CompressFormat.JPEG, 100, bytes)
-           val path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(), inImage, "IMG_" + Calendar.getInstance().getTime(), null)
+        val path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(), inImage, "IMG_" + Calendar.getInstance().getTime(), null)
         return Uri.parse(path)
     }
 
 
     fun createDirectoryAndSaveFile(
-        imgSave: Bitmap,
-        fileName: String
-    ):File {
+            appContext: Context,
+            imgSave: Bitmap,
+            fileName: String
+    ): File {
+
         val direct = File(
-            Environment.getExternalStorageDirectory().toString() + "/Arvi"
+                appContext.filesDir, "/Arvi"
+
         )
         if (!direct.exists()) {
-            val imageDirectory = File("/sdcard/Arvi/")
+//            val imageDirectory = File("/sdcard/Arvi/")
+            val imageDirectory = File(appContext.filesDir, "/Arvi")
             imageDirectory.mkdirs()
         }
-        val file = File(File("/sdcard/Arvi/"), fileName)
+//        val file = File(File("/sdcard/Arvi/"), fileName)
+        val file = File(File(appContext.filesDir, "/Arvi"), fileName)
         if (file.exists()) {
             file.delete()
         }
@@ -70,7 +88,7 @@ object FileUtil {
         } catch (e: Exception) {
             e.printStackTrace()
         }
-         return file
+        return file
     }
 
     fun getPath(context: Context, uri: Uri): String? {
@@ -85,7 +103,7 @@ object FileUtil {
 
                 if ("primary".equals(type, ignoreCase = true)) {
 
-                    return Environment.getExternalStorageDirectory().toString() + "/" +  split[1]
+                    return Environment.getExternalStorageDirectory().toString() + "/" + split[1]
                 }
 
                 // TODO handle non-primary volumes
@@ -93,7 +111,7 @@ object FileUtil {
 
                 val id = DocumentsContract.getDocumentId(uri)
                 val contentUri = ContentUris.withAppendedId(
-                    Uri.parse("content://downloads/public_downloads"), java.lang.Long.valueOf(id)
+                        Uri.parse("content://downloads/public_downloads"), java.lang.Long.valueOf(id)
                 )
 
                 return getDataColumn(context, contentUri, null, null)
@@ -129,8 +147,8 @@ object FileUtil {
 
 
     fun getDataColumn(
-        context: Context, uri: Uri?, selection: String?,
-        selectionArgs: Array<String>?
+            context: Context, uri: Uri?, selection: String?,
+            selectionArgs: Array<String>?
     ): String? {
         var cursor: Cursor? = null
         val column = "_data"

@@ -42,6 +42,8 @@ class SplashActivity : AppCompatActivity() {
             .build()
         Fabric.with(fabric)
 
+        
+
 
         try {
             context = SplashActivity@ this
@@ -49,6 +51,20 @@ class SplashActivity : AppCompatActivity() {
             //todo:: priyanka 31/11/2020
             //todo:: delete photos after this time
             setHandlerData()
+
+          //  val dir = File(Environment.getExternalStorageDirectory().toString() + "/Arvi")
+            val dir= File(
+                context!!.filesDir, "/Arvi"
+
+            )
+            if (dir.isDirectory()) {
+                val children: Array<String> = dir.list()
+                for (i in children.indices) {
+                    Log.e("delete:",children[i].toString())
+                    File(dir, children[i]).delete()
+                }
+            }
+
             //todo:: restart app code end
 
 
@@ -114,12 +130,17 @@ class SplashActivity : AppCompatActivity() {
                     if (currenttime.equals("12 : 00 : 00") || currenttime.equals("23 : 59 : 59")) {
                         Log.e("restart", "true")
                         //restarting the activity
-                        val dir = File(
+/*                        val dir = File(
                             Environment.getExternalStorageDirectory().toString() + "/Arvi"
+                        )*/
+                        val dir = File(
+                            context!!.filesDir, "/Arvi"
+
                         )
                         if (dir.isDirectory()) {
                             val children: Array<String> = dir.list()
                             for (i in children.indices) {
+                                Log.e("delete:",children[i].toString())
                                 File(dir, children[i]).delete()
                             }
                         }
@@ -129,7 +150,7 @@ class SplashActivity : AppCompatActivity() {
                 }
             }
 
-            h!!.post(r)
+            h!!.post(r as Runnable)
         } catch (e: java.lang.Exception) {
             e.printStackTrace()
         }
@@ -152,7 +173,7 @@ class SplashActivity : AppCompatActivity() {
                     startActivity(intent)
                 }else {
                     var intent = Intent(context, DashboardActivity::class.java)
-                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK
+                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
                     intent.putExtra("from","splash")
                     startActivity(intent)
                 }

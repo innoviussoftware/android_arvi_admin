@@ -16,6 +16,7 @@ import com.arvi.RetrofitApiCall.APIService
 import com.arvi.RetrofitApiCall.ApiUtils
 import com.arvi.SessionManager.SessionManager
 import com.arvi.Utils.AppConstants
+import com.arvi.Utils.ConnectivityDetector
 import com.arvi.Utils.MyProgressDialog
 import com.arvi.Utils.SnackBar
 import com.arvihealthscanner.Model.GetEmployeeListResponse
@@ -41,7 +42,12 @@ class UserEmployeesListActivity : AppCompatActivity() {
         mContext = this@UserEmployeesListActivity
         snackbarView = findViewById(android.R.id.content)
         try {
-            CallGetComapniesUserListApi()
+            if (ConnectivityDetector.isConnectingToInternet(mContext!!)) {
+                CallGetComapniesUserListApi()
+            } else {
+                SnackBar.showInternetError(mContext!!, snackbarView!!)
+            }
+
 
         } catch (e: Exception) {
             e.printStackTrace()
@@ -144,5 +150,9 @@ class UserEmployeesListActivity : AppCompatActivity() {
         } catch (e: Exception) {
             e.printStackTrace()
         }
+    }
+
+    override fun onBackPressed() {
+        finish()
     }
 }

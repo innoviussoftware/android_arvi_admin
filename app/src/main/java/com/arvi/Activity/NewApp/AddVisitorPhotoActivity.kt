@@ -22,9 +22,7 @@ import com.arvi.R
 import com.arvi.RetrofitApiCall.APIService
 import com.arvi.RetrofitApiCall.ApiUtils
 import com.arvi.SessionManager.SessionManager
-import com.arvi.Utils.AppConstants
-import com.arvi.Utils.ConnectivityDetector
-import com.arvi.Utils.MyProgressDialog
+import com.arvi.Utils.*
 import com.arvi.btScan.common.CameraSource
 import com.arvi.btScan.common.CameraSourcePreview
 import com.arvi.btScan.common.GraphicOverlay
@@ -92,9 +90,12 @@ class AddVisitorPhotoActivity : AppCompatActivity(), CompoundButton.OnCheckedCha
     internal var isImg4Seted: Boolean? = false
     internal var isImg5Seted: Boolean? = false
     internal var imgCount = 0
-    internal var name: String? = ""
+    internal var visitorName: String? = ""
     internal var context: Context? = null
-    var entryId: Int = 0
+    var visitorEntryId: Int = 0
+    var comingFrom:String = ""
+    var visitingToId:Int=0
+
 
     var snackbarView: View? = null
 
@@ -143,7 +144,7 @@ class AddVisitorPhotoActivity : AppCompatActivity(), CompoundButton.OnCheckedCha
                     }
                 }
             }
-            bindService(serviceIntent, serviceConnection!!, Context.BIND_AUTO_CREATE)
+            //bindService(serviceIntent, serviceConnection!!, Context.BIND_AUTO_CREATE)
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -226,8 +227,8 @@ class AddVisitorPhotoActivity : AppCompatActivity(), CompoundButton.OnCheckedCha
         Log.d(TAG, "onResume")
         super.onResume()
         try {
-            startService(serviceIntent)
-            bindService()
+            //   startService(serviceIntent)
+            //bindService()
             faceDetected = false
         } catch (e: Exception) {
             e.printStackTrace()
@@ -275,12 +276,12 @@ class AddVisitorPhotoActivity : AppCompatActivity(), CompoundButton.OnCheckedCha
     }
 
 
-    lateinit var visitorName: String
+    lateinit var visitingToName: String
     lateinit var expectDate: String
     lateinit var expectTime: String
     lateinit var company: String
     lateinit var purpose: String
-    lateinit var mobile: String
+    lateinit var visitorMobile: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -335,14 +336,15 @@ class AddVisitorPhotoActivity : AppCompatActivity(), CompoundButton.OnCheckedCha
         try {
             jsonUserPicObject = JsonObject()
             jsonArray = JsonArray()
-            name = intent.getStringExtra("name")
-            visitorName = intent.getStringExtra("visitorName")!!
+            visitorName = intent.getStringExtra("visitorName")
+            visitingToName = intent.getStringExtra("visitingToName")!!
             expectDate = intent.getStringExtra("expectDate")!!
             expectTime = intent.getStringExtra("expectTime")!!
-            mobile = intent.getStringExtra("mobile")!!
-            entryId = intent.getIntExtra("entryId", 0)
-            //           company = intent.getStringExtra("company")!!
-            //        purpose = intent.getStringExtra("purpose")!!
+            visitorMobile = intent.getStringExtra("visitorMobile")!!
+            visitorEntryId = intent.getIntExtra("visitorEntryId", 0)
+            visitingToId = intent.getIntExtra("visitingToId",0)
+            comingFrom = intent.getStringExtra("comingFrom")!!
+            purpose = intent.getStringExtra("purpose")!!
 
 
 
@@ -363,11 +365,11 @@ class AddVisitorPhotoActivity : AppCompatActivity(), CompoundButton.OnCheckedCha
                             img1!!.setImageBitmap(newFace)
                             isDoneCapture = "front"
                             photoCount = photoCount + 1
-                            Toast.makeText(
+                            /*Toast.makeText(
                                 applicationContext,
                                 "Photo $photoCount is captured",
                                 Toast.LENGTH_SHORT
-                            ).show()
+                            ).show()*/
                             openNextScreen(newFace!!)
                         }
                     } else if (!isImg2Seted!!) {
@@ -437,31 +439,41 @@ class AddVisitorPhotoActivity : AppCompatActivity(), CompoundButton.OnCheckedCha
             val tempUri = FileUtil.getImageUriAndPath(this@AddVisitorPhotoActivity, face)
             val profilePath = tempUri
             Log.e("path ", profilePath!!)
-            callStorePersonPicApi(profilePath)
-            if (imgCount == 4) {
+
+            if (ConnectivityDetector.isConnectingToInternet(context!!)) {
+                callStorePersonPicApi(profilePath)
+            } else {
+                SnackBar.showInternetError(context!!, snackbarView!!)
+            }
+
+
+
+            /*if (imgCount == 1) {
                 cameraSource!!.stop()
                 cameraSource!!.release()
                 cameraSource = null
+
                 val builder = AlertDialog.Builder(this)
                 builder.setCancelable(false)
-                var message = "Welcome " + name + ", You have been registered"
+                var message = "Welcome " + visitorName + ", You have been registered"
                 builder.setMessage(message)
                 builder.setPositiveButton("Ok") { dialog, which ->
                     try {
                         dialog.dismiss()
-                        callAddNewEntriesApi()
-                        /* val intent =
+
+
+                        *//* val intent =
                              Intent(applicationContext, DashboardActivity::class.java)
                          intent.flags =
                              Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
-                         startActivity(intent)*/
+                         startActivity(intent)*//*
                     } catch (e: Exception) {
                         e.printStackTrace()
                     }
                 }
                 val dialog = builder.create()
                 dialog.show()
-            }
+            }*/
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -488,6 +500,7 @@ class AddVisitorPhotoActivity : AppCompatActivity(), CompoundButton.OnCheckedCha
                 AppConstants.BEARER_TOKEN + SessionManager.getToken(this),
                 file1!!
             )
+            MyProgressDialog.showProgressDialog(context!!)
             call.enqueue(object : Callback<UploadPhotoResponse> {
                 override fun onResponse(
                     call: Call<UploadPhotoResponse>,
@@ -501,7 +514,11 @@ class AddVisitorPhotoActivity : AppCompatActivity(), CompoundButton.OnCheckedCha
                                 alPhotoDetail.addAll(response.body().data!!)
                             callStoreWithId(alPhotoDetail)
                         } else if (response.code() == 401) {
-
+                            var intent = Intent(context!!, EnterCompanyDetailActivity::class.java)
+                            intent.flags =
+                                Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+                            startActivity(intent)
+                            SessionManager.clearAppSession(context!!)
                         }
                     } catch (e: Exception) {
                         e.printStackTrace()
@@ -523,7 +540,7 @@ class AddVisitorPhotoActivity : AppCompatActivity(), CompoundButton.OnCheckedCha
         try {
             if (response.size > 0) {
 
-//                val jsonObject = JsonObject()
+                val jsonObject = JsonObject()
 
                 val jsonImgObject = JsonObject()
                 val path = response[0].path
@@ -534,18 +551,53 @@ class AddVisitorPhotoActivity : AppCompatActivity(), CompoundButton.OnCheckedCha
                 jsonImgObject.addProperty("filename", filename)
                 jsonArray.add(jsonImgObject)
 
-                /*   jsonObject.addProperty("mobile", strPhone)
-                   jsonObject.addProperty("email", "")
-                   jsonObject.addProperty("employeeId", strEmpId)
-                   jsonObject.addProperty("name", name)
-   */
+                jsonObject.addProperty("mobile", strPhone)
+                jsonObject.addProperty("email", "")
+                jsonObject.addProperty("employeeId", strEmpId)
+                jsonObject.addProperty("name", visitorName)
 //                jsonArray.add("images", jsonImgObject);
 
 
-                jsonUserPicObject.addProperty("name", name!!)
-                jsonUserPicObject.addProperty("mobile", mobile!!)
+                jsonUserPicObject.addProperty("name", visitorName!!)
+                jsonUserPicObject.addProperty("mobile", visitorMobile!!)
                 jsonUserPicObject.add("images", jsonArray)
-                jsonUserPicObject.addProperty("type", "static personal")
+                jsonUserPicObject.addProperty("type", purpose)
+
+                if (ConnectivityDetector.isConnectingToInternet(context!!)) {
+                    callAddNewEntriesApi()
+                } else {
+                    SnackBar.showInternetError(context!!, snackbarView!!)
+                }
+
+/*
+//new
+                var visitorJsonObject = JsonObject()
+                visitorJsonObject.addProperty("name",visitorName)
+                visitorJsonObject.addProperty("mobile",visitorMobile)
+                jsonUserPicObject.add("visitor",visitorJsonObject)
+
+                var visitingToJsonObject = JsonObject()
+                visitingToJsonObject.addProperty("id",visitingToId)
+                jsonUserPicObject.add("visitingTo",visitingToJsonObject)
+
+                var c = Calendar.getInstance().time
+                System.out.println("Current time => " + c)
+                var df = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.s'Z'", Locale.getDefault())
+
+                val timeZone: TimeZone = TimeZone.getTimeZone("IST")
+                df.timeZone  = timeZone
+                var formattedActualDate: String = df.format(c)
+                formattedActualDate = GlobalMethods.convertISTToUTCDate(formattedActualDate)
+
+                var dataJsonObject = JsonObject()
+                dataJsonObject.addProperty("actualEntryTime",formattedActualDate)
+                dataJsonObject.addProperty("purpose",purpose)
+                dataJsonObject.addProperty("comingFrom",comingFrom)
+                dataJsonObject.add("images",jsonArray)
+                jsonUserPicObject.add("data",dataJsonObject)
+*/
+
+
 
             }
         } catch (e: java.lang.Exception) {
@@ -561,7 +613,7 @@ class AddVisitorPhotoActivity : AppCompatActivity(), CompoundButton.OnCheckedCha
         try {
             var mAPIService: APIService? = null
             mAPIService = ApiUtils.apiService
-            MyProgressDialog.showProgressDialog(context!!)
+//            MyProgressDialog.showProgressDialog(context!!)
             mAPIService!!.newVisitorsEntryRegister(
                 AppConstants.BEARER_TOKEN + SessionManager.getToken(context!!),
                 "application/json",
@@ -573,21 +625,22 @@ class AddVisitorPhotoActivity : AppCompatActivity(), CompoundButton.OnCheckedCha
                         call: Call<NewVisitorRegisterResponse>,
                         response: Response<NewVisitorRegisterResponse>
                     ) {
-                        MyProgressDialog.hideProgressDialog()
+//                        MyProgressDialog.hideProgressDialog()
                         try {
                             if (response.code() == 200) {
                                 var visitorID = response.body().visitor.id
                                 if (ConnectivityDetector.isConnectingToInternet(context!!)) {
                                     callSameVisitorAddDetailsApi(visitorID)
                                 } else {
-                                    // SnackBar.showInternetError(context!!, snackbarView!!)
+                                    MyProgressDialog.hideProgressDialog()
+                                    SnackBar.showInternetError(context!!, snackbarView!!)
                                 }
                             } else {
-                                /*SnackBar.showError(
+                                SnackBar.showError(
                                     context!!,
                                     snackbarView!!,
                                     "Something went wrong"
-                                )*/
+                                )
                             }
                         } catch (e: Exception) {
                             e.printStackTrace()
@@ -613,16 +666,23 @@ class AddVisitorPhotoActivity : AppCompatActivity(), CompoundButton.OnCheckedCha
 
     private fun callSameVisitorAddDetailsApi(visitorID: Int) {
         try {
+/*
             var c = Calendar.getInstance().time
             System.out.println("Current time => " + c);
+*/
 
-       //     var df = SimpleDateFormat("yyyy-MM-dd hh:mm a", Locale.getDefault())
+            //     var df = SimpleDateFormat("yyyy-MM-dd hh:mm a", Locale.getDefault())
+
+/*
             var df = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.s'Z'", Locale.getDefault())
 
-
+            val timeZone: TimeZone = TimeZone.getTimeZone("IST")
+            df.timeZone  = timeZone
             var formattedDate: String = df.format(c)
+            formattedDate = GlobalMethods.convertISTToUTCDate(formattedDate)
+*/
 
-
+/*
             var jsonObjectMain = JsonObject()
 
             //var jsonObjectVisitorMain = JsonObject()
@@ -642,13 +702,43 @@ class AddVisitorPhotoActivity : AppCompatActivity(), CompoundButton.OnCheckedCha
 
             jsonObjectMain.add("data", jsonObjectData)
 
+*/
+            var jsonObjectMain = JsonObject()
+
+            var visitorJsonObject = JsonObject()
+            visitorJsonObject.addProperty("id",visitorID)
+            jsonObjectMain.add("visitor",visitorJsonObject)
+
+            var visitingToJsonObject = JsonObject()
+            visitingToJsonObject.addProperty("id",visitingToId)
+            jsonObjectMain.add("visitingTo",visitingToJsonObject)
+
+            var c = Calendar.getInstance().time
+            System.out.println("Current time => " + c)
+            /*var df = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.s'Z'", Locale.getDefault())
+
+            val timeZone: TimeZone = TimeZone.getTimeZone("IST")
+            df.timeZone  = timeZone*/
+            var df = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault())
+            var formattedActualDate: String = df.format(c)
+            formattedActualDate = GlobalMethods.convertISTToUTCDate(formattedActualDate)
+
+            var dataJsonObject = JsonObject()
+            dataJsonObject.addProperty("actualEntryTime",formattedActualDate)
+            dataJsonObject.addProperty("purpose",purpose)
+            dataJsonObject.addProperty("comingFrom",comingFrom)
+            dataJsonObject.add("images",jsonArray)
+            jsonObjectMain.add("data",dataJsonObject)
+
+
             var mAPIService: APIService? = null
             mAPIService = ApiUtils.apiService
-            MyProgressDialog.showProgressDialog(context!!)
+            Log.e("VisitorEntryId:Photo: ",visitorEntryId.toString())
+//            MyProgressDialog.showProgressDialog(context!!)
             mAPIService!!.visitorEntryRegister(
                 AppConstants.BEARER_TOKEN + SessionManager.getToken(context!!),
                 "application/json",
-                entryId,
+                visitorEntryId,
                 jsonObjectMain
             )
                 .enqueue(object : Callback<ResponseBody> {
@@ -660,11 +750,40 @@ class AddVisitorPhotoActivity : AppCompatActivity(), CompoundButton.OnCheckedCha
                         MyProgressDialog.hideProgressDialog()
                         try {
                             if (response.code() == 200) {
-                                var intent = Intent(
-                                    this@AddVisitorPhotoActivity,
-                                    DashboardActivity::class.java
-                                )
-                                startActivity(intent)
+
+                                if (imgCount == 1) {
+                                    cameraSource!!.stop()
+                                    cameraSource!!.release()
+                                    cameraSource = null
+
+                                    val builder = AlertDialog.Builder(context!!)
+                                    builder.setCancelable(false)
+                                    var message = "Welcome " + visitorName + ", You have been registered"
+                                    builder.setMessage(message)
+                                    builder.setPositiveButton("Ok") { dialog, which ->
+                                        try {
+                                            dialog.dismiss()
+
+                                            var intent = Intent(
+                                                this@AddVisitorPhotoActivity,
+                                                DashboardActivity::class.java
+                                            )
+                                            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+                                            startActivity(intent)
+                                            /* val intent =
+                                                 Intent(applicationContext, DashboardActivity::class.java)
+                                             intent.flags =
+                                                 Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+                                             startActivity(intent)*/
+                                        } catch (e: Exception) {
+                                            e.printStackTrace()
+                                        }
+                                    }
+                                    val dialog = builder.create()
+                                    dialog.show()
+                                }
+
+
                             } else {
                                 /*   SnackBar.showError(
                                        context!!,
@@ -907,5 +1026,9 @@ class AddVisitorPhotoActivity : AppCompatActivity(), CompoundButton.OnCheckedCha
             e.printStackTrace()
         }
 
+    }
+
+    override fun onBackPressed() {
+        finish()
     }
 }

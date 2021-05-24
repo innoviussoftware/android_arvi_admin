@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#e6e6e6"
+    tools:context=".Fragment.LeaveListFragment">
+
+    <RelativeLayout
+        android:id="@+id/rlHeaderLRLA"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_50sdp">
+
+        <ImageView
+            android:id="@+id/imgVwBackLRLA"
+            android:layout_width="@dimen/_30sdp"
+            android:layout_height="@dimen/_30sdp"
+            android:visibility="gone"
+            android:layout_centerVertical="true"
+            android:padding="@dimen/_8sdp"
+            android:src="@drawable/ic_back_black" />
+        <EditText
+            android:id="@+id/etEmpNameLLF"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/edit_left_border_bg"
+            android:paddingStart="@dimen/_10sdp"
+            android:paddingEnd="@dimen/_10sdp"
+            android:paddingTop="@dimen/_5sdp"
+            android:paddingBottom="@dimen/_5sdp"
+            android:layout_margin="@dimen/_5sdp"
+            android:layout_marginStart="@dimen/_5sdp"
+            android:hint="Search Employee by Name or Employee Id"
+            android:layout_toStartOf="@+id/imgVwCalendarLLF"
+            android:textSize="@dimen/_12ssp"
+            android:maxLines="2"
+            android:fontFamily="@font/gotham_book_regular"
+            />
+
+
+        <ImageView
+            android:id="@+id/imgVwCalendarLLF"
+            android:layout_width="@dimen/_25sdp"
+            android:layout_height="@dimen/_25sdp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="@dimen/_10sdp"
+            android:src="@drawable/ic_calendar_leave" />
+
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@+id/imgVwBackLRLA"
+            android:fontFamily="@font/gotham_bold"
+            android:visibility="gone"
+            android:text="Leave Request"
+            android:textColor="@color/black"
+            android:textSize="@dimen/_14ssp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_alignParentBottom="true"
+            android:background="@color/view_bg" />
+    </RelativeLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rVwRequestLRLA"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/rlHeaderLRLA"
+        />
+
+    <TextView
+        android:id="@+id/tvNoLeaveLRLA"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="Leave request list is empty"
+        android:textSize="@dimen/_14ssp"
+        android:textColor="@color/app_bg"
+        android:fontFamily="@font/avenir_next_bold"
+        android:gravity="center"
+        android:visibility="gone"
+        />
+
+
+    <ImageView
+        android:id="@+id/imgVwAddRequestLRLA"
+        android:layout_width="@dimen/_50sdp"
+        android:layout_height="@dimen/_50sdp"
+        android:src="@mipmap/ic_add_round"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_margin="@dimen/_10sdp"
+        android:elevation="@dimen/_2sdp"
+        />
+</RelativeLayout>
