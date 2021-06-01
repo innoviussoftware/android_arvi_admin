@@ -1,19 +1,14 @@
 package com.arvi.Activity.NewApp
 
 import android.app.Dialog
-import android.content.ComponentName
-import android.content.Context
-import android.content.Intent
-import android.content.ServiceConnection
+import android.content.*
 import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.hardware.Camera
 import android.location.Address
 import android.location.Geocoder
-import android.os.Build
-import android.os.Bundle
-import android.os.IBinder
+import android.os.*
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
@@ -33,10 +28,8 @@ import com.arvi.SessionManager.SessionManager.getKioskModel
 import com.arvi.SessionManager.SessionManager.getOxiScanOption
 import com.arvi.SessionManager.SessionManager.getSanitizerOption
 import com.arvi.SessionManager.SessionManager.getToken
+import com.arvi.Utils.*
 import com.arvi.Utils.AppConstants.BEARER_TOKEN
-import com.arvi.Utils.ConnectivityDetector
-import com.arvi.Utils.SingleShotLocationProvider
-import com.arvi.Utils.SnackBar
 import com.arvi.btScan.common.CameraSource
 import com.arvi.btScan.common.CameraSourcePreview
 import com.arvi.btScan.common.GraphicOverlay
@@ -64,7 +57,8 @@ import java.time.format.DateTimeFormatter
 import java.util.*
 
 class SelfiCheckInActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener,
-        SlaveListener {
+    SlaveListener,
+    ConnectivityReceiver.ConnectivityReceiverListener {
 
     var tvInstruction: TextView? = null
     var imgVwHomeSCA: ImageView? = null
@@ -144,7 +138,7 @@ class SelfiCheckInActivity : AppCompatActivity(), CompoundButton.OnCheckedChange
                 startCameraSource()
                 if (SessionManager.getSelectedCameraFacing(context!!) != null) {
                     if (SessionManager.getSelectedCameraFacing(context!!)
-                                    .equals(resources.getString(R.string.front_facing))
+                            .equals(resources.getString(R.string.front_facing))
                     ) {
                         if (cameraSource != null) {
                             cameraSource!!.setFacing(CameraSource.CAMERA_FACING_FRONT)
@@ -154,7 +148,6 @@ class SelfiCheckInActivity : AppCompatActivity(), CompoundButton.OnCheckedChange
                             cameraSource!!.setFacing(CameraSource.CAMERA_FACING_BACK)
                         }
                     }
-
                 } else {
                     cameraSource!!.setFacing(CameraSource.CAMERA_FACING_FRONT)
                 }
@@ -185,7 +178,8 @@ class SelfiCheckInActivity : AppCompatActivity(), CompoundButton.OnCheckedChange
                         cameraSource = null
                     }
                     var intent = Intent(context, DashboardActivity::class.java)
-                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+                    intent.flags =
+                        Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
                     startActivity(intent)
                 } catch (e: Exception) {
                     e.printStackTrace()
@@ -195,11 +189,11 @@ class SelfiCheckInActivity : AppCompatActivity(), CompoundButton.OnCheckedChange
 
 
             SingleShotLocationProvider.requestSingleUpdate(
-                    applicationContext
+                applicationContext
             ) { location ->
                 Log.e(
-                        "location:",
-                        location.latitude.toString() + " , " + location.longitude
+                    "location:",
+                    location.latitude.toString() + " , " + location.longitude
                 )
                 var latitude = location.latitude.toDouble()
                 var longitude = location.longitude.toDouble()
@@ -214,7 +208,7 @@ class SelfiCheckInActivity : AppCompatActivity(), CompoundButton.OnCheckedChange
                     e.printStackTrace()
                 }
             }
-
+//            setConnectionSpeedHandlerData()
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -231,11 +225,11 @@ class SelfiCheckInActivity : AppCompatActivity(), CompoundButton.OnCheckedChange
     }
 
     private fun isPermissionGranted(
-            context: Context,
-            permission: String
+        context: Context,
+        permission: String
     ): Boolean {
         if (ContextCompat.checkSelfPermission(context, permission)
-                == PackageManager.PERMISSION_GRANTED
+            == PackageManager.PERMISSION_GRANTED
         ) {
             Log.i(TAG, "Permission granted: $permission")
             return true
@@ -247,7 +241,7 @@ class SelfiCheckInActivity : AppCompatActivity(), CompoundButton.OnCheckedChange
     private fun getRequiredPermissions(): Array<String?>? {
         return try {
             val info = this.packageManager
-                    .getPackageInfo(this.packageName, PackageManager.GET_PERMISSIONS)
+                .getPackageInfo(this.packageName, PackageManager.GET_PERMISSIONS)
             val ps = info.requestedPermissions
             if (ps != null && ps.size > 0) {
                 ps
@@ -261,13 +255,13 @@ class SelfiCheckInActivity : AppCompatActivity(), CompoundButton.OnCheckedChange
     }
 
     private fun showToastError(e: java.lang.Exception) {
-    //    Toast.makeText(context,""+e.printStackTrace(),Toast.LENGTH_SHORT).show()
+        //    Toast.makeText(context,""+e.printStackTrace(),Toast.LENGTH_SHORT).show()
     }
 
     private fun getRuntimePermissions() {
         try {
             val allNeededPermissions: MutableList<String?> =
-                    ArrayList()
+                ArrayList()
             for (permission in getRequiredPermissions()!!) {
                 if (!isPermissionGranted(this, permission!!)) {
                     allNeededPermissions.add(permission)
@@ -275,9 +269,9 @@ class SelfiCheckInActivity : AppCompatActivity(), CompoundButton.OnCheckedChange
             }
             if (!allNeededPermissions.isEmpty()) {
                 ActivityCompat.requestPermissions(
-                        this,
-                        allNeededPermissions.toTypedArray(),
-                        PERMISSION_REQUESTS
+                    this,
+                    allNeededPermissions.toTypedArray(),
+                    PERMISSION_REQUESTS
                 )
             }
         } catch (e: java.lang.Exception) {
@@ -294,113 +288,114 @@ class SelfiCheckInActivity : AppCompatActivity(), CompoundButton.OnCheckedChange
             }
             try {
                 cameraSource!!.setMachineLearningFrameProcessor(
-                        ArviFaceDetectionProcessor.getForDetectionScreen(
-                                resources,
-                                object : FaceDetectionListener {
-                                    @RequiresApi(api = Build.VERSION_CODES.O)
-                                    override fun faceDetected(face: Bitmap) {
-                                        try {
-                                            facebitmap = face
-                                            faceDetectTimeout = 100
-                                            if (faceLockTimeout == 0) {
-                                                faceDetected = true
-                                            }
-                                            if (facebitmap != null && !face.equals("")) {
-                                                if (!isApiCalled) {
-                                                    if (ConnectivityDetector.isConnectingToInternet(context!!)) {
-                                                        callDetectFaceAPI(facebitmap!!)
-                                                    } else {
-                                                        SnackBar.showInternetError(
-                                                                context!!,
-                                                                snackbarView!!
-                                                        )
-                                                    }
-
-                                                }
-                                            }
-                                        } catch (e: java.lang.Exception) {
-                                            e.printStackTrace()
-                                            showToastError(e)
-                                        }
+                    ArviFaceDetectionProcessor.getForDetectionScreen(
+                        resources,
+                        object : FaceDetectionListener {
+                            @RequiresApi(api = Build.VERSION_CODES.O)
+                            override fun faceDetected(face: Bitmap) {
+                                try {
+                                    facebitmap = face
+                                    faceDetectTimeout = 100
+                                    if (faceLockTimeout == 0) {
+                                        faceDetected = true
                                     }
-
-                                    override fun faceErrorYangleFailed(
-                                            face: Bitmap,
-                                            yAngle: Float
-                                    ) {
-                                        try {
-                                            facebitmap = face
-                                            faceDetectTimeout = 100
-                                            if (yAngle < 0) {
-                                                if (state == STATE.WAIT_FOR_FACE) {
-                                                    showMessage("Turn your face towards left", 50, false)
-                                                }
+                                    if (facebitmap != null && !face.equals("")) {
+                                        if (!isApiCalled) {
+                                            if (ConnectivityDetector.isConnectingToInternet(context!!)) {
+                                                setConnectionSpeedHandlerData()
+                                                callDetectFaceAPI(facebitmap!!)
                                             } else {
-                                                if (state == STATE.WAIT_FOR_FACE) {
-                                                    showMessage("Turn your face towards right", 50, false)
-                                                }
+                                                SnackBar.showInternetError(
+                                                    context!!,
+                                                    snackbarView!!
+                                                )
                                             }
-                                        } catch (e: java.lang.Exception) {
-                                            e.printStackTrace()
-                                            showToastError(e)
-                                        }
-                                    }
 
-                                    override fun faceErrorZangleFailed(
-                                            face: Bitmap,
-                                            zAngle: Float
-                                    ) {
-                                        try {
-                                            facebitmap = face
-                                            faceDetectTimeout = 100
-                                            if (state == STATE.WAIT_FOR_FACE) {
-                                                showMessage("Keep your face straight", 50, false)
-                                            }
-                                        } catch (e: java.lang.Exception) {
-                                            e.printStackTrace()
-                                            showToastError(e)
                                         }
                                     }
+                                } catch (e: java.lang.Exception) {
+                                    e.printStackTrace()
+                                    showToastError(e)
+                                }
+                            }
 
-                                    override fun faceErrorOutsideBox(face: Bitmap) {
-                                        try {
-                                            facebitmap = face
-                                            faceDetectTimeout = 100
-                                            faceOutside = true
-                                            if (state == STATE.WAIT_FOR_FACE) {
-                                                showMessage("Adjust your face within the box", 50, false)
-                                            }
-                                        } catch (e: java.lang.Exception) {
-                                            e.printStackTrace()
-                                            showToastError(e)
+                            override fun faceErrorYangleFailed(
+                                face: Bitmap,
+                                yAngle: Float
+                            ) {
+                                try {
+                                    facebitmap = face
+                                    faceDetectTimeout = 100
+                                    if (yAngle < 0) {
+                                        if (state == STATE.WAIT_FOR_FACE) {
+                                            showMessage("Turn your face towards left", 50, false)
+                                        }
+                                    } else {
+                                        if (state == STATE.WAIT_FOR_FACE) {
+                                            showMessage("Turn your face towards right", 50, false)
                                         }
                                     }
+                                } catch (e: java.lang.Exception) {
+                                    e.printStackTrace()
+                                    showToastError(e)
+                                }
+                            }
 
-                                    override fun faceErrorTooSmall(
-                                            face: Bitmap,
-                                            width: Float
-                                    ) {
-                                        try {
-                                            facebitmap = face
-                                            faceDetectTimeout = 100
-                                            if (state == STATE.WAIT_FOR_FACE) {
-                                                showMessage("Come forward", 50, false)
-                                            }
-                                        } catch (e: java.lang.Exception) {
-                                            e.printStackTrace()
-                                            showToastError(e)
-                                        }
+                            override fun faceErrorZangleFailed(
+                                face: Bitmap,
+                                zAngle: Float
+                            ) {
+                                try {
+                                    facebitmap = face
+                                    faceDetectTimeout = 100
+                                    if (state == STATE.WAIT_FOR_FACE) {
+                                        showMessage("Keep your face straight", 50, false)
                                     }
-                                })
+                                } catch (e: java.lang.Exception) {
+                                    e.printStackTrace()
+                                    showToastError(e)
+                                }
+                            }
+
+                            override fun faceErrorOutsideBox(face: Bitmap) {
+                                try {
+                                    facebitmap = face
+                                    faceDetectTimeout = 100
+                                    faceOutside = true
+                                    if (state == STATE.WAIT_FOR_FACE) {
+                                        showMessage("Adjust your face within the box", 50, false)
+                                    }
+                                } catch (e: java.lang.Exception) {
+                                    e.printStackTrace()
+                                    showToastError(e)
+                                }
+                            }
+
+                            override fun faceErrorTooSmall(
+                                face: Bitmap,
+                                width: Float
+                            ) {
+                                try {
+                                    facebitmap = face
+                                    faceDetectTimeout = 100
+                                    if (state == STATE.WAIT_FOR_FACE) {
+                                        showMessage("Come forward", 50, false)
+                                    }
+                                } catch (e: java.lang.Exception) {
+                                    e.printStackTrace()
+                                    showToastError(e)
+                                }
+                            }
+                        })
                 )
             } catch (e: java.lang.Exception) {
                 Log.e(TAG, "Can not create image processor: ", e)
                 Toast.makeText(
-                        applicationContext,
-                        "Can not create image processor: " + e.message,
-                        Toast.LENGTH_LONG
+                    applicationContext,
+                    "Can not create image processor: " + e.message,
+                    Toast.LENGTH_LONG
                 )
-                        .show()
+                    .show()
             }
         } catch (e: java.lang.Exception) {
             e.printStackTrace()
@@ -420,41 +415,42 @@ class SelfiCheckInActivity : AppCompatActivity(), CompoundButton.OnCheckedChange
             try {
                 file1 = if (profilePath!!.isEmpty()) {
                     MultipartBody.Part.createFormData(
-                            "file1", "",
-                            RequestBody.create(MediaType.parse("multipart/form-data"), "")
+                        "file1", "",
+                        RequestBody.create(MediaType.parse("multipart/form-data"), "")
                     )
                 } else {
                     val file = File(profilePath)
                     MultipartBody.Part.createFormData(
-                            "file1", file.name,
-                            RequestBody.create(MediaType.parse("multipart/form-data"), file)
+                        "file1", file.name,
+                        RequestBody.create(MediaType.parse("multipart/form-data"), file)
                     )
                 }
                 var mAPIService: APIService? = null
                 mAPIService = apiService
                 val call = mAPIService.detectFace(
-                        BEARER_TOKEN + getToken(
-                                context!!
-                        ), file1!!
+                    BEARER_TOKEN + getToken(
+                        context!!
+                    ), file1!!
                 )
                 call.enqueue(object : Callback<DetectFaceNewResponse> {
                     @RequiresApi(api = Build.VERSION_CODES.O)
                     override fun onResponse(
-                            call: Call<DetectFaceNewResponse>,
-                            response: Response<DetectFaceNewResponse>
+                        call: Call<DetectFaceNewResponse>,
+                        response: Response<DetectFaceNewResponse>
                     ) {
                         try {
                             if (response.code() == 200) {
+                                h!!.removeCallbacks(r!!)
                                 Log.e("Upload", "success")
                                 if (response.body().data == null) {
                                     strUserId = ""
                                     strUserName = "Unknown"
                                     fullname = strUserName
                                     showToast(
-                                            tempNormal,
-                                            temperature,
-                                            message!!,
-                                            strUserName
+                                        tempNormal,
+                                        temperature,
+                                        message!!,
+                                        strUserName
                                     )
                                 } else {
 
@@ -468,7 +464,7 @@ class SelfiCheckInActivity : AppCompatActivity(), CompoundButton.OnCheckedChange
 
                                         if (response.body().data.name != null) {
                                             strUserName =
-                                                    response.body().data.name // response.body().getFullName();
+                                                response.body().data.name // response.body().getFullName();
                                         } else {
                                             strUserName = "Unknown"
                                         }
@@ -478,73 +474,78 @@ class SelfiCheckInActivity : AppCompatActivity(), CompoundButton.OnCheckedChange
                                     Log.e("userId:-", strUserId + "")
                                     if (strUserName != null && strUserName != "") {
                                         showToast(
-                                                tempNormal,
-                                                temperature,
-                                                message!!,
-                                                strUserName
+                                            tempNormal,
+                                            temperature,
+                                            message!!,
+                                            strUserName
                                         )
                                     } else {
                                         strUserId = ""
                                         strUserName = "Unknown"
                                         fullname = strUserName
                                         showToast(
-                                                tempNormal,
-                                                temperature,
-                                                message!!,
-                                                strUserName
+                                            tempNormal,
+                                            temperature,
+                                            message!!,
+                                            strUserName
                                         )
                                     }
                                 }
                             } else if (response.code() == 401) {
+                                h!!.removeCallbacks(r!!)
                                 val intent = Intent(context, EnterLoginDetailActivity::class.java)
                                 intent.flags =
-                                        Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+                                    Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
                                 startActivity(intent)
                             }
                         } catch (e: java.lang.Exception) {
                             e.printStackTrace()
                             showToastError(e)
+                            h!!.removeCallbacks(r!!)
                         }
                     }
 
                     @RequiresApi(api = Build.VERSION_CODES.O)
                     override fun onFailure(
-                            call: Call<DetectFaceNewResponse>,
-                            t: Throwable
+                        call: Call<DetectFaceNewResponse>,
+                        t: Throwable
                     ) {
                         Log.e("Upload", "failure")
                         if (strUserName != null) showToast(
-                                tempNormal,
-                                temperature,
-                                message!!,
-                                strUserName
+                            tempNormal,
+                            temperature,
+                            message!!,
+                            strUserName
                         ) else {
                             strUserName = "Unknown"
                             strUserId = ""
                             fullname = strUserName
                             showToast(
-                                    tempNormal,
-                                    temperature,
-                                    message!!,
-                                    strUserName
+                                tempNormal,
+                                temperature,
+                                message!!,
+                                strUserName
                             )
                         }
                         Toast.makeText(
-                                this@SelfiCheckInActivity,
-                                "Not able to recognize face",
-                                Toast.LENGTH_SHORT
+                            this@SelfiCheckInActivity,
+                            "Not able to recognize face",
+                            Toast.LENGTH_SHORT
                         ).show()
-                        Toast.makeText(context,""+t.message,Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "" + t.message, Toast.LENGTH_SHORT).show()
+//                        h!!.removeCallbacks(r!!)
                         //       showToast(tempNormal, temperature, message, strUserName);
                     }
                 })
             } catch (e: java.lang.Exception) {
                 e.printStackTrace()
+                h!!.removeCallbacks(r!!)
                 // showToast(tempNormal, temperature, message, strUserName);
             }
         } catch (e: java.lang.Exception) {
             e.printStackTrace()
             showToastError(e)
+            h!!.removeCallbacks(r!!)
             // showToast(tempNormal, temperature, message, strUserName);
         }
     }
@@ -604,9 +605,9 @@ class SelfiCheckInActivity : AppCompatActivity(), CompoundButton.OnCheckedChange
 
 
     private fun showMessage(
-            msg: String,
-            timeout: Int,
-            priority: Boolean
+        msg: String,
+        timeout: Int,
+        priority: Boolean
     ) {
         var msg = msg
         try {
@@ -629,10 +630,10 @@ class SelfiCheckInActivity : AppCompatActivity(), CompoundButton.OnCheckedChange
 
     @RequiresApi(api = Build.VERSION_CODES.O)
     private fun showToast(
-            result: Boolean,
-            temp: String,
-            msg: String,
-            strUserName: String?
+        result: Boolean,
+        temp: String,
+        msg: String,
+        strUserName: String?
     ) {
         try {
 
@@ -640,12 +641,12 @@ class SelfiCheckInActivity : AppCompatActivity(), CompoundButton.OnCheckedChange
                 if (message == "ENTRY DENIED") {
                     //     ArviAudioPlaybacks.forcePlay(R.raw.salli_temp_high_denined);
                     if (getKioskModel(applicationContext) == "TX77" || getKioskModel(
-                                    applicationContext
-                            ) == "TX99"
+                            applicationContext
+                        ) == "TX99"
                     ) {
                         if (getSanitizerOption(
-                                        applicationContext
-                                ) == "Enable"
+                                applicationContext
+                            ) == "Enable"
                         ) {
                             ArviAudioPlaybacks.forcePlay(R.raw.salli_temp_high)
                         } else {
@@ -657,12 +658,12 @@ class SelfiCheckInActivity : AppCompatActivity(), CompoundButton.OnCheckedChange
                 } else if (message == "NORMAL" || message!!.contains("NORMAL")) {
 //                    ArviAudioPlaybacks.forcePlay(R.raw.salli_temp_normal_pass);
                     if (getKioskModel(applicationContext) == "TX77" || getKioskModel(
-                                    applicationContext
-                            ) == "TX99"
+                            applicationContext
+                        ) == "TX99"
                     ) {
                         if (getSanitizerOption(
-                                        applicationContext
-                                ) == "Enable"
+                                applicationContext
+                            ) == "Enable"
                         ) {
                             ArviAudioPlaybacks.forcePlay(R.raw.salli_temp_normal)
                         } else {
@@ -677,28 +678,28 @@ class SelfiCheckInActivity : AppCompatActivity(), CompoundButton.OnCheckedChange
             dialog!!.setCancelable(false)
             dialog!!.setContentView(R.layout.dialog_result)
             val tvUserName =
-                    dialog!!.findViewById<View>(R.id.tvUserName) as TextView
+                dialog!!.findViewById<View>(R.id.tvUserName) as TextView
             val tvEmpIdDR =
-                    dialog!!.findViewById<View>(R.id.tvEmpIdDR) as TextView
+                dialog!!.findViewById<View>(R.id.tvEmpIdDR) as TextView
             val tvDateDR =
-                    dialog!!.findViewById<View>(R.id.tvDateDR) as TextView
+                dialog!!.findViewById<View>(R.id.tvDateDR) as TextView
             val tvTimeDR =
-                    dialog!!.findViewById<View>(R.id.tvTimeDR) as TextView
+                dialog!!.findViewById<View>(R.id.tvTimeDR) as TextView
             val tvLocationDR =
-                    dialog!!.findViewById<View>(R.id.tvLocationDR) as TextView
+                dialog!!.findViewById<View>(R.id.tvLocationDR) as TextView
             val imgVwStatusDR =
-                    dialog!!.findViewById<View>(R.id.imgVwStatusDR) as ImageView
+                dialog!!.findViewById<View>(R.id.imgVwStatusDR) as ImageView
             val tvMessageDR =
-                    dialog!!.findViewById<View>(R.id.tvMessageDR) as TextView
+                dialog!!.findViewById<View>(R.id.tvMessageDR) as TextView
             val imgVwPhotoDR =
-                    dialog!!.findViewById<View>(R.id.imgVwPhotoDR) as ImageView
+                dialog!!.findViewById<View>(R.id.imgVwPhotoDR) as ImageView
             if (facebitmap != null) {
                 imgVwPhotoDR.setImageBitmap(facebitmap)
             }
             val df =
-                    DateTimeFormatter.ofPattern("dd MMM yyyy")
+                DateTimeFormatter.ofPattern("dd MMM yyyy")
             val tf =
-                    DateTimeFormatter.ofPattern("HH:mm a")
+                DateTimeFormatter.ofPattern("HH:mm a")
             val now = LocalDateTime.now()
             println(df.format(now))
             tvDateDR.text = "Date: " + df.format(now)
@@ -721,11 +722,11 @@ class SelfiCheckInActivity : AppCompatActivity(), CompoundButton.OnCheckedChange
                 tvMessageDR.text = "Attendance capture failed"
             }
             SingleShotLocationProvider.requestSingleUpdate(
-                    applicationContext
+                applicationContext
             ) { location ->
                 Log.e(
-                        "location:",
-                        location.latitude.toString() + " , " + location.longitude
+                    "location:",
+                    location.latitude.toString() + " , " + location.longitude
                 )
                 latitude = location.latitude.toDouble()
                 longitude = location.longitude.toDouble()
@@ -742,12 +743,12 @@ class SelfiCheckInActivity : AppCompatActivity(), CompoundButton.OnCheckedChange
                     val knownName = addresses[0].featureName
                     strAddress = address
                     /*+", "+city+", "+state+", "+country+", "+postalCode*/Log.e(
-                            "address:",
-                            address
+                        "address:",
+                        address
                     )
                     if (SessionManager.getSelectedGPSOption(context!!) != null && SessionManager.getSelectedGPSOption(
-                                    context!!
-                            ).equals("Yes")
+                            context!!
+                        ).equals("Yes")
                     ) {
                         tvLocationDR.text = "Location: $address"
                     } else {
@@ -773,12 +774,12 @@ class SelfiCheckInActivity : AppCompatActivity(), CompoundButton.OnCheckedChange
                 dialog!!.show()
             }
             dialog!!.window!!.setLayout(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.MATCH_PARENT
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
             )
             resultToastTimeout = if (getKioskModel(applicationContext) == "TX55" || getKioskModel(
-                            applicationContext
-                    ) == "TX66"
+                    applicationContext
+                ) == "TX66"
             ) {
                 1000
             } else {
@@ -799,6 +800,38 @@ class SelfiCheckInActivity : AppCompatActivity(), CompoundButton.OnCheckedChange
     override fun processResponseFromSlave(data: ByteArray?) {
         Log.d(TAG, "processResponseFromSlave")
     }
+
+    val delayMillis: Long = 10000
+    var h: Handler? = null
+    var r: Runnable? = null
+
+    private fun setConnectionSpeedHandlerData() {
+        try {
+            h = Handler(Looper.getMainLooper())
+            r = object : Runnable {
+
+                override fun run() {
+                    Log.e("downSpeed", TrafficUtils.getNetworkSpeed())
+                    if(TrafficUtils.getNetworkSpeed().contains("KB")){
+                        var speed = TrafficUtils.getNetworkSpeed()
+                        speed = speed.substring(0,speed.indexOf(" "))
+                        if(speed.toInt()<20){
+//                            Toast.makeText(context,"Your internet speed is slow",Toast.LENGTH_SHORT).show()
+                            SnackBar.showNetSpeedError(context!!,snackbarView!!,"Your internet speed is slow")
+                        }
+                    }
+                    h!!.postDelayed(this, delayMillis)
+                }
+            }
+
+            h!!.post(r as Runnable)
+
+
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+        }
+    }
+
 
     override fun every100ms() {
         try {
@@ -837,8 +870,8 @@ class SelfiCheckInActivity : AppCompatActivity(), CompoundButton.OnCheckedChange
             jsonObject.addProperty("scanTime", strCurrentTime)
 
             if (SessionManager.getSelectedGPSOption(context!!) != null && SessionManager.getSelectedGPSOption(
-                            context!!
-                    ).equals("Yes")
+                    context!!
+                ).equals("Yes")
             ) {
                 jsonObject.addProperty("address", strAddress)
                 jsonObject.addProperty("emp_lat", latitude)
@@ -849,21 +882,21 @@ class SelfiCheckInActivity : AppCompatActivity(), CompoundButton.OnCheckedChange
             var mAPIService: APIService? = null
             mAPIService = apiService
             val call = mAPIService.recordUserTemperature(
-                    BEARER_TOKEN + getToken(context!!),
-                    "application/json",
-                    jsonObject
+                BEARER_TOKEN + getToken(context!!),
+                "application/json",
+                jsonObject
             )
             call.enqueue(object : Callback<ResponseBody?> {
                 override fun onResponse(
-                        call: Call<ResponseBody?>,
-                        response: Response<ResponseBody?>
+                    call: Call<ResponseBody?>,
+                    response: Response<ResponseBody?>
                 ) {
                     Log.e("Store Temp", "success")
                 }
 
                 override fun onFailure(
-                        call: Call<ResponseBody?>,
-                        t: Throwable
+                    call: Call<ResponseBody?>,
+                    t: Throwable
                 ) {
                     Log.e("Store temp", "failure")
                 }
@@ -882,8 +915,8 @@ class SelfiCheckInActivity : AppCompatActivity(), CompoundButton.OnCheckedChange
 
             //Todo:: priyanka go for oximeter reading screen
             if (getKioskModel(applicationContext) == "TX99" && getOxiScanOption(
-                            applicationContext
-                    ) == "Enable"
+                    applicationContext
+                ) == "Enable"
             ) {
                 try {
                     val timer = Timer()
@@ -909,8 +942,8 @@ class SelfiCheckInActivity : AppCompatActivity(), CompoundButton.OnCheckedChange
 
                             //todo::Priyanka 06-07 start
                             if (getFaceRecognizeOption(
-                                            applicationContext
-                                    ) == "ON"
+                                    applicationContext
+                                ) == "ON"
                             ) {
                                 if (strUserId != null) {
                                     if (strUserId != "") {
@@ -1024,16 +1057,16 @@ class SelfiCheckInActivity : AppCompatActivity(), CompoundButton.OnCheckedChange
             if (serviceConnection == null) {
                 serviceConnection = object : ServiceConnection {
                     override fun onServiceConnected(
-                            componentName: ComponentName,
-                            iBinder: IBinder
+                        componentName: ComponentName,
+                        iBinder: IBinder
                     ) {
                         try {
                             val myServiceBinder = iBinder as MyServiceBinder
                             slaveService = myServiceBinder.service
                             isServiceBound = true
                             Log.d(
-                                    TAG,
-                                    "onServiceConnected. setting owner listener " + slaveService
+                                TAG,
+                                "onServiceConnected. setting owner listener " + slaveService
                             )
                             slaveService!!.addListener(this@SelfiCheckInActivity)
                         } catch (e: java.lang.Exception) {
@@ -1108,6 +1141,16 @@ class SelfiCheckInActivity : AppCompatActivity(), CompoundButton.OnCheckedChange
             } else {
                 cameraSource!!.setFacing(CameraSource.CAMERA_FACING_FRONT)
             }
+
+
+            try {
+                val filter = IntentFilter("android.net.conn.CONNECTIVITY_CHANGE")
+                connectivityChangeReceiver = ConnectivityReceiver()
+
+                registerReceiver(connectivityChangeReceiver, filter)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         } catch (e: java.lang.Exception) {
             e.printStackTrace()
             showToastError(e)
@@ -1118,11 +1161,12 @@ class SelfiCheckInActivity : AppCompatActivity(), CompoundButton.OnCheckedChange
         Log.d(TAG, "onResume")
         super.onResume()
         try {
+            MyApplication.instance!!.setConnectivityListener(this)
             // startService(serviceIntent)
 //            bindService()
             faceDetected = false
 
-            if(cameraSource==null){
+            if (cameraSource == null) {
                 SlaveService.serviceOn = true
                 resultToastTimeout = 0
                 stateTimeoutIn100ms = 100
@@ -1177,7 +1221,6 @@ class SelfiCheckInActivity : AppCompatActivity(), CompoundButton.OnCheckedChange
             }
 
 
-
         } catch (e: java.lang.Exception) {
             e.printStackTrace()
             showToastError(e)
@@ -1211,10 +1254,17 @@ class SelfiCheckInActivity : AppCompatActivity(), CompoundButton.OnCheckedChange
         super.onStop()
         try {
             threadRunning = false
+            unregisterReceiver(connectivityChangeReceiver)
         } catch (e: java.lang.Exception) {
             e.printStackTrace()
             showToastError(e)
         }
+
+    }
+
+
+    override fun onNetworkConnectionChanged(isConnected: Boolean) {
+        NoInternetDialog.showSnack(isConnected, context!!)
     }
 
 
@@ -1251,4 +1301,5 @@ class SelfiCheckInActivity : AppCompatActivity(), CompoundButton.OnCheckedChange
 
     }
 
+    var connectivityChangeReceiver: ConnectivityReceiver? = null
 }

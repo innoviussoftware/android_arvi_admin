@@ -4,7 +4,7 @@ public class Config
 {
 	public static final boolean showRectangle=true;
 	public static float defaultMinFaceWidth=25f; //1
-	public static float detectMinFaceWidth=60f;//1
+	public static float detectMinFaceWidth=40f;//1
 
 	public static float fixedBoxTopMargin=20f;
 	public static float fixedBoxLeftMargin=10f;

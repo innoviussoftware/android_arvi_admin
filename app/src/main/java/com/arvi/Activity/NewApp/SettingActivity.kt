@@ -11,7 +11,6 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import com.arvi.Adapter.GetLeaveRequestResponse
 import com.arvi.Model.UserLoginResponse
 import com.arvi.R
 import com.arvi.RetrofitApiCall.APIService
@@ -21,6 +20,7 @@ import com.arvi.SessionManager.SessionManager
 import com.arvi.Utils.*
 import com.arvi.Utils.AppConstants.BASE_Custom_URL
 import com.arvi.Utils.AppConstants.BASE_URL
+import com.arvi.btScan.java.arvi.Config
 import com.google.gson.JsonObject
 import okhttp3.ResponseBody
 import retrofit2.Call
@@ -47,6 +47,9 @@ class SettingActivity : AppCompatActivity(), View.OnClickListener {
     var llGpsSA: LinearLayout? = null
     var llLaunchOptionSA: LinearLayout? = null
 
+    var etDefaultMinWidthSA:EditText?=null
+    var etDetectMinFaceWidthSA:EditText?=null
+
     var tvSaveSA: TextView? = null
 
     var context: Context? = null
@@ -56,6 +59,8 @@ class SettingActivity : AppCompatActivity(), View.OnClickListener {
     var strSelectedScreenOption: String = ""
     var strSelectedGPSOption: String = ""
     var strSelectedAppModeOption: String = ""
+
+
 
     var oldUrl:String = ""
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -195,7 +200,13 @@ class SettingActivity : AppCompatActivity(), View.OnClickListener {
             rbYesTrackSA = findViewById(R.id.rbYesTrackSA)
             rbNoTrackSA = findViewById(R.id.rbNoTrackSA)
 
+            etDefaultMinWidthSA = findViewById(R.id.etDefaultMinWidthSA)
+            etDetectMinFaceWidthSA = findViewById(R.id.etDetectMinFaceWidthSA)
+
             tvSaveSA = findViewById(R.id.tvSaveSA)
+
+            etDefaultMinWidthSA!!.setText(Config.defaultMinFaceWidth.toString())
+            etDetectMinFaceWidthSA!!.setText(Config.detectMinFaceWidth.toString())
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -347,7 +358,16 @@ class SettingActivity : AppCompatActivity(), View.OnClickListener {
                                     "please enter your server url"
                             )
                             etServerUrlSA!!.requestFocus()
-                        } else {
+                        } else if(etDefaultMinWidthSA!!.text.toString().isNullOrEmpty())
+                        {
+                            SnackBar.showValidationError(context!!,snackbarView!!,"Please enter default minimum face width")
+                            etDefaultMinWidthSA!!.requestFocus()
+                        }else if(etDetectMinFaceWidthSA!!.text.toString().isNullOrEmpty())
+                        {
+                            SnackBar.showValidationError(context!!,snackbarView!!,"Please enter default minimum face width")
+                            etDetectMinFaceWidthSA!!.requestFocus()
+                        }
+                        else {
                             BASE_Custom_URL = strSelectedServerOption!!
                             if (ConnectivityDetector.isConnectingToInternet(context!!)) {
                                 callCheckBaseURLAPI()
@@ -406,8 +426,8 @@ class SettingActivity : AppCompatActivity(), View.OnClickListener {
                                     )
                                     SessionManager.setSelectedGPSOption(context!!, strSelectedGPSOption!!)
                                     SessionManager.setSelectedAppMode(context!!, strSelectedAppModeOption!!)
-
-                                    
+                                    Config.defaultMinFaceWidth = etDefaultMinWidthSA!!.getText().toString().toFloat()
+                                    Config.detectMinFaceWidth = etDetectMinFaceWidthSA!!.getText().toString().toFloat()
                                     if(oldUrl == strSelectedServerOption){
                                         //no need to login
                                         var builder = AlertDialog.Builder(context!!)

@@ -97,6 +97,7 @@ public class ArviFaceGraphic extends GraphicOverlay.Graphic {
         boxPaint.setStyle(Paint.Style.STROKE);
         boxPaint.setStrokeWidth(BOX_STROKE_WIDTH);
 
+
         blockPaint = new Paint();
         blockPaint.setStyle(Paint.Style.FILL);
         blockPaint.setColor(Color.argb(200,0,0,0));
@@ -158,7 +159,6 @@ public class ArviFaceGraphic extends GraphicOverlay.Graphic {
                     rect=ArviFaceDetectionProcessor.fixedBox;
                     left = translateX(rect.left);
                     top = translateY(rect.top);
-                    ;
                     right = translateX(rect.right);
                     bottom = translateY(rect.bottom);
                     boxPaint.setColor(Color.WHITE);

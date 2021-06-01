@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:background="#EFEFEF"
+    android:layout_height="match_parent">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_centerVertical="true">
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_group_1"/>
+
+        <TextView
+            android:id="@+id/tvTextLine1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/_18ssp"
+            android:text="@string/no_internet_connection"
+            android:gravity="center"
+            android:textColor="@color/app_bg"
+            android:layout_marginTop="@dimen/_20sdp"
+            android:layout_marginBottom="@dimen/_14sdp"
+            android:fontFamily="@font/gotham_book_regular"
+            />
+
+        <TextView
+            android:id="@+id/tvTryAgain"
+            android:layout_width="@dimen/_140sdp"
+            android:layout_height="@dimen/_40sdp"
+            android:background="@drawable/btn_bg"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginBottom="@dimen/_40sdp"
+            android:text="@string/reload"
+            android:textAllCaps="true"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:visibility="visible"
+            android:textSize="@dimen/_14ssp"
+            android:fontFamily="@font/gotham_book_regular"
+            />
+    </LinearLayout>
+</RelativeLayout>

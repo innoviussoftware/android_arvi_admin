@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.arvi.Activity.NewApp.AddRegularizationRequestActivity
@@ -37,7 +38,7 @@ class RegularizationRequestFragment : Fragment(), View.OnClickListener {
 
     var rVwRequestRRLA: RecyclerView? = null
     var tvNoVisitorRRLA: TextView? = null
-//    var imgVwAddRequestRRLA: ImageView? = null
+    var imgVwAddRequestRRLA: ImageView? = null
     var imgVwCalendarRRF: ImageView? = null
 
     var appContext: Context? = null
@@ -66,9 +67,9 @@ class RegularizationRequestFragment : Fragment(), View.OnClickListener {
         snackbarView = view.findViewById(android.R.id.content)
         rVwRequestRRLA = view.findViewById(R.id.rVwRequestRRLA)
         tvNoVisitorRRLA = view.findViewById(R.id.tvNoVisitorRRLA)
-//        imgVwAddRequestRRLA = view.findViewById(R.id.imgVwCalendarRRF)
+        imgVwAddRequestRRLA = view.findViewById(R.id.imgVwCalendarRRF)
         imgVwCalendarRRF = view.findViewById(R.id.imgVwCalendarRRF)
-//        imgVwAddRequestRRLA!!.setOnClickListener(this)
+        imgVwAddRequestRRLA!!.setOnClickListener(this)
         imgVwCalendarRRF!!.setOnClickListener(this)
 
     /*
@@ -221,8 +222,9 @@ class RegularizationRequestFragment : Fragment(), View.OnClickListener {
         try {
             when (view1!!.id) {
                 R.id.imgVwAddRequestRRLA -> {
-                    var intent = Intent(context, AddRegularizationRequestActivity::class.java)
-                    startActivity(intent)
+                   /* var intent = Intent(context, AddRegularizationRequestActivity::class.java)
+                    startActivity(intent)*/
+                    Toast.makeText(context,"work in progress",Toast.LENGTH_SHORT).show()
                 }
                 R.id.imgVwCalendarRRF -> {
                     openCalendarView()

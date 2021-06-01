@@ -33,6 +33,18 @@ object  SnackBar {
     }
 
 
+    fun showNetSpeedError(context: Context, view: View, msg: String) {
+        val snackbar = Snackbar
+            .make(view, msg, Snackbar.LENGTH_LONG)
+        snackbar.setActionTextColor(Color.WHITE)
+        snackbar.setDuration(1000)
+        val snackbarView = snackbar.getView()
+        snackbarView.setBackgroundColor(context.resources.getColor(R.color.grey))
+        //        snackbarView.setBackgroundColor(Color.RED);
+        snackbar.show()
+    }
+
+
     fun showError(context: Context, view: View, msg: String) {
         val snackbar = Snackbar
             .make(view, msg, Snackbar.LENGTH_SHORT)
