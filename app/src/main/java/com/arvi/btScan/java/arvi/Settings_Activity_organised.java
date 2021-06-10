@@ -95,6 +95,7 @@ public class Settings_Activity_organised extends AppCompatActivity {
             setFaceRecognizeData();
 
 
+
             if (SessionManager.INSTANCE.getKioskModel(context).equals("TX99")) {
                 rlOxiSettingSOA.setVisibility(View.VISIBLE);
                 rlOxiLevel.setVisibility(View.VISIBLE);

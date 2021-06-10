@@ -29,11 +29,13 @@ class SetAllDataAttendanceAdapter(
         var tvEndTimeRAD = itemView.findViewById(R.id.tvEndTimeRAD) as TextView
         var tvTotalHrRAD = itemView.findViewById(R.id.tvTotalHrRAD) as TextView
         var llTimeRAD = itemView.findViewById(R.id.llTimeRAD) as LinearLayout
+
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val v = LayoutInflater.from(parent.context)
                 .inflate(R.layout.row_all_data_attendance, parent, false)
+
         return ViewHolder(v)
     }
 

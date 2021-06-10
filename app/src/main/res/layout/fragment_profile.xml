@@ -53,6 +53,7 @@
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
                 android:layout_marginEnd="@dimen/_10sdp"
+                android:visibility="gone"
                 android:background="@drawable/edit_pen" />
         </RelativeLayout>
 

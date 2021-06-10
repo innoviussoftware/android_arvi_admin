@@ -91,9 +91,9 @@ class SetAllDataAdapter(
             holder.tvVisitorADR.setPaintFlags(holder.tvPresentADR.getPaintFlags() or Paint.UNDERLINE_TEXT_FLAG)
             holder.tvHolidayADR.setPaintFlags(holder.tvPresentADR.getPaintFlags() or Paint.UNDERLINE_TEXT_FLAG)
 
-            if(alCalendarEvent.get(position).A!=null){
+            if(alCalendarEvent.get(position).ABSENT!=null){
                 holder.rlAbsentADR.visibility = View.VISIBLE
-                holder.tvAbsentADR.setText(alCalendarEvent.get(position).A!!.text+": "+alCalendarEvent.get(position).A!!.metric.toString())
+                holder.tvAbsentADR.setText(alCalendarEvent.get(position).ABSENT!!.text+": "+alCalendarEvent.get(position).ABSENT!!.metric.toString())
             }else{
                 holder.rlAbsentADR.visibility = View.GONE
             }
@@ -105,16 +105,16 @@ class SetAllDataAdapter(
                 holder.rlMissedADR.visibility = View.GONE
             }
 
-            if(alCalendarEvent.get(position).P!=null){
+            if(alCalendarEvent.get(position).PRESENT!=null){
                 holder.rlPresentADR.visibility = View.VISIBLE
-                holder.tvPresentADR.setText(alCalendarEvent.get(position).P!!.text+": "+alCalendarEvent.get(position).P!!.metric.toString())
+                holder.tvPresentADR.setText(alCalendarEvent.get(position).PRESENT!!.text+": "+alCalendarEvent.get(position).PRESENT!!.metric.toString())
             }else{
                 holder.rlPresentADR.visibility = View.GONE
             }
 
-            if(alCalendarEvent.get(position).L!=null){
+            if(alCalendarEvent.get(position).LATE_CHECKIN!=null){
                 holder.rlLeaveADR.visibility = View.VISIBLE
-                holder.tvLeaveADR.setText(alCalendarEvent.get(position).L!!.text+": "+alCalendarEvent.get(position).L!!.metric.toString())
+                holder.tvLeaveADR.setText(alCalendarEvent.get(position).LATE_CHECKIN!!.text+": "+alCalendarEvent.get(position).LATE_CHECKIN!!.metric.toString())
             }else{
                 holder.rlLeaveADR.visibility = View.GONE
             }
@@ -126,9 +126,9 @@ class SetAllDataAdapter(
                 holder.rlVisitorADR.visibility = View.GONE
             }
 
-            if(alCalendarEvent.get(position).HOL!=null){
+            if(alCalendarEvent.get(position).HOLIDAY!=null){
                 holder.rlHolidayADR.visibility = View.VISIBLE
-                holder.tvHolidayADR.setText(alCalendarEvent.get(position).HOL!!.text+": "+alCalendarEvent.get(position).HOL!!.metric.toString())
+                holder.tvHolidayADR.setText(alCalendarEvent.get(position).HOLIDAY!!.text+": "+alCalendarEvent.get(position).HOLIDAY!!.metric.toString())
             }else{
                 holder.rlHolidayADR.visibility = View.GONE
             }

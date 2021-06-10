@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
+import android.se.omapi.Session
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
@@ -17,6 +18,8 @@ import com.arvi.RetrofitApiCall.APIService
 import com.arvi.RetrofitApiCall.ApiDynamicUtils
 import com.arvi.RetrofitApiCall.ApiUtils
 import com.arvi.SessionManager.SessionManager
+import com.arvi.SessionManager.SessionManager.setDefaultFaceWidth
+import com.arvi.SessionManager.SessionManager.setDetectFaceWidth
 import com.arvi.Utils.*
 import com.arvi.Utils.AppConstants.BASE_Custom_URL
 import com.arvi.Utils.AppConstants.BASE_URL
@@ -112,6 +115,11 @@ class SettingActivity : AppCompatActivity(), View.OnClickListener {
             setDefaultScreenSpinnerData()
             setDefaultCameraFacingSpinnerData()
             setDefaultAppModeSpinnerData()
+            Config.defaultMinFaceWidth = SessionManager.getDefaultFaceWidth(context!!)
+            Config.detectMinFaceWidth = SessionManager.getDetectFaceWidth(context!!)
+
+            etDefaultMinWidthSA!!.setText(Config.defaultMinFaceWidth.toString())
+            etDetectMinFaceWidthSA!!.setText(Config.detectMinFaceWidth.toString())
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -205,8 +213,6 @@ class SettingActivity : AppCompatActivity(), View.OnClickListener {
 
             tvSaveSA = findViewById(R.id.tvSaveSA)
 
-            etDefaultMinWidthSA!!.setText(Config.defaultMinFaceWidth.toString())
-            etDetectMinFaceWidthSA!!.setText(Config.detectMinFaceWidth.toString())
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -428,6 +434,14 @@ class SettingActivity : AppCompatActivity(), View.OnClickListener {
                                     SessionManager.setSelectedAppMode(context!!, strSelectedAppModeOption!!)
                                     Config.defaultMinFaceWidth = etDefaultMinWidthSA!!.getText().toString().toFloat()
                                     Config.detectMinFaceWidth = etDetectMinFaceWidthSA!!.getText().toString().toFloat()
+                                        SessionManager.setDefaultFaceWidth(
+                                        context!!,
+                                        Config.defaultMinFaceWidth
+                                    )
+                                    SessionManager.setDetectFaceWidth(
+                                        context!!,
+                                        Config.detectMinFaceWidth
+                                    )
                                     if(oldUrl == strSelectedServerOption){
                                         //no need to login
                                         var builder = AlertDialog.Builder(context!!)

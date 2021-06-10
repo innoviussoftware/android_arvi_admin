@@ -191,6 +191,7 @@ class SelfiCheckInActivity : AppCompatActivity(), CompoundButton.OnCheckedChange
             SingleShotLocationProvider.requestSingleUpdate(
                 applicationContext
             ) { location ->
+                try {
                 Log.e(
                     "location:",
                     location.latitude.toString() + " , " + location.longitude
@@ -200,7 +201,7 @@ class SelfiCheckInActivity : AppCompatActivity(), CompoundButton.OnCheckedChange
                 val geocoder: Geocoder
                 val addresses: List<Address>
                 geocoder = Geocoder(applicationContext, Locale.getDefault())
-                try {
+
                     addresses = geocoder.getFromLocation(latitude, longitude, 1)
                     val address = addresses[0].getAddressLine(0)
                     Log.e("address:", address)
@@ -440,7 +441,7 @@ class SelfiCheckInActivity : AppCompatActivity(), CompoundButton.OnCheckedChange
                     ) {
                         try {
                             if (response.code() == 200) {
-                                h!!.removeCallbacks(r!!)
+                          //      h!!.removeCallbacks(r!!)
                                 Log.e("Upload", "success")
                                 if (response.body().data == null) {
                                     strUserId = ""
@@ -492,7 +493,7 @@ class SelfiCheckInActivity : AppCompatActivity(), CompoundButton.OnCheckedChange
                                     }
                                 }
                             } else if (response.code() == 401) {
-                                h!!.removeCallbacks(r!!)
+                             //   h!!.removeCallbacks(r!!)
                                 val intent = Intent(context, EnterLoginDetailActivity::class.java)
                                 intent.flags =
                                     Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
@@ -501,7 +502,7 @@ class SelfiCheckInActivity : AppCompatActivity(), CompoundButton.OnCheckedChange
                         } catch (e: java.lang.Exception) {
                             e.printStackTrace()
                             showToastError(e)
-                            h!!.removeCallbacks(r!!)
+                      //      h!!.removeCallbacks(r!!)
                         }
                     }
 
@@ -510,42 +511,46 @@ class SelfiCheckInActivity : AppCompatActivity(), CompoundButton.OnCheckedChange
                         call: Call<DetectFaceNewResponse>,
                         t: Throwable
                     ) {
-                        Log.e("Upload", "failure")
-                        if (strUserName != null) showToast(
-                            tempNormal,
-                            temperature,
-                            message!!,
-                            strUserName
-                        ) else {
-                            strUserName = "Unknown"
-                            strUserId = ""
-                            fullname = strUserName
-                            showToast(
+                        try {
+                            Log.e("Upload", "failure")
+                            if (strUserName != null) showToast(
                                 tempNormal,
                                 temperature,
                                 message!!,
                                 strUserName
-                            )
+                            ) else {
+                                strUserName = "Unknown"
+                                strUserId = ""
+                                fullname = strUserName
+                                showToast(
+                                    tempNormal,
+                                    temperature,
+                                    message!!,
+                                    strUserName
+                                )
+                            }
+                            Toast.makeText(
+                                this@SelfiCheckInActivity,
+                                "Not able to recognize face",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            Toast.makeText(context, "" + t.message, Toast.LENGTH_SHORT).show()
+                        } catch (e: Exception) {
+                            e.printStackTrace()
                         }
-                        Toast.makeText(
-                            this@SelfiCheckInActivity,
-                            "Not able to recognize face",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                        Toast.makeText(context, "" + t.message, Toast.LENGTH_SHORT).show()
 //                        h!!.removeCallbacks(r!!)
                         //       showToast(tempNormal, temperature, message, strUserName);
                     }
                 })
             } catch (e: java.lang.Exception) {
                 e.printStackTrace()
-                h!!.removeCallbacks(r!!)
+              //  h!!.removeCallbacks(r!!)
                 // showToast(tempNormal, temperature, message, strUserName);
             }
         } catch (e: java.lang.Exception) {
             e.printStackTrace()
             showToastError(e)
-            h!!.removeCallbacks(r!!)
+         //   h!!.removeCallbacks(r!!)
             // showToast(tempNormal, temperature, message, strUserName);
         }
     }
@@ -802,10 +807,11 @@ class SelfiCheckInActivity : AppCompatActivity(), CompoundButton.OnCheckedChange
     }
 
     val delayMillis: Long = 10000
-    var h: Handler? = null
-    var r: Runnable? = null
+//    var h: Handler? = null
+//    var r: Runnable? = null
 
     private fun setConnectionSpeedHandlerData() {
+/*
         try {
             h = Handler(Looper.getMainLooper())
             r = object : Runnable {
@@ -830,6 +836,7 @@ class SelfiCheckInActivity : AppCompatActivity(), CompoundButton.OnCheckedChange
         } catch (e: java.lang.Exception) {
             e.printStackTrace()
         }
+*/
     }
 
 

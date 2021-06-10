@@ -11,8 +11,12 @@ import com.arvi.R
 
 object  SnackBar {
     fun showInternetError(context: Context, view: View) {
+        var message =  R.string.check_internet
+      /*  if(android.net.TrafficStats.getMobileRxBytes().toString().equals("0")){
+            message = R.string.no_mobile_data
+        }*/
         val snackbar = Snackbar
-            .make(view, R.string.check_internet, Snackbar.LENGTH_LONG)
+            .make(view,message, Snackbar.LENGTH_LONG)
         snackbar.setActionTextColor(Color.WHITE)
         snackbar.setDuration(10000)
         val snackbarView = snackbar.getView()

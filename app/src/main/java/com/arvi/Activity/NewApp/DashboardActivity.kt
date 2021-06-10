@@ -2,8 +2,10 @@ package com.arvi.Activity.NewApp
 
 import android.content.Context
 import android.content.Intent
+import android.net.ConnectivityManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.ImageView
@@ -54,6 +56,8 @@ class DashboardActivity : AppCompatActivity(), View.OnClickListener {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_dashboard)
         try {
+//            Log.e("data:",android.net.TrafficStats.getMobileRxBytes().toString())
+
             setIds()
             setListeners()
             if (SessionManager.getSelectedAppMode(context!!).equals(context!!.resources.getString(R.string.admin_lite_mode))) {

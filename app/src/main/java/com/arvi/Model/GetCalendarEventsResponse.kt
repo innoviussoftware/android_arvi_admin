@@ -7,11 +7,11 @@ class GetCalendarEventsResponse : ArrayList<GetCalendarEventsResponseItem>()
 
 @Parcelize
 data class GetCalendarEventsResponseItem(
-    val A: GetCalendarEvent_A?=null,
-    val HOL: GetCalendarEvent_HOL?=null,
-    val L: GetCalendarEvent_L?=null,
+    val ABSENT: GetCalendarEvent_A?=null,
+    val HOLIDAY: GetCalendarEvent_HOL?=null,
+    val LATE_CHECKIN: GetCalendarEvent_L?=null,
     val MISS: GetCalendarEvent_MISS?=null,
-    val P: GetCalendarEvent_P?=null,
+    val PRESENT: GetCalendarEvent_P?=null,
     val VISITOR: GetCalendarEvent_VISITOR?=null,
     val date: String?=""
 ):Parcelable

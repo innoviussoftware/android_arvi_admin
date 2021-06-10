@@ -454,7 +454,7 @@ class ProfileFragment : Fragment(), View.OnClickListener {
 
             tvUpdateFP.visibility = View.VISIBLE
             rlProfilePicFP.visibility = View.VISIBLE
-            ivEditProfileFP.visibility = View.GONE
+          //  ivEditProfileFP.visibility = View.GONE
 
             KeyboardUtility.showKeyboard(mContext, etComapnyNameFP!!)
 /*
@@ -483,7 +483,7 @@ class ProfileFragment : Fragment(), View.OnClickListener {
 
             tvUpdateFP.visibility = View.GONE
             rlProfilePicFP.visibility = View.GONE
-            ivEditProfileFP.visibility = View.VISIBLE
+          //  ivEditProfileFP.visibility = View.VISIBLE
 
             val expireDate =
                 "<font color=#2977DD>" + mContext.resources.getString(R.string.view_list_ttl) + "</font>"

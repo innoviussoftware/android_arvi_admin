@@ -495,7 +495,7 @@ class EnterEmployeeDetailsActivity : AppCompatActivity(), View.OnClickListener {
             jsonObject.addProperty("employeeId", strEmpId)
             jsonObject.add("role",jsonObjectRole)
             jsonObject.add("group",jsonObjectGroup)
-
+            MyProgressDialog.showProgressDialog(context!!)
             Log.e("request:",jsonObject.toString())
             var mAPIService: APIService? = null
             mAPIService = ApiUtils.apiService
@@ -510,12 +510,14 @@ class EnterEmployeeDetailsActivity : AppCompatActivity(), View.OnClickListener {
                     call: Call<ResponseBody?>,
                     response: Response<ResponseBody?>
                 ) {
+                    MyProgressDialog.hideProgressDialog()
                     Log.e("Upload", "success")
                     Toast.makeText(context!!,"Employee detail update successfully",Toast.LENGTH_LONG).show()
                 }
 
                 override fun onFailure(call: Call<ResponseBody?>, t: Throwable) {
                     Log.e("Upload", "failure")
+                    MyProgressDialog.hideProgressDialog()
                 }
             })
 

@@ -59,7 +59,7 @@ class AddVisitorDetailActivity : AppCompatActivity(), View.OnClickListener {
     var tvRegisterAVDA: TextView? = null
     var tvDeleteAVDA: TextView? = null
     var spMeetAVDA: Spinner? = null
-    var imgVwSVisitorPhotoAVDA:ImageView?=null
+    var imgVwSVisitorPhotoAVDA: ImageView? = null
     private var alComapniesUserList: ArrayList<GetEmployeeListResult> = ArrayList()
 
 
@@ -312,7 +312,16 @@ class AddVisitorDetailActivity : AppCompatActivity(), View.OnClickListener {
                    )
                )*/
 
-            if(visitorDetails.visitor!=null){
+
+            if (visitorDetails.data.images != null && visitorDetails.data.images.size >0) {
+                imgVwSVisitorPhotoAVDA!!.visibility = View.VISIBLE
+                var path = visitorDetails.data.images.get(0).path
+                path = AppConstants.IMAGE_URL + path
+                Picasso.with(context)
+                    .load(path)
+                    .fit()
+                    .into(imgVwSVisitorPhotoAVDA)
+            } else if (visitorDetails.visitor != null) {
                 imgVwSVisitorPhotoAVDA!!.visibility = View.VISIBLE
                 var path = visitorDetails.visitor.picture
                 path = AppConstants.IMAGE_URL + path
@@ -320,7 +329,7 @@ class AddVisitorDetailActivity : AppCompatActivity(), View.OnClickListener {
                     .load(path)
                     .fit()
                     .into(imgVwSVisitorPhotoAVDA)
-            }else   {
+            } else {
                 imgVwSVisitorPhotoAVDA!!.visibility = View.GONE
             }
         } catch (e: Exception) {
@@ -432,7 +441,7 @@ class AddVisitorDetailActivity : AppCompatActivity(), View.OnClickListener {
                     finish()
                 }
                 R.id.tvSaveAVDA -> {
-                    KeyboardUtility.hideKeyboard(context!!,tvSaveAVDA)
+                    KeyboardUtility.hideKeyboard(context!!, tvSaveAVDA)
                     if (isValidation()) {
                         val sdf = SimpleDateFormat("yyyy-MM-dd hh:mm a")
 
@@ -466,7 +475,7 @@ class AddVisitorDetailActivity : AppCompatActivity(), View.OnClickListener {
                     openTimePickerDialog()
                 }
                 R.id.tvRegisterAVDA -> {
-                    KeyboardUtility.hideKeyboard(context!!,tvRegisterAVDA)
+                    KeyboardUtility.hideKeyboard(context!!, tvRegisterAVDA)
                     if (isValidation()) {
                         val sdf = SimpleDateFormat("yyyy-MM-dd hh:mm a")
 
@@ -868,12 +877,11 @@ class AddVisitorDetailActivity : AppCompatActivity(), View.OnClickListener {
             SnackBar.showError(context!!, snackbarView!!, "Please enter name.")
             etNameAVDA!!.requestFocus()
             return false
-        }else if(!isValidName(name)){
+        } else if (!isValidName(name)) {
             SnackBar.showError(context!!, snackbarView!!, "Please enter valid name.")
             etNameAVDA!!.requestFocus()
             return false
-        }
-        else if (meetToId == 0) {
+        } else if (meetToId == 0) {
             SnackBar.showError(context!!, snackbarView!!, "Please select meet person name.")
             aTvToMeetAVDA!!.requestFocus()
             return false
@@ -975,7 +983,7 @@ class AddVisitorDetailActivity : AppCompatActivity(), View.OnClickListener {
 
     private fun openAddPhotoPage(visitorEntryId: Int) {
 
-Log.e("VisitorEntryId:Detail: ",visitorEntryId.toString())
+        Log.e("VisitorEntryId:Detail: ", visitorEntryId.toString())
         var intent = Intent(context!!, AddVisitorPhotoActivity::class.java)
         intent.putExtra("visitorEntryId", visitorEntryId)
         intent.putExtra("visitorName", name)
