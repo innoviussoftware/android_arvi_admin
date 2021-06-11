@@ -4,6 +4,7 @@ import android.app.ActivityManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -15,6 +16,7 @@ import androidx.core.content.ContextCompat
 import com.arvi.R
 import com.arvi.SessionManager.SessionManager
 import com.arvi.Utils.AppConstants.BASE_URL
+import com.arvi.Utils.CacheUtils
 import com.crashlytics.android.Crashlytics
 import com.google.firebase.FirebaseApp
 import io.fabric.sdk.android.Fabric
@@ -217,6 +219,7 @@ class SplashActivity : AppCompatActivity() {
                     }
 
                     if(currenttime.equals("03 : 01 : 00")||currenttime.equals("06 : 01 : 00")||currenttime.equals("09 : 01 : 00")||
+                        currenttime.equals("16 : 45 : 00")||
                         currenttime.equals("12 : 01 : 00")|| currenttime.equals("15 : 01 : 00")||
                         currenttime.equals("18 : 01 : 00")|| currenttime.equals("21 : 01 : 00")||currenttime.equals("23 : 59 : 59")){
                         //todo:: clear app cache
@@ -224,6 +227,9 @@ class SplashActivity : AppCompatActivity() {
                             Log.e("restart", "cleared cache")
                             val dir = context!!.getCacheDir()
                             deleteDir(dir)
+                          /*  var size = CacheUtils.getTotalCacheSize(context!!)
+                           Log.e("size: ",size)*/
+
 
                         } catch (e: java.lang.Exception) {
                             e.printStackTrace()

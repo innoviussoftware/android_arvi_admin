@@ -203,12 +203,12 @@
         <item>@string/back_facing</item>
     </string-array>
 
-    <string name="this_month">This Month</string>
+    <string name="this_month">This Month</string>0
     <string name="previous_month">Previous Month</string>
     <string name="custom_date">Custom Date</string>
     <string name="leave_ttl">Leave</string>
     <string name="wfh_ttl">WFH</string>
-    <string name="regularization_ttl">Regularization</string>
+    <string name="regularization_ttl">Regularize</string>
     <string name="no_internet_connection">No Internet Connection</string>
     <string name="reload">Reload</string>
     <string name="no_mobile_data">You don\'t have mobile data</string>
