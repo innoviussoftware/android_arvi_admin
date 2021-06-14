@@ -26,7 +26,7 @@
             android:layout_centerVertical="true"
             android:layout_toEndOf="@+id/imgVwBackARRA"
             android:fontFamily="@font/gotham_bold"
-            android:text="Update Regularization Request"
+            android:text="Update Regularize Request"
             android:textColor="@color/black"
             android:textSize="@dimen/_14ssp" />
 

@@ -28,7 +28,7 @@
             android:layout_toEndOf="@+id/imgVwBackRRLA"
             android:visibility="gone"
             android:fontFamily="@font/gotham_bold"
-            android:text="Regularization Request"
+            android:text="Regularize Request"
             android:textColor="@color/black"
             android:textSize="@dimen/_14ssp" />
 
@@ -79,7 +79,7 @@
         android:layout_height="match_parent"
         android:fontFamily="@font/avenir_next_bold"
         android:gravity="center"
-        android:text="Regularization request list is empty"
+        android:text="Regularize request list is empty"
         android:textColor="@color/app_bg"
         android:textSize="@dimen/_14ssp"
         android:visibility="gone" />

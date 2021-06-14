@@ -34,7 +34,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_horizontal"
-                android:text="Regularization\nRequest"
+                android:text="Regularize\nRequest"
                 android:layout_marginTop="@dimen/_5sdp"
                 android:textColor="@color/black"
                 android:fontFamily="@font/gotham_bold"
