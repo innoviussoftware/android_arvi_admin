@@ -502,6 +502,25 @@ object SessionManager {
         return preferences.getString(AppPrefFields.PARAM_gpsOption, "Yes")!!
     }
 
+
+    fun setSelectedRestartAt(context: Context, option: String) {
+        try {
+            val preferences = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+
+            val editor = preferences.edit()
+            editor.putString(AppPrefFields.PARAM_restartAt, option)
+            editor.commit()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+    }
+
+    fun getSelectedRestartAt(context: Context?): String {
+        val preferences = context!!.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)
+        return preferences.getString(AppPrefFields.PARAM_restartAt, "12")!!
+    }
+
     fun setSelectedAppMode(context: Context, option: String) {
         try {
             val preferences = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE)

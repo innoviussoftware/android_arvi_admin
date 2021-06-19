@@ -60,6 +60,7 @@ class SelfiCheckInActivity : AppCompatActivity(), CompoundButton.OnCheckedChange
     SlaveListener,
     ConnectivityReceiver.ConnectivityReceiverListener {
 
+    private var needToRestart: Boolean = false
     var tvInstruction: TextView? = null
     var imgVwHomeSCA: ImageView? = null
     var dialog: Dialog? = null
@@ -109,6 +110,8 @@ class SelfiCheckInActivity : AppCompatActivity(), CompoundButton.OnCheckedChange
     var longitude = 0.0
 
     var snackbarView: View? = null
+    var h: Handler? = null
+    var r: Runnable? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -192,15 +195,15 @@ class SelfiCheckInActivity : AppCompatActivity(), CompoundButton.OnCheckedChange
                 applicationContext
             ) { location ->
                 try {
-                Log.e(
-                    "location:",
-                    location.latitude.toString() + " , " + location.longitude
-                )
-                var latitude = location.latitude.toDouble()
-                var longitude = location.longitude.toDouble()
-                val geocoder: Geocoder
-                val addresses: List<Address>
-                geocoder = Geocoder(applicationContext, Locale.getDefault())
+                    Log.e(
+                        "location:",
+                        location.latitude.toString() + " , " + location.longitude
+                    )
+                    var latitude = location.latitude.toDouble()
+                    var longitude = location.longitude.toDouble()
+                    val geocoder: Geocoder
+                    val addresses: List<Address>
+                    geocoder = Geocoder(applicationContext, Locale.getDefault())
 
                     addresses = geocoder.getFromLocation(latitude, longitude, 1)
                     val address = addresses[0].getAddressLine(0)
@@ -210,10 +213,124 @@ class SelfiCheckInActivity : AppCompatActivity(), CompoundButton.OnCheckedChange
                 }
             }
 //            setConnectionSpeedHandlerData()
+            setHandlerData()
         } catch (e: Exception) {
             e.printStackTrace()
         }
 
+    }
+
+    private fun setHandlerData() {
+
+        try {
+            h = Handler(Looper.getMainLooper())
+            r = object : Runnable {
+                override fun run() {
+
+                    //current time
+
+                    val c: Calendar = Calendar.getInstance()
+                    val hour: Int = c.get(Calendar.HOUR_OF_DAY)
+                    val min: Int = c.get(Calendar.MINUTE)
+                    val sec: Int = c.get(Calendar.SECOND)
+
+                    var showHour = "11"
+                    var showMinute = "59"
+                    var showSec = "00"
+
+
+
+                    if (hour < 10) {
+                        if (hour == 0) {
+                            showHour = "24"
+                        } else {
+                            showHour = "0" + hour.toString()
+                        }
+                    } else {
+                        showHour = hour.toString()
+                    }
+
+                    if (min < 10) {
+                        showMinute = "0" + min.toString()
+                    } else {
+                        showMinute = min.toString()
+                    }
+
+                    if (sec < 10) {
+                        showSec = "0" + sec.toString()
+                    } else {
+                        showSec = sec.toString()
+                    }
+
+
+                    val currenttime =
+                        "$showHour : $showMinute : $showSec"
+                    Log.e("timeS:", currenttime)
+
+                    var timeSelected = SessionManager.getSelectedRestartAt(context!!).toInt()
+                    Log.e("timeSelected:",timeSelected.toString())
+                    for (i in timeSelected..24 step timeSelected) {
+                         var hour = i
+                        var showHour = "00"
+                        if(hour<10){
+                            showHour = "0"+hour
+                        }else{
+                            showHour = hour.toString()
+                        }
+                        if(currenttime.equals(showHour+" : 00 : 00")){
+                            try {
+//                                Log.e("TimeD:",showHour+" : 00 : 00")
+//                                Log.e("restart", "cleared cache")
+                                if (facebitmap == null) {
+                                    val intent = Intent(context!!, SplashActivity::class.java)
+                                    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                                    finish()
+                                    startActivity(intent)
+                                } else {
+                                    needToRestart = true
+                                }
+
+                            } catch (e: java.lang.Exception) {
+                                e.printStackTrace()
+                            }
+                        }
+                    }
+
+                   /* if (currenttime.equals("03 : 01 : 00") || currenttime.equals("06 : 01 : 00") || currenttime.equals(
+                            "09 : 01 : 00"
+                        ) ||
+                        currenttime.equals("10 : 45 : 00") || currenttime.equals("10 : 50  : 00") ||
+                        currenttime.equals("12 : 01 : 00") || currenttime.equals("15 : 01 : 00") ||
+                        currenttime.equals("18 : 01 : 00") || currenttime.equals("21 : 01 : 00") || currenttime.equals(
+                            "23 : 59 : 59"
+                        )
+                    ) {
+                        //todo:: clear app cache
+                        try {
+                            Log.e("restart", "cleared cache")
+                            if (facebitmap == null) {
+                                val intent = Intent(context!!, SplashActivity::class.java)
+                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                                finish()
+                                startActivity(intent)
+                            } else {
+                                needToRestart = true
+                            }
+
+                        } catch (e: java.lang.Exception) {
+                            e.printStackTrace()
+                        }
+                    }
+*/
+
+                    h!!.postDelayed(this, delayMillis)
+                }
+            }
+
+            h!!.post(r as Runnable)
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+        }
     }
 
     private fun allPermissionsGranted(): Boolean {
@@ -441,7 +558,7 @@ class SelfiCheckInActivity : AppCompatActivity(), CompoundButton.OnCheckedChange
                     ) {
                         try {
                             if (response.code() == 200) {
-                          //      h!!.removeCallbacks(r!!)
+                                //      h!!.removeCallbacks(r!!)
                                 Log.e("Upload", "success")
                                 if (response.body().data == null) {
                                     strUserId = ""
@@ -493,7 +610,7 @@ class SelfiCheckInActivity : AppCompatActivity(), CompoundButton.OnCheckedChange
                                     }
                                 }
                             } else if (response.code() == 401) {
-                             //   h!!.removeCallbacks(r!!)
+                                //   h!!.removeCallbacks(r!!)
                                 val intent = Intent(context, EnterLoginDetailActivity::class.java)
                                 intent.flags =
                                     Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
@@ -502,7 +619,7 @@ class SelfiCheckInActivity : AppCompatActivity(), CompoundButton.OnCheckedChange
                         } catch (e: java.lang.Exception) {
                             e.printStackTrace()
                             showToastError(e)
-                      //      h!!.removeCallbacks(r!!)
+                            //      h!!.removeCallbacks(r!!)
                         }
                     }
 
@@ -544,13 +661,13 @@ class SelfiCheckInActivity : AppCompatActivity(), CompoundButton.OnCheckedChange
                 })
             } catch (e: java.lang.Exception) {
                 e.printStackTrace()
-              //  h!!.removeCallbacks(r!!)
+                //  h!!.removeCallbacks(r!!)
                 // showToast(tempNormal, temperature, message, strUserName);
             }
         } catch (e: java.lang.Exception) {
             e.printStackTrace()
             showToastError(e)
-         //   h!!.removeCallbacks(r!!)
+            //   h!!.removeCallbacks(r!!)
             // showToast(tempNormal, temperature, message, strUserName);
         }
     }
@@ -795,7 +912,15 @@ class SelfiCheckInActivity : AppCompatActivity(), CompoundButton.OnCheckedChange
                 }
             }
 
-            goBackScreen()
+            if (needToRestart) {
+                needToRestart = false
+                val intent = Intent(context!!, SplashActivity::class.java)
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                finish()
+                startActivity(intent)
+            } else {
+                goBackScreen()
+            }
         } catch (e: Resources.NotFoundException) {
             e.printStackTrace()
             showToastError(e)
@@ -806,7 +931,7 @@ class SelfiCheckInActivity : AppCompatActivity(), CompoundButton.OnCheckedChange
         Log.d(TAG, "processResponseFromSlave")
     }
 
-    val delayMillis: Long = 10000
+    val delayMillis: Long = 1000
 //    var h: Handler? = null
 //    var r: Runnable? = null
 

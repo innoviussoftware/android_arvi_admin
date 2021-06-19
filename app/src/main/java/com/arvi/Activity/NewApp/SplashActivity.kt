@@ -1,10 +1,8 @@
 package com.arvi.Activity.NewApp
 
-import android.app.ActivityManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -16,7 +14,6 @@ import androidx.core.content.ContextCompat
 import com.arvi.R
 import com.arvi.SessionManager.SessionManager
 import com.arvi.Utils.AppConstants.BASE_URL
-import com.arvi.Utils.CacheUtils
 import com.crashlytics.android.Crashlytics
 import com.google.firebase.FirebaseApp
 import io.fabric.sdk.android.Fabric
@@ -70,8 +67,10 @@ class SplashActivity : AppCompatActivity() {
             }
             //todo:: clear app cache
             try {
-                val dir = context!!.getCacheDir()
-                deleteDir(dir)
+                val dir = context!!.cacheDir
+                if (dir != null && dir.isDirectory) {
+                    deleteDir(dir)
+                }
             } catch (e: java.lang.Exception) {
                 e.printStackTrace()
             }
@@ -198,7 +197,7 @@ class SplashActivity : AppCompatActivity() {
 
                     val currenttime =
                         "$showHour : $showMinute : $showSec"
-                    Log.e("time:", currenttime)
+                  /*  Log.e("time:", currenttime)*/
                     if (currenttime.equals("12 : 00 : 00") || currenttime.equals("23 : 59 : 59")) {
                         Log.e("restart", "true")
                         //restarting the activity
@@ -218,23 +217,38 @@ class SplashActivity : AppCompatActivity() {
                         }
                     }
 
+/*
                     if(currenttime.equals("03 : 01 : 00")||currenttime.equals("06 : 01 : 00")||currenttime.equals("09 : 01 : 00")||
-                        currenttime.equals("16 : 45 : 00")||
+                        currenttime.equals("14 : 01 : 00")||
                         currenttime.equals("12 : 01 : 00")|| currenttime.equals("15 : 01 : 00")||
                         currenttime.equals("18 : 01 : 00")|| currenttime.equals("21 : 01 : 00")||currenttime.equals("23 : 59 : 59")){
                         //todo:: clear app cache
                         try {
-                            Log.e("restart", "cleared cache")
-                            val dir = context!!.getCacheDir()
-                            deleteDir(dir)
-                          /*  var size = CacheUtils.getTotalCacheSize(context!!)
-                           Log.e("size: ",size)*/
+                           // Log.e("restart", "cleared cache")
+                            try {
+                                val dir = context!!.cacheDir
+                                if (dir != null && dir.isDirectory) {
+                                    deleteDir(dir)
+                                }
+
+                            } catch (e: java.lang.Exception) {
+                            }
+
+                            val intent = Intent(context!!, SplashActivity::class.java)
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                            finish()
+                            startActivity(intent)
+                          */
+/*  var size = CacheUtils.getTotalCacheSize(context!!)
+                           Log.e("size: ",size)*//*
+
 
 
                         } catch (e: java.lang.Exception) {
                             e.printStackTrace()
                         }
                     }
+*/
 
 
                     h!!.postDelayed(this, delayMillis)

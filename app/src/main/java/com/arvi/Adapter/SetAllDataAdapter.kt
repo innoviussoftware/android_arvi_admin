@@ -56,10 +56,11 @@ class SetAllDataAdapter(
 
         override fun onClick(v: View?) {
             when (v!!.id){
-                R.id.rlAbsentADR->{listener!!.onClick(v,adapterPosition,"A" /*alCalendarEvent.get(adapterPosition).A!!.text!!*/)}
-                R.id.rlPresentADR->{listener!!.onClick(v,adapterPosition,"P" /*alCalendarEvent.get(adapterPosition).P!!.text!!*/)}
-                R.id.rlLeaveADR->{listener!!.onClick(v,adapterPosition,"L" /*alCalendarEvent.get(adapterPosition).L!!.text!!*/)}
-                R.id.rlHolidayADR->{listener!!.onClick(v,adapterPosition, "HOL"/*alCalendarEvent.get(adapterPosition).HOL!!.text!!*/)}
+
+                R.id.rlAbsentADR->{listener!!.onClick(v,adapterPosition,"ABSENT" /*alCalendarEvent.get(adapterPosition).A!!.text!!*/)}
+                R.id.rlPresentADR->{listener!!.onClick(v,adapterPosition,"PRESENT" /*alCalendarEvent.get(adapterPosition).P!!.text!!*/)}
+                R.id.rlLeaveADR->{listener!!.onClick(v,adapterPosition,"LATE_CHECKIN" /*alCalendarEvent.get(adapterPosition).L!!.text!!*/)}
+                R.id.rlHolidayADR->{listener!!.onClick(v,adapterPosition, "HOLIDAY"/*alCalendarEvent.get(adapterPosition).HOL!!.text!!*/)}
                 R.id.rlVisitorADR->{listener!!.onClick(v,adapterPosition, "VISITOR"/*alCalendarEvent.get(adapterPosition).VISITOR!!.text!!*/)}
                 R.id.rlMissedADR->{listener!!.onClick(v,adapterPosition, "MISS"/*alCalendarEvent.get(adapterPosition).MISS!!.text!!*/)}
             }

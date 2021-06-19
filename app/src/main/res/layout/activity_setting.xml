@@ -104,6 +104,7 @@
                     android:layout_height="1dp"
                     android:background="@color/view_bg" />
             </LinearLayout>
+
             <LinearLayout
                 android:id="@+id/llLaunchOptionSA"
                 android:layout_width="match_parent"
@@ -191,14 +192,16 @@
                         android:textSize="@dimen/_12ssp" />
                 </RadioGroup>
             </LinearLayout>
+
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
                 android:background="@color/view_bg" />
+
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_marginTop="@dimen/_10sdp"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_10sdp">
 
                 <TextView
                     android:id="@+id/tvDefaultMinWidthSA"
@@ -206,8 +209,8 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentStart="true"
                     android:layout_centerVertical="true"
-                    android:fontFamily="@font/gotham_book_regular"
                     android:layout_toStartOf="@+id/etDefaultMinWidthSA"
+                    android:fontFamily="@font/gotham_book_regular"
                     android:text="Min Face Width % (Default Screen)"
                     android:textColor="@color/black"
                     android:textSize="@dimen/_12ssp" />
@@ -217,20 +220,20 @@
                     android:layout_width="@dimen/_100sdp"
                     android:layout_height="@dimen/_30sdp"
                     android:layout_alignParentEnd="true"
-                    android:gravity="center"
-                    android:inputType="numberDecimal"
-                    android:textColor="@color/black"
-                    android:maxLines="1"
-                    android:singleLine="true"
                     android:layout_centerVertical="true"
                     android:fontFamily="@font/gotham_book_regular"
+                    android:gravity="center"
+                    android:inputType="numberDecimal"
+                    android:maxLines="1"
+                    android:singleLine="true"
+                    android:textColor="@color/black"
                     android:textSize="@dimen/_12ssp" />
             </RelativeLayout>
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_marginTop="@dimen/_10sdp"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_10sdp">
 
                 <TextView
                     android:id="@+id/tvDetectMinFaceWidthSA"
@@ -239,25 +242,71 @@
                     android:layout_alignParentStart="true"
                     android:layout_centerVertical="true"
                     android:layout_toStartOf="@+id/etDetectMinFaceWidthSA"
+                    android:fontFamily="@font/gotham_book_regular"
                     android:text="Min Face Width % (Detect Screen)"
                     android:textColor="@color/black"
-                    android:fontFamily="@font/gotham_book_regular"
                     android:textSize="@dimen/_12ssp" />
 
                 <EditText
                     android:id="@+id/etDetectMinFaceWidthSA"
                     android:layout_width="@dimen/_100sdp"
                     android:layout_height="wrap_content"
-                    android:maxLines="1"
-                    android:singleLine="true"
                     android:layout_alignParentEnd="true"
-                    android:inputType="numberDecimal"
-                    android:textColor="@color/black"
-                    android:gravity="center"
                     android:layout_centerVertical="true"
                     android:fontFamily="@font/gotham_book_regular"
+                    android:gravity="center"
+                    android:inputType="numberDecimal"
+                    android:maxLines="1"
+                    android:singleLine="true"
+                    android:textColor="@color/black"
                     android:textSize="@dimen/_12ssp" />
 
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_10sdp">
+
+                <TextView
+                    android:id="@+id/tvRestartAppSA"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_30sdp"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:layout_toStartOf="@+id/etRestartAppSA"
+                    android:fontFamily="@font/gotham_book_regular"
+                    android:text="Restart App at every "
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_12ssp" />
+
+                <EditText
+                    android:id="@+id/etRestartAppSA"
+                    android:layout_width="@dimen/_100sdp"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_toStartOf="@+id/tvRestartHrAppSA"
+                    android:fontFamily="@font/gotham_book_regular"
+                    android:gravity="center"
+                    android:text="12"
+                    android:inputType="phone"
+                    android:maxLength="2"
+                    android:maxLines="1"
+                    android:singleLine="true"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_12ssp" />
+
+                <TextView
+                    android:id="@+id/tvRestartHrAppSA"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/_30sdp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerVertical="true"
+                    android:gravity="center"
+                    android:fontFamily="@font/gotham_book_regular"
+                    android:text="Hours"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_12ssp" />
             </RelativeLayout>
 
 

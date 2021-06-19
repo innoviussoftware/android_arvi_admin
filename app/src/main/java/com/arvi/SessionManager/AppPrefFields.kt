@@ -2,6 +2,7 @@ package com.arvi.SessionManager
 
 object AppPrefFields {
 
+    val PARAM_restartAt: String? ="restart_at"
     val PARAM_appMode: String? = "app_mode"
     val PARAM_serverURL: String? = "server_url"
     val PARAM_defaultLaunchScreen: String? = "dashboard"

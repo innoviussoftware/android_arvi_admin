@@ -50,8 +50,8 @@ class SettingActivity : AppCompatActivity(), View.OnClickListener {
     var llGpsSA: LinearLayout? = null
     var llLaunchOptionSA: LinearLayout? = null
 
-    var etDefaultMinWidthSA:EditText?=null
-    var etDetectMinFaceWidthSA:EditText?=null
+    var etDefaultMinWidthSA: EditText? = null
+    var etDetectMinFaceWidthSA: EditText? = null
 
     var tvSaveSA: TextView? = null
 
@@ -63,9 +63,10 @@ class SettingActivity : AppCompatActivity(), View.OnClickListener {
     var strSelectedGPSOption: String = ""
     var strSelectedAppModeOption: String = ""
 
+    var etRestartAppSA: EditText? = null
+    var strRestartAt :String = "12"
 
-
-    var oldUrl:String = ""
+    var oldUrl: String = ""
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_setting)
@@ -73,17 +74,23 @@ class SettingActivity : AppCompatActivity(), View.OnClickListener {
             setIDs()
             setListeners()
             oldUrl = SessionManager.getSelectedServerURL(context!!)
-            
+
             strSelectedAppModeOption = SessionManager.getSelectedAppMode(context!!)!!
-            if (SessionManager.getSelectedAppMode(context!!).equals(context!!.resources.getString(R.string.admin_lite_mode))) {
+            if (SessionManager.getSelectedAppMode(context!!)
+                    .equals(context!!.resources.getString(R.string.admin_lite_mode))
+            ) {
                 /*for admin lite mode = selfi*/
                 llGpsSA!!.visibility = View.VISIBLE
                 llLaunchOptionSA!!.visibility = View.VISIBLE
-            } else if (SessionManager.getSelectedAppMode(context!!).equals(context!!.resources.getString(R.string.full_mode))) {
+            } else if (SessionManager.getSelectedAppMode(context!!)
+                    .equals(context!!.resources.getString(R.string.full_mode))
+            ) {
                 /*for all feature mode*/
                 llGpsSA!!.visibility = View.VISIBLE
                 llLaunchOptionSA!!.visibility = View.VISIBLE
-            } else if (SessionManager.getSelectedAppMode(context!!).equals(context!!.resources.getString(R.string.visitor_lite_mode))) {
+            } else if (SessionManager.getSelectedAppMode(context!!)
+                    .equals(context!!.resources.getString(R.string.visitor_lite_mode))
+            ) {
                 /*for visitor lite mode*/
                 llGpsSA!!.visibility = View.GONE
                 llLaunchOptionSA!!.visibility = View.VISIBLE
@@ -131,14 +138,14 @@ class SettingActivity : AppCompatActivity(), View.OnClickListener {
             screenOption = resources.getStringArray(R.array.default_app_mode)
 
             val adapter =
-                    ArrayAdapter(context!!, android.R.layout.simple_spinner_dropdown_item, screenOption)
+                ArrayAdapter(context!!, android.R.layout.simple_spinner_dropdown_item, screenOption)
             spAppModeSA!!.adapter = adapter
 
             spAppModeSA!!.onItemSelectedListener = object :
-                    AdapterView.OnItemSelectedListener {
+                AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(
-                        parent: AdapterView<*>,
-                        view: View, position: Int, id: Long
+                    parent: AdapterView<*>,
+                    view: View, position: Int, id: Long
                 ) {
                     try {
                         strSelectedAppModeOption = screenOption[position]
@@ -211,6 +218,7 @@ class SettingActivity : AppCompatActivity(), View.OnClickListener {
             etDefaultMinWidthSA = findViewById(R.id.etDefaultMinWidthSA)
             etDetectMinFaceWidthSA = findViewById(R.id.etDetectMinFaceWidthSA)
 
+            etRestartAppSA = findViewById(R.id.etRestartAppSA)
             tvSaveSA = findViewById(R.id.tvSaveSA)
 
         } catch (e: Exception) {
@@ -222,14 +230,14 @@ class SettingActivity : AppCompatActivity(), View.OnClickListener {
         try {
             val facingOption = resources.getStringArray(R.array.camera_facing_option)
             val adapter =
-                    ArrayAdapter(context!!, android.R.layout.simple_spinner_dropdown_item, facingOption)
+                ArrayAdapter(context!!, android.R.layout.simple_spinner_dropdown_item, facingOption)
             spCameraFacingSA!!.adapter = adapter
 
             spCameraFacingSA!!.onItemSelectedListener = object :
-                    AdapterView.OnItemSelectedListener {
+                AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(
-                        parent: AdapterView<*>,
-                        view: View, position: Int, id: Long
+                    parent: AdapterView<*>,
+                    view: View, position: Int, id: Long
                 ) {
 
                     try {
@@ -262,26 +270,42 @@ class SettingActivity : AppCompatActivity(), View.OnClickListener {
         try {
 
 
-            if (SessionManager.getSelectedAppMode(context!!).equals(context!!.resources.getString(R.string.admin_lite_mode)) || strSelectedAppModeOption.equals(context!!.resources.getString(R.string.admin_lite_mode))) {
+            if (SessionManager.getSelectedAppMode(context!!)
+                    .equals(context!!.resources.getString(R.string.admin_lite_mode)) || strSelectedAppModeOption.equals(
+                    context!!.resources.getString(R.string.admin_lite_mode)
+                )
+            ) {
                 /*for admin lite mode = selfi*/
                 screenOption = resources.getStringArray(R.array.default_screen_admin_lite)
-            } else if (SessionManager.getSelectedAppMode(context!!).equals(context!!.resources.getString(R.string.full_mode)) || strSelectedAppModeOption.equals(context!!.resources.getString(R.string.full_mode))) {
+            } else if (SessionManager.getSelectedAppMode(context!!)
+                    .equals(context!!.resources.getString(R.string.full_mode)) || strSelectedAppModeOption.equals(
+                    context!!.resources.getString(R.string.full_mode)
+                )
+            ) {
                 /*for all feature mode*/
                 screenOption = resources.getStringArray(R.array.default_screen_option)
-            } else if (SessionManager.getSelectedAppMode(context!!).equals(context!!.resources.getString(R.string.visitor_lite_mode)) || strSelectedAppModeOption.equals(context!!.resources.getString(R.string.visitor_lite_mode))) {
+            } else if (SessionManager.getSelectedAppMode(context!!)
+                    .equals(context!!.resources.getString(R.string.visitor_lite_mode)) || strSelectedAppModeOption.equals(
+                    context!!.resources.getString(R.string.visitor_lite_mode)
+                )
+            ) {
                 /*for visitor lite mode*/
                 screenOption = resources.getStringArray(R.array.default_screen_visitor_mode)
             }
 
             val adapter =
-                    ArrayAdapter(context!!, android.R.layout.simple_spinner_dropdown_item, screenOption!!)
+                ArrayAdapter(
+                    context!!,
+                    android.R.layout.simple_spinner_dropdown_item,
+                    screenOption!!
+                )
             spScreensSA!!.adapter = adapter
 
             spScreensSA!!.onItemSelectedListener = object :
-                    AdapterView.OnItemSelectedListener {
+                AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(
-                        parent: AdapterView<*>,
-                        view: View?, position: Int, id: Long
+                    parent: AdapterView<*>,
+                    view: View?, position: Int, id: Long
                 ) {
 
                     try {
@@ -359,28 +383,46 @@ class SettingActivity : AppCompatActivity(), View.OnClickListener {
                         strSelectedServerOption = etServerUrlSA!!.text.toString()
                         if (strSelectedServerOption.isNullOrEmpty()) {
                             SnackBar.showValidationError(
-                                    context!!,
-                                    snackbarView!!,
-                                    "please enter your server url"
+                                context!!,
+                                snackbarView!!,
+                                "please enter your server url"
                             )
                             etServerUrlSA!!.requestFocus()
-                        } else if(etDefaultMinWidthSA!!.text.toString().isNullOrEmpty())
-                        {
-                            SnackBar.showValidationError(context!!,snackbarView!!,"Please enter default minimum face width")
+                        } else if (etDefaultMinWidthSA!!.text.toString().isNullOrEmpty()) {
+                            SnackBar.showValidationError(
+                                context!!,
+                                snackbarView!!,
+                                "Please enter default minimum face width"
+                            )
                             etDefaultMinWidthSA!!.requestFocus()
-                        }else if(etDetectMinFaceWidthSA!!.text.toString().isNullOrEmpty())
-                        {
-                            SnackBar.showValidationError(context!!,snackbarView!!,"Please enter default minimum face width")
+                        } else if (etDetectMinFaceWidthSA!!.text.toString().isNullOrEmpty()) {
+                            SnackBar.showValidationError(
+                                context!!,
+                                snackbarView!!,
+                                "Please enter default minimum face width"
+                            )
                             etDetectMinFaceWidthSA!!.requestFocus()
-                        }
-                        else {
+                        }else if(etRestartAppSA!!.text.toString().isNullOrEmpty()){
+                            SnackBar.showValidationError(
+                                context!!,
+                                snackbarView!!,
+                                "Please enter default restart time"
+                            )
+                            etRestartAppSA!!.requestFocus()
+                        }else if(etRestartAppSA!!.text.toString().toInt()>25){
+                            SnackBar.showValidationError(
+                                context!!,
+                                snackbarView!!,
+                                "Enter restart time between 1 to 24"
+                            )
+                            etRestartAppSA!!.requestFocus()
+                        } else {
                             BASE_Custom_URL = strSelectedServerOption!!
                             if (ConnectivityDetector.isConnectingToInternet(context!!)) {
                                 callCheckBaseURLAPI()
                             } else {
                                 SnackBar.showInternetError(context!!, snackbarView!!)
                             }
-
                         }
                     } catch (e: Exception) {
                         e.printStackTrace()
@@ -398,102 +440,113 @@ class SettingActivity : AppCompatActivity(), View.OnClickListener {
             mAPIService = ApiDynamicUtils.apiService
             MyProgressDialog.showProgressDialog(context!!)
             mAPIService!!.checkBaseURL()
-                    .enqueue(object : Callback<ResponseBody> {
+                .enqueue(object : Callback<ResponseBody> {
 
-                        override fun onResponse(
-                                call: Call<ResponseBody>,
-                                response: Response<ResponseBody>
-                        ) {
-                            MyProgressDialog.hideProgressDialog()
-                            if (response.code() == 200) {
-                                try {
-                                    BASE_URL = strSelectedServerOption!!
-                                    val selectedOption: Int = rgGPSTrackSA!!.checkedRadioButtonId
-                                    var radioButton = findViewById(selectedOption) as RadioButton
-                                    var selectedGpsOption = radioButton.text
-                                    strSelectedGPSOption = selectedGpsOption.toString()
-                                    Log.e("selectedGpsOption = ", strSelectedGPSOption)
-                                    Log.e("selectedScreen = ", strSelectedScreenOption)
-                                    Log.e("selectedFacing = ", strSelectedCameraFacing)
-                                    Log.e("selectedServer = ", strSelectedServerOption)
-                                    Log.e("selectedMode = ", strSelectedAppModeOption)
-                                    //todo:: set data in session
-                                    SessionManager.setSelectedServerURL(
-                                            context!!,
-                                            strSelectedServerOption!!
-                                    )
-                                    SessionManager.setSelectedDefaultScreen(
-                                            context!!,
-                                            strSelectedScreenOption!!
-                                    )
-                                    SessionManager.setSelectedCameraFacing(
-                                            context!!,
-                                            strSelectedCameraFacing!!
-                                    )
-                                    SessionManager.setSelectedGPSOption(context!!, strSelectedGPSOption!!)
-                                    SessionManager.setSelectedAppMode(context!!, strSelectedAppModeOption!!)
-                                    Config.defaultMinFaceWidth = etDefaultMinWidthSA!!.getText().toString().toFloat()
-                                    Config.detectMinFaceWidth = etDetectMinFaceWidthSA!!.getText().toString().toFloat()
-                                        SessionManager.setDefaultFaceWidth(
-                                        context!!,
-                                        Config.defaultMinFaceWidth
-                                    )
-                                    SessionManager.setDetectFaceWidth(
-                                        context!!,
-                                        Config.detectMinFaceWidth
-                                    )
-                                    if(oldUrl == strSelectedServerOption){
-                                        //no need to login
-                                        var builder = AlertDialog.Builder(context!!)
-                                        builder.setCancelable(false)
-                                        builder.setTitle("Settings")
-                                        builder.setMessage("Setting saved successfully")
-                                        builder.setPositiveButton(
-                                                "Ok",
-                                                DialogInterface.OnClickListener { dialog, which ->
-                                                    dialog.dismiss()
-                                                    var intent = Intent(context, DashboardActivity::class.java)
-                                                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
-                                                    startActivity(intent)
-                                                    finish()
-                                                })
-                                        var dialog = builder.create()
-                                        dialog.show()
-
-                                    }else{
-                                        //need to login
-                                        openLoginDialog()
-                                    }
-                                } catch (e: Exception) {
-                                    e.printStackTrace()
-                                }
-                            } else {
-                                SnackBar.showError(
-                                        context!!,
-                                        snackbarView!!,
-                                        "Please enter valid URL"
-                                )
-                            }
-                        }
-
-                        override fun onFailure(
-                                call: Call<ResponseBody>,
-                                t: Throwable
-                        ) {
-                            MyProgressDialog.hideProgressDialog()
-                            SnackBar.showError(
+                    override fun onResponse(
+                        call: Call<ResponseBody>,
+                        response: Response<ResponseBody>
+                    ) {
+                        MyProgressDialog.hideProgressDialog()
+                        if (response.code() == 200) {
+                            try {
+                                BASE_URL = strSelectedServerOption!!
+                                val selectedOption: Int = rgGPSTrackSA!!.checkedRadioButtonId
+                                var radioButton = findViewById(selectedOption) as RadioButton
+                                var selectedGpsOption = radioButton.text
+                                strSelectedGPSOption = selectedGpsOption.toString()
+                                Log.e("selectedGpsOption = ", strSelectedGPSOption)
+                                Log.e("selectedScreen = ", strSelectedScreenOption)
+                                Log.e("selectedFacing = ", strSelectedCameraFacing)
+                                Log.e("selectedServer = ", strSelectedServerOption)
+                                Log.e("selectedMode = ", strSelectedAppModeOption)
+                                //todo:: set data in session
+                                SessionManager.setSelectedServerURL(
                                     context!!,
-                                    snackbarView!!,
-                                    "Please enter valid URL"
+                                    strSelectedServerOption!!
+                                )
+                                SessionManager.setSelectedDefaultScreen(
+                                    context!!,
+                                    strSelectedScreenOption!!
+                                )
+                                SessionManager.setSelectedCameraFacing(
+                                    context!!,
+                                    strSelectedCameraFacing!!
+                                )
+                                SessionManager.setSelectedGPSOption(
+                                    context!!,
+                                    strSelectedGPSOption!!
+                                )
+                                SessionManager.setSelectedAppMode(
+                                    context!!,
+                                    strSelectedAppModeOption!!
+                                )
+                                SessionManager.setSelectedRestartAt(context!!,etRestartAppSA!!.text.toString())
+                                Config.defaultMinFaceWidth =
+                                    etDefaultMinWidthSA!!.getText().toString().toFloat()
+                                Config.detectMinFaceWidth =
+                                    etDetectMinFaceWidthSA!!.getText().toString().toFloat()
+                                SessionManager.setDefaultFaceWidth(
+                                    context!!,
+                                    Config.defaultMinFaceWidth
+                                )
+                                SessionManager.setDetectFaceWidth(
+                                    context!!,
+                                    Config.detectMinFaceWidth
+                                )
+                                if (oldUrl == strSelectedServerOption) {
+                                    //no need to login
+                                    var builder = AlertDialog.Builder(context!!)
+                                    builder.setCancelable(false)
+                                    builder.setTitle("Settings")
+                                    builder.setMessage("Setting saved successfully")
+                                    builder.setPositiveButton(
+                                        "Ok",
+                                        DialogInterface.OnClickListener { dialog, which ->
+                                            dialog.dismiss()
+                                            var intent =
+                                                Intent(context, DashboardActivity::class.java)
+                                            intent.flags =
+                                                Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+                                            startActivity(intent)
+                                            finish()
+                                        })
+                                    var dialog = builder.create()
+                                    dialog.show()
+
+                                } else {
+                                    //need to login
+                                    openLoginDialog()
+                                }
+                            } catch (e: Exception) {
+                                e.printStackTrace()
+                            }
+                        } else {
+                            SnackBar.showError(
+                                context!!,
+                                snackbarView!!,
+                                "Please enter valid URL"
                             )
                         }
-                    })
+                    }
+
+                    override fun onFailure(
+                        call: Call<ResponseBody>,
+                        t: Throwable
+                    ) {
+                        MyProgressDialog.hideProgressDialog()
+                        SnackBar.showError(
+                            context!!,
+                            snackbarView!!,
+                            "Please enter valid URL"
+                        )
+                    }
+                })
         } catch (e: Exception) {
             e.printStackTrace()
             SnackBar.showError(
-                    context!!,
-                    snackbarView!!,
-                    "Please enter valid URL"
+                context!!,
+                snackbarView!!,
+                "Please enter valid URL"
             )
         }
 
@@ -510,20 +563,21 @@ class SettingActivity : AppCompatActivity(), View.OnClickListener {
             var rlLoginDL = dialog.findViewById(R.id.rlLoginDL) as RelativeLayout
             rlLoginDL.setOnClickListener {
                 try {
-                    var  emailID = etEmpIdDL!!.text.toString()
+                    var emailID = etEmpIdDL!!.text.toString()
                     var password = etPasswordDL!!.text.toString()
                     if (emailID.isNullOrEmpty()) {
-                        Toast.makeText(context,"Please enter Email Id.",Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Please enter Email Id.", Toast.LENGTH_SHORT).show()
                         etEmpIdDL!!.requestFocus()
                     } else if (!GlobalMethods.isEmailValid(emailID!!)) {
-                        Toast.makeText(context,"Please enter valid Email Id.",Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Please enter valid Email Id.", Toast.LENGTH_SHORT)
+                            .show()
                         etEmpIdDL!!.requestFocus()
                     } else if (password.isNullOrEmpty()) {
-                        Toast.makeText(context,"Please enter password.",Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Please enter password.", Toast.LENGTH_SHORT).show()
                         etPasswordDL!!.requestFocus()
-                    }else{
+                    } else {
                         dialog.dismiss()
-                        callNewLoginApi(emailID,password)
+                        callNewLoginApi(emailID, password)
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()
@@ -532,16 +586,15 @@ class SettingActivity : AppCompatActivity(), View.OnClickListener {
 
             dialog.show()
             dialog!!.window!!.setLayout(
-                    ViewGroup.LayoutParams.MATCH_PARENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
             )
-        }catch (e:Exception)
-        {
+        } catch (e: Exception) {
             e.printStackTrace()
         }
     }
-    
-        private fun callNewLoginApi(emailID: String, password: String) {
+
+    private fun callNewLoginApi(emailID: String, password: String) {
         try {
             var jsonObject = JsonObject()
 
@@ -557,40 +610,49 @@ class SettingActivity : AppCompatActivity(), View.OnClickListener {
             MyProgressDialog.showProgressDialog(context!!)
             mAPIService!!.setUserLogin("application/json", jsonObject)
 
-                    .enqueue(object : Callback<UserLoginResponse> {
+                .enqueue(object : Callback<UserLoginResponse> {
 
-                        override fun onResponse(
-                                call: Call<UserLoginResponse>,
-                                response: Response<UserLoginResponse>
-                        ) {
-                            MyProgressDialog.hideProgressDialog()
-                            try {
-                                if (response.code() == 200) {
-                                    SessionManager.setIsUserLoggedin(context!!, true)
-                                    SessionManager.setToken(context!!, response.body().accessToken)
-                                    SessionManager.setKioskID(context!!, response.body().user.id.toString())
-                                    var intent = Intent(context, DashboardActivity::class.java)
-                                    intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
-                                    startActivity(intent)
-                                    finish()
-                                } else if (response.code() == 401) {
-                                    Toast.makeText(context!!,"User not found",Toast.LENGTH_SHORT).show()
-                                } else {
-                                    Toast.makeText(context!!,"Something went wrong",Toast.LENGTH_SHORT).show()
-                                }
-                            } catch (e: Exception) {
-                                e.printStackTrace()
-
+                    override fun onResponse(
+                        call: Call<UserLoginResponse>,
+                        response: Response<UserLoginResponse>
+                    ) {
+                        MyProgressDialog.hideProgressDialog()
+                        try {
+                            if (response.code() == 200) {
+                                SessionManager.setIsUserLoggedin(context!!, true)
+                                SessionManager.setToken(context!!, response.body().accessToken)
+                                SessionManager.setKioskID(
+                                    context!!,
+                                    response.body().user.id.toString()
+                                )
+                                var intent = Intent(context, DashboardActivity::class.java)
+                                intent.flags =
+                                    Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+                                startActivity(intent)
+                                finish()
+                            } else if (response.code() == 401) {
+                                Toast.makeText(context!!, "User not found", Toast.LENGTH_SHORT)
+                                    .show()
+                            } else {
+                                Toast.makeText(
+                                    context!!,
+                                    "Something went wrong",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
-                        }
+                        } catch (e: Exception) {
+                            e.printStackTrace()
 
-                        override fun onFailure(
-                                call: Call<UserLoginResponse>,
-                                t: Throwable
-                        ) {
-                            MyProgressDialog.hideProgressDialog()
                         }
-                    })
+                    }
+
+                    override fun onFailure(
+                        call: Call<UserLoginResponse>,
+                        t: Throwable
+                    ) {
+                        MyProgressDialog.hideProgressDialog()
+                    }
+                })
 
         } catch (e: Exception) {
             e.printStackTrace()
