@@ -14,12 +14,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.arvi.Adapter.SetRegularizationDataAdapter
 import com.arvi.Adapter.SetWfHDataAdapter
 import com.arvi.R
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class WfHRequestListActivity : AppCompatActivity(), View.OnClickListener {
     var imgVwBackWfhRA: ImageView?=null
     var rVwRequestWfhRA: RecyclerView?=null
     var tvNoVisitorWfhRA: TextView?=null
-    var imgVwAddRequestWfhRA: ImageView?=null
+    var imgVwAddRequestWfhRA: FloatingActionButton?=null
 
     var context: Context?=null
     var snackbarView: View?=null

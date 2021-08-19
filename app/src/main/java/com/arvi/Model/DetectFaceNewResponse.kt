@@ -13,9 +13,11 @@ data class DetectFaceNewData(
     val isSuperAdmin: Int,
     val mobile: String,
     val name: String,
-    val password: Any,
     val permissions: Any,
     val picture: String,
-    val salt: Any,
-    val updatedAt: String
+    val roleId: Int,
+    val status: Int,
+    val token: Any,
+    val updatedAt: String,
+    val userId: String
 )

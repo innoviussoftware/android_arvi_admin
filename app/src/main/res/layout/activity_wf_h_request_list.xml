@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#e6e6e6"
-    tools:context=".Activity.NewApp.RegularizationRequestListActivity">
+    tools:context=".Activity.NewApp.WfHRequestListActivity">
 
     <RelativeLayout
         android:id="@+id/rlHeaderWfhRA"
@@ -57,7 +57,7 @@
         />
 
 
-    <ImageView
+  <!--  <ImageView
         android:id="@+id/imgVwAddRequestWfhRA"
         android:layout_width="@dimen/_50sdp"
         android:layout_height="@dimen/_50sdp"
@@ -66,5 +66,16 @@
         android:layout_alignParentEnd="true"
         android:layout_margin="@dimen/_10sdp"
         android:elevation="@dimen/_2sdp"
-        />
+        />-->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/imgVwAddRequestWfhRA"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/_10sdp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        style="@style/MyFloatingBtnTheme"
+        android:visibility="visible" />
+
 </RelativeLayout>

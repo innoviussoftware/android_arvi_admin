@@ -25,6 +25,7 @@ import com.arvi.SessionManager.SessionManager
 import com.arvi.Utils.AppConstants
 import com.arvi.Utils.ConnectivityDetector
 import com.arvi.Utils.SnackBar
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -37,7 +38,7 @@ class LeaveListFragment : Fragment(), View.OnClickListener {
     var imgVwBackLRLA: ImageView? = null
     var rVwRequestLRLA: RecyclerView? = null
     var tvNoLeaveLRLA: TextView? = null
-    var imgVwAddRequestLRLA: ImageView? = null
+    var imgVwAddRequestLRLA: FloatingActionButton? = null
     var imgVwCalendarLLF: ImageView? = null
 
     var appContext: Context? = null

@@ -150,7 +150,8 @@ class EnterLoginDetailActivity : AppCompatActivity(), View.OnClickListener {
 
                                 //MM Changed: 06/04/2021 After Login Flow changed id to emailID
                                 SessionManager.setKioskID(context!!, response.body().user.id.toString())
-                                var intent = Intent(context, DashboardActivity::class.java)
+//                                var intent = Intent(context, DashboardActivity::class.java)
+                                var intent = Intent(context, SelfiCheckInActivity::class.java)
                                 intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TASK or Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
                                 startActivity(intent)
                             } else if (response.code() == 401) {

@@ -1,5 +1,7 @@
 package com.arvi.Activity.NewApp
 
+import android.Manifest
+import android.app.AlertDialog
 import android.app.Dialog
 import android.content.*
 import android.content.pm.PackageManager
@@ -8,7 +10,10 @@ import android.graphics.Bitmap
 import android.hardware.Camera
 import android.location.Address
 import android.location.Geocoder
+import android.location.Location
+import android.location.LocationManager
 import android.os.*
+import android.provider.Settings
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
@@ -41,6 +46,11 @@ import com.arvi.btScan.java.arvi.FaceDetectionListener
 import com.arvi.btScan.java.services.SlaveListener
 import com.arvi.btScan.java.services.SlaveService
 import com.arvi.btScan.java.services.SlaveService.MyServiceBinder
+import com.google.android.gms.common.ConnectionResult
+import com.google.android.gms.common.api.GoogleApiClient
+import com.google.android.gms.common.api.PendingResult
+import com.google.android.gms.common.api.ResultCallback
+import com.google.android.gms.location.*
 import com.google.gson.JsonObject
 import com.societyguard.Utils.FileUtil.getImageUriAndPath
 import okhttp3.MediaType
@@ -58,8 +68,11 @@ import java.util.*
 
 class SelfiCheckInActivity : AppCompatActivity(), CompoundButton.OnCheckedChangeListener,
     SlaveListener,
-    ConnectivityReceiver.ConnectivityReceiverListener {
+    ConnectivityReceiver.ConnectivityReceiverListener,GoogleApiClient.ConnectionCallbacks,
+    GoogleApiClient.OnConnectionFailedListener,
+    LocationListener {
 
+    private var picture: String?=null
     private var needToRestart: Boolean = false
     var tvInstruction: TextView? = null
     var imgVwHomeSCA: ImageView? = null
@@ -189,8 +202,13 @@ class SelfiCheckInActivity : AppCompatActivity(), CompoundButton.OnCheckedChange
                 }
             }
 
-
-
+          /*  if (SessionManager.getSelectedGPSOption(context!!) != null && SessionManager.getSelectedGPSOption(
+                    context!!
+                ).equals("Yes")
+            ) {
+                gpsStatusCheck()
+            }*/
+            setUpGClient()
             SingleShotLocationProvider.requestSingleUpdate(
                 applicationContext
             ) { location ->
@@ -214,11 +232,109 @@ class SelfiCheckInActivity : AppCompatActivity(), CompoundButton.OnCheckedChange
             }
 //            setConnectionSpeedHandlerData()
             setHandlerData()
+
+    /*        val locationManager =
+                getSystemService(Context.LOCATION_SERVICE) as LocationManager
+
+            val locationListener: LocationListener = MyLocationListener()
+            locationManager.requestLocationUpdates(
+                LocationManager.GPS_PROVIDER, 5000, 10, locationListener
+            )*/
         } catch (e: Exception) {
             e.printStackTrace()
         }
 
     }
+    private var mylocation: Location? = null
+    private var googleApiClient: GoogleApiClient? = null
+    private val REQUEST_CHECK_SETTINGS_GPS = 0x1
+    private val REQUEST_ID_MULTIPLE_PERMISSIONS = 0x2
+
+
+    @Synchronized
+    private fun setUpGClient() {
+        googleApiClient = GoogleApiClient.Builder(this)
+            .enableAutoManage(this, 0, this)
+            .addConnectionCallbacks(this)
+            .addOnConnectionFailedListener(this)
+            .addApi(LocationServices.API)
+            .build()
+        googleApiClient!!.connect()
+    }
+
+    override fun onConnected(bundle: Bundle?) {
+        getMyLocation()
+    }
+
+    private fun getMyLocation() {
+        if (googleApiClient != null) {
+            if (googleApiClient!!.isConnected) {
+                val permissionLocation =
+                    ContextCompat.checkSelfPermission(
+                        this@SelfiCheckInActivity,
+                        Manifest.permission.ACCESS_FINE_LOCATION
+                    )
+                if (permissionLocation == PackageManager.PERMISSION_GRANTED) {
+                    mylocation = LocationServices.FusedLocationApi.getLastLocation(googleApiClient)
+                    val locationRequest = LocationRequest()
+                    locationRequest.setInterval(3000)
+                    locationRequest.setFastestInterval(3000)
+                    locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+                    val builder: LocationSettingsRequest.Builder = LocationSettingsRequest.Builder()
+                        .addLocationRequest(locationRequest)
+                    builder.setAlwaysShow(true)
+                    LocationServices.FusedLocationApi
+                        .requestLocationUpdates(googleApiClient, locationRequest, this)
+                    val result = LocationServices.SettingsApi.checkLocationSettings(googleApiClient, builder.build()) as  PendingResult<LocationSettingsResult>
+                    var listener = object : ResultCallback<LocationSettingsResult>  {
+                        override fun onResult(result: LocationSettingsResult) {
+                            val status =
+                                result.status
+                            when (status.statusCode) {
+                                LocationSettingsStatusCodes.SUCCESS -> {
+
+                                    val permissionLocation =
+                                        ContextCompat
+                                            .checkSelfPermission(
+                                                this@SelfiCheckInActivity,
+                                                Manifest.permission.ACCESS_FINE_LOCATION
+                                            )
+                                    if (permissionLocation == PackageManager.PERMISSION_GRANTED) {
+                                        mylocation = LocationServices.FusedLocationApi
+                                            .getLastLocation(googleApiClient)
+                                    }
+                                }
+                                LocationSettingsStatusCodes.RESOLUTION_REQUIRED ->                                     // Location settings are not satisfied.
+                                    // But could be fixed by showing the user a dialog.
+                                    try {
+
+                                        status.startResolutionForResult(
+                                            this@SelfiCheckInActivity,
+                                            REQUEST_CHECK_SETTINGS_GPS
+                                        )
+                                    } catch (e: IntentSender.SendIntentException) {
+                                        // Ignore the error.
+                                    }
+                                LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE -> {
+                                }
+                            }
+                        }
+                    }
+                    result.setResultCallback(listener)
+                }
+            }
+        }
+    }
+
+    override fun onConnectionSuspended(i: Int) {
+        //Do whatever you need
+        //You can display a message here
+    }
+
+
+
+
+
 
     private fun setHandlerData() {
 
@@ -268,16 +384,16 @@ class SelfiCheckInActivity : AppCompatActivity(), CompoundButton.OnCheckedChange
                     Log.e("timeS:", currenttime)
 
                     var timeSelected = SessionManager.getSelectedRestartAt(context!!).toInt()
-                    Log.e("timeSelected:",timeSelected.toString())
+                    Log.e("timeSelected:", timeSelected.toString())
                     for (i in timeSelected..24 step timeSelected) {
-                         var hour = i
+                        var hour = i
                         var showHour = "00"
-                        if(hour<10){
-                            showHour = "0"+hour
-                        }else{
+                        if (hour < 10) {
+                            showHour = "0" + hour
+                        } else {
                             showHour = hour.toString()
                         }
-                        if(currenttime.equals(showHour+" : 00 : 00")){
+                        if (currenttime.equals(showHour + " : 00 : 00")) {
                             try {
 //                                Log.e("TimeD:",showHour+" : 00 : 00")
 //                                Log.e("restart", "cleared cache")
@@ -296,32 +412,6 @@ class SelfiCheckInActivity : AppCompatActivity(), CompoundButton.OnCheckedChange
                         }
                     }
 
-                   /* if (currenttime.equals("03 : 01 : 00") || currenttime.equals("06 : 01 : 00") || currenttime.equals(
-                            "09 : 01 : 00"
-                        ) ||
-                        currenttime.equals("10 : 45 : 00") || currenttime.equals("10 : 50  : 00") ||
-                        currenttime.equals("12 : 01 : 00") || currenttime.equals("15 : 01 : 00") ||
-                        currenttime.equals("18 : 01 : 00") || currenttime.equals("21 : 01 : 00") || currenttime.equals(
-                            "23 : 59 : 59"
-                        )
-                    ) {
-                        //todo:: clear app cache
-                        try {
-                            Log.e("restart", "cleared cache")
-                            if (facebitmap == null) {
-                                val intent = Intent(context!!, SplashActivity::class.java)
-                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                                finish()
-                                startActivity(intent)
-                            } else {
-                                needToRestart = true
-                            }
-
-                        } catch (e: java.lang.Exception) {
-                            e.printStackTrace()
-                        }
-                    }
-*/
 
                     h!!.postDelayed(this, delayMillis)
                 }
@@ -564,6 +654,7 @@ class SelfiCheckInActivity : AppCompatActivity(), CompoundButton.OnCheckedChange
                                     strUserId = ""
                                     strUserName = "Unknown"
                                     fullname = strUserName
+                                    picture = response.body().data.picture
                                     showToast(
                                         tempNormal,
                                         temperature,
@@ -586,7 +677,7 @@ class SelfiCheckInActivity : AppCompatActivity(), CompoundButton.OnCheckedChange
                                         } else {
                                             strUserName = "Unknown"
                                         }
-
+                                        picture = response.body().data.picture
                                     }
                                     fullname = strUserName
                                     Log.e("userId:-", strUserId + "")
@@ -843,6 +934,7 @@ class SelfiCheckInActivity : AppCompatActivity(), CompoundButton.OnCheckedChange
                 imgVwStatusDR.setImageDrawable(resources.getDrawable(R.mipmap.ic_check_false))
                 tvMessageDR.text = "Attendance capture failed"
             }
+
             SingleShotLocationProvider.requestSingleUpdate(
                 applicationContext
             ) { location ->
@@ -893,6 +985,34 @@ class SelfiCheckInActivity : AppCompatActivity(), CompoundButton.OnCheckedChange
             }
             if (dialog!!.isShowing) {
             } else {
+                if (tvLocationDR.text.isNullOrEmpty()) {
+//                    tvLocationDR.text = mylocation!!.latitude.toString()
+
+                    latitude = mylocation!!.latitude.toDouble()
+                    longitude = mylocation!!.longitude.toDouble()
+                    val geocoder: Geocoder
+                    val addresses: List<Address>
+                    geocoder = Geocoder(applicationContext, Locale.getDefault())
+                    try {
+                        addresses = geocoder.getFromLocation(latitude, longitude, 1)
+                        val address = addresses[0].getAddressLine(0)
+
+                        strAddress = address
+                        Log.e("address:", address)
+                        if (SessionManager.getSelectedGPSOption(context!!) != null && SessionManager.getSelectedGPSOption(
+                                context!!
+                            ).equals("Yes")
+                        ) {
+                            tvLocationDR.text = "Location: $address"
+                        } else {
+                            tvLocationDR.text = ""
+                        }
+                    } catch (e: IOException) {
+                        e.printStackTrace()
+                        showToastError(e)
+                    }
+
+                }
                 dialog!!.show()
             }
             dialog!!.window!!.setLayout(
@@ -1006,10 +1126,12 @@ class SelfiCheckInActivity : AppCompatActivity(), CompoundButton.OnCheckedChange
                 ).equals("Yes")
             ) {
                 jsonObject.addProperty("address", strAddress)
-                jsonObject.addProperty("emp_lat", latitude)
-                jsonObject.addProperty("emp_long", longitude)
+                jsonObject.addProperty("lat", latitude)
+                jsonObject.addProperty("lng", longitude)
             }
-
+            if(picture!=null) {
+                jsonObject.addProperty("photo", picture)
+            }
             Log.e("storeT:", jsonObject.toString())
             var mAPIService: APIService? = null
             mAPIService = apiService
@@ -1434,4 +1556,19 @@ class SelfiCheckInActivity : AppCompatActivity(), CompoundButton.OnCheckedChange
     }
 
     var connectivityChangeReceiver: ConnectivityReceiver? = null
+    override fun onConnectionFailed(p0: ConnectionResult) {
+
+    }
+
+    override fun onLocationChanged(location: Location) {
+        mylocation = location
+        if (mylocation != null) {
+            val latitude = mylocation!!.getLatitude()
+            val longitude = mylocation!!.getLongitude()
+            Log.e("Latitude : ",latitude.toString())
+            Log.e("Longitude : ",longitude.toString())
+
+            //Or Do whatever you want with your location
+        }
+    }
 }

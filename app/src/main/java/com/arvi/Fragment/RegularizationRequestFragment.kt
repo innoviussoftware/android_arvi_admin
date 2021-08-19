@@ -27,6 +27,7 @@ import com.arvi.SessionManager.SessionManager
 import com.arvi.Utils.AppConstants
 import com.arvi.Utils.ConnectivityDetector
 import com.arvi.Utils.SnackBar
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -38,7 +39,7 @@ class RegularizationRequestFragment : Fragment(), View.OnClickListener {
 
     var rVwRequestRRLA: RecyclerView? = null
     var tvNoVisitorRRLA: TextView? = null
-    var imgVwAddRequestRRLA: ImageView? = null
+    var imgVwAddRequestRRLA: FloatingActionButton? = null
     var imgVwCalendarRRF: ImageView? = null
 
     var appContext: Context? = null
@@ -67,7 +68,7 @@ class RegularizationRequestFragment : Fragment(), View.OnClickListener {
         snackbarView = view.findViewById(android.R.id.content)
         rVwRequestRRLA = view.findViewById(R.id.rVwRequestRRLA)
         tvNoVisitorRRLA = view.findViewById(R.id.tvNoVisitorRRLA)
-        imgVwAddRequestRRLA = view.findViewById(R.id.imgVwCalendarRRF)
+        imgVwAddRequestRRLA = view.findViewById(R.id.imgVwAddRequestRRLA)
         imgVwCalendarRRF = view.findViewById(R.id.imgVwCalendarRRF)
         imgVwAddRequestRRLA!!.setOnClickListener(this)
         imgVwCalendarRRF!!.setOnClickListener(this)

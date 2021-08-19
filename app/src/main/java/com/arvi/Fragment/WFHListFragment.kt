@@ -19,6 +19,7 @@ import com.arvi.Adapter.SetWfHDataAdapter
 import com.arvi.R
 import com.arvi.Utils.ConnectivityDetector
 import com.arvi.Utils.SnackBar
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -27,7 +28,7 @@ class WFHListFragment : Fragment(), View.OnClickListener {
 
     var rVwRequestWfhRA: RecyclerView?=null
     var tvNoVisitorWfhRA: TextView?=null
-    var imgVwAddRequestWfhRA: ImageView?=null
+    var imgVwAddRequestWfhRA: FloatingActionButton?=null
 
     var imgVwCalendarWF:ImageView?=null
 

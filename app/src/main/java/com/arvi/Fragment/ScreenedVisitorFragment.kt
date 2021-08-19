@@ -26,6 +26,7 @@ import com.arvi.Utils.AppConstants
 import com.arvi.Utils.ConnectivityDetector
 import com.arvi.Utils.MyProgressDialog
 import com.arvi.Utils.SnackBar
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.gson.Gson
 import retrofit2.Call
 import retrofit2.Callback
@@ -35,7 +36,7 @@ class ScreenedVisitorFragment : Fragment(), View.OnClickListener {
 
     var rVwVisitorVLF: RecyclerView? = null
 var tvNoVisitorVLF: TextView? = null
-var imgVwAddVisitorVLF: ImageView? = null
+var imgVwAddVisitorVLF: FloatingActionButton? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {

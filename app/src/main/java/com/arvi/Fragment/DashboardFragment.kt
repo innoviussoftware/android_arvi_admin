@@ -108,11 +108,9 @@ class DashboardFragment : Fragment() {
         override fun getItem(position: Int): Fragment {
             when (position) {
                 0 -> {
-
                     return Dashboard_SummaryDataFragment()
                 }
                 1 -> {
-
                     return Dashboard_AllDataFragment()
                 }
                 else -> return Dashboard_SummaryDataFragment()

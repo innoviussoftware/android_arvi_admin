@@ -30,6 +30,7 @@ import com.arvi.Utils.AppConstants
 import com.arvi.Utils.ConnectivityDetector
 import com.arvi.Utils.MyProgressDialog
 import com.arvi.Utils.SnackBar
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -45,7 +46,7 @@ class RegularizationRequestListActivity : AppCompatActivity(), View.OnClickListe
     var imgVwBackRRLA: ImageView? = null
     var rVwRequestRRLA: RecyclerView? = null
     var tvNoVisitorRRLA: TextView? = null
-    var imgVwAddRequestRRLA: ImageView? = null
+    var imgVwAddRequestRRLA: FloatingActionButton? = null
     var imgVwCalendarRRLA: ImageView? = null
 
     var context: Context? = null

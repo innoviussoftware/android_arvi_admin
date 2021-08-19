@@ -16,8 +16,8 @@ import de.hdodenhof.circleimageview.CircleImageView
 import java.text.SimpleDateFormat
 
 class SetAllDataAttendanceAdapter(
-        var context: Context,
-        var alDetails: ArrayList<GetEmpDayDetailResponseItem>
+    var context: Context,
+    var alDetails: ArrayList<GetEmpDayDetailResponseItem>
 ) : RecyclerView.Adapter<SetAllDataAttendanceAdapter.ViewHolder>() {
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -34,7 +34,7 @@ class SetAllDataAttendanceAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val v = LayoutInflater.from(parent.context)
-                .inflate(R.layout.row_all_data_attendance, parent, false)
+            .inflate(R.layout.row_all_data_attendance, parent, false)
 
         return ViewHolder(v)
     }
@@ -57,7 +57,11 @@ class SetAllDataAttendanceAdapter(
             } else {
                 holder.imgVwStatusRAD.background = context.resources.getDrawable(R.drawable.wfh_status)
             }*/
-            holder.tvNameRAD.setText(alDetails.get(position).emp_name + " - " + alDetails.get(position).emp_id)
+            holder.tvNameRAD.setText(
+                alDetails.get(position).emp_name + " - " + alDetails.get(
+                    position
+                ).emp_id
+            )
 
             if (alDetails.get(position).status.equals("A")) {
                 holder.imgVwStatusRAD.setColorFilter(context.resources.getColor(R.color.absent_clr))
@@ -74,34 +78,37 @@ class SetAllDataAttendanceAdapter(
             }
 
             var strInDate = alDetails.get(position).check_in
-            if(strInDate!=null){
+            if (strInDate != null) {
                 holder.tvStartTimeRAD.text =
-                        GlobalMethods.convertUTCDateTimeformate(strInDate)
+                    GlobalMethods.convertUTCDateTimeformate(strInDate)
             }
 
             var strOutDate = alDetails.get(position).check_out
-            if(strOutDate!=null){
+            if (strOutDate != null) {
                 holder.tvEndTimeRAD.text =
-                        GlobalMethods.convertUTCDateTimeformate(strOutDate)
+                    GlobalMethods.convertUTCDateTimeformate(strOutDate)
             }
 
-            if(strOutDate==null && strInDate==null){
+            if (strOutDate == null && strInDate == null) {
                 holder.llTimeRAD.visibility = View.GONE
-            }else{
-            holder.llTimeRAD.visibility = View.VISIBLE
+            } else {
+                holder.llTimeRAD.visibility = View.VISIBLE
             }
 
 
             var strTotalWorkHour = alDetails.get(position).workHours
-            if(strTotalWorkHour.equals("00:00:00")){
+            if (strTotalWorkHour.equals("00:00:00")) {
                 holder.tvTotalHrRAD.text = "(00:00)"
-            }else {
-                holder.tvTotalHrRAD.text = "("+GlobalMethods.convertHourFormat(strTotalWorkHour)+")"
+            } else if (strTotalWorkHour.equals("0")) {
+                holder.tvTotalHrRAD.text = "(00:00)"
+            } else {
+                holder.tvTotalHrRAD.text =
+                    "(" + GlobalMethods.convertHourFormat(strTotalWorkHour) + ")"
             }
             var role = alDetails.get(position).emp_role
-            if(role!=null){
+            if (role != null) {
                 holder.tvDateRAD.setText(role)
-            }else{
+            } else {
                 holder.tvDateRAD.setText("")
                 holder.tvDateRAD.visibility = View.GONE
             }

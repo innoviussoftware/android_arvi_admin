@@ -31,7 +31,7 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 
-class Dashboard_SummaryDataFragment : Fragment() {
+class Dashboard_SummaryDataFragment : Fragment(), View.OnClickListener {
 
     var tvPresentCountDSDF: TextView? = null
     var tvAbsentCountDSDF: TextView? = null
@@ -42,6 +42,7 @@ class Dashboard_SummaryDataFragment : Fragment() {
     var spGroupDSDF: Spinner? = null
     var spPeriodDSDF: Spinner? = null
     var spShiftDSDF: Spinner? = null
+    var imgVwRefreshSummary:ImageView?=null
 
     var appContext: Context? = null
 
@@ -70,9 +71,19 @@ class Dashboard_SummaryDataFragment : Fragment() {
         var view = inflater.inflate(R.layout.fragment_dashboard__summary_data, container, false)
         try {
             setIds(view)
+            setListeners()
             getDefaultDates()
 //            showProgressDialog()
+          //  callApis()
 
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return view
+    }
+
+    private fun callApis() {
+        try {
             if (ConnectivityDetector.isConnectingToInternet(appContext!!)) {
                 callAttendanceSummaryDataApi()
                 callGetKeyMetricsDataApi()
@@ -82,11 +93,13 @@ class Dashboard_SummaryDataFragment : Fragment() {
             } else {
                 SnackBar.showInternetError(appContext!!, snackbarView!!)
             }
-
         } catch (e: Exception) {
             e.printStackTrace()
         }
-        return view
+    }
+
+    private fun setListeners() {
+        imgVwRefreshSummary!!.setOnClickListener(this)
     }
 
     private fun callGetWorkShiftApi() {
@@ -201,7 +214,7 @@ class Dashboard_SummaryDataFragment : Fragment() {
                         } else {
                             getCustomDates()
                         }
-                        showProgressDialog()
+                        //showProgressDialog()
 
                         if (ConnectivityDetector.isConnectingToInternet(context!!)) {
                             callAttendanceSummaryDataApi()
@@ -284,7 +297,7 @@ class Dashboard_SummaryDataFragment : Fragment() {
 
                     } else {
                         dialog.dismiss()
-                        showProgressDialog()
+                        //showProgressDialog()
 
                         if (ConnectivityDetector.isConnectingToInternet(appContext!!)) {
                             callAttendanceSummaryDataApi()
@@ -469,6 +482,7 @@ class Dashboard_SummaryDataFragment : Fragment() {
             spGroupDSDF = view.findViewById(R.id.spGroupDSDF)
             spPeriodDSDF = view.findViewById(R.id.spPeriodDSDF)
             spShiftDSDF = view.findViewById(R.id.spShiftDSDF)
+            imgVwRefreshSummary = view.findViewById(R.id.imgVwRefreshSummary)
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -715,5 +729,14 @@ class Dashboard_SummaryDataFragment : Fragment() {
 
                 }
             }
+    }
+
+    override fun onClick(v: View?) {
+        when(v!!.id){
+            R.id.imgVwRefreshSummary->{
+                callApis()
+                showProgressDialog()
+            }
+        }
     }
 }

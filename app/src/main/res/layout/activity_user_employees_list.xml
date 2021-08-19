@@ -60,7 +60,7 @@
     </RelativeLayout>
 
 
-    <ImageView
+    <!--<ImageView
         android:onClick="addEmployeeDetails"
         android:layout_marginBottom="@dimen/_10sdp"
         android:layout_marginEnd="@dimen/_10sdp"
@@ -68,6 +68,17 @@
         android:layout_alignParentEnd="true"
         android:background="@mipmap/ic_add_round"
         android:layout_width="@dimen/_60sdp"
-        android:layout_height="@dimen/_60sdp"/>
+        android:layout_height="@dimen/_60sdp"/>-->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:onClick="addEmployeeDetails"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/_10sdp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        style="@style/MyFloatingBtnTheme"
+        android:visibility="visible" />
+
 
 </RelativeLayout>

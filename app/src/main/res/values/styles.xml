@@ -65,4 +65,11 @@
         <item name="colorAccent">@color/black</item>
     </style>
 
+    <style name="MyFloatingBtnTheme">
+        <item name="tint">#FFFFFF</item>
+        <item name="backgroundTint">#2977DD</item>
+        <item name="android:src">@drawable/ic_add_white</item>
+
+    </style>
+
 </resources>

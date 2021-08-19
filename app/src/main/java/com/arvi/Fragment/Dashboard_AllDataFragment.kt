@@ -44,6 +44,7 @@ class Dashboard_AllDataFragment : Fragment(), View.OnClickListener {
     var spGroupDADF: Spinner? = null
     var rVwAllDataDADF: RecyclerView? = null
     var tvNoDataDADF:TextView?=null
+    var imgVwRefreshAll:ImageView?=null
 
     var appContext: Context? = null
     var snackbarView: View? = null
@@ -74,7 +75,16 @@ class Dashboard_AllDataFragment : Fragment(), View.OnClickListener {
             setIds(view)
             setListeners()
             getDefaultDates()
+           // callApis()
 
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        return view
+    }
+
+    private fun callApis() {
+        try {
             if (ConnectivityDetector.isConnectingToInternet(appContext!!)) {
                 callCalendarEventApi()
                 callGroupListApi()
@@ -84,19 +94,16 @@ class Dashboard_AllDataFragment : Fragment(), View.OnClickListener {
             } else {
                 SnackBar.showInternetError(appContext!!, snackbarView!!)
             }
-
-
         } catch (e: Exception) {
             e.printStackTrace()
         }
-        return view
     }
 
     private fun callCalendarEventApi() {
         try {
             var mAPIService: APIService? = null
             mAPIService = ApiUtils.apiService
-            showProgressDialog()
+            //showProgressDialog()
             var apiCall: Call<GetCalendarEventsResponse>? = null
             if (group_id > 0) {
                 apiCall = mAPIService.getCalendarEventWithGroup(
@@ -158,14 +165,18 @@ class Dashboard_AllDataFragment : Fragment(), View.OnClickListener {
     }
 
     private fun showProgressDialog() {
-        MyProgressDialog.showProgressDialog(appContext!!)
-        val delayInMillis: Long = 1000
-        val timer = Timer()
-        timer.schedule(object : TimerTask() {
-            override fun run() {
-                MyProgressDialog.hideProgressDialog()
-            }
-        }, delayInMillis)
+        try {
+            MyProgressDialog.showProgressDialog(appContext!!)
+            val delayInMillis: Long = 1000
+            val timer = Timer()
+            timer.schedule(object : TimerTask() {
+                override fun run() {
+                    MyProgressDialog.hideProgressDialog()
+                }
+            }, delayInMillis)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     private fun callGetWorkShiftApi() {
@@ -590,7 +601,7 @@ class Dashboard_AllDataFragment : Fragment(), View.OnClickListener {
 
     private fun setListeners() {
         try {
-
+            imgVwRefreshAll!!.setOnClickListener(this)
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -599,7 +610,11 @@ class Dashboard_AllDataFragment : Fragment(), View.OnClickListener {
 
     override fun onClick(view: View) {
         when (view.id) {
+            R.id.imgVwRefreshAll->{
+                showProgressDialog()
+                callApis()
 
+            }
         }
     }
 
@@ -613,6 +628,7 @@ class Dashboard_AllDataFragment : Fragment(), View.OnClickListener {
             spShiftDADF = view.findViewById(R.id.spShiftDADF)
             spGroupDADF = view.findViewById(R.id.spGroupDADF)
             rVwAllDataDADF = view.findViewById(R.id.rVwAllDataDADF)
+            imgVwRefreshAll = view.findViewById(R.id.imgVwRefreshAll)
         } catch (e: Exception) {
             e.printStackTrace()
         }

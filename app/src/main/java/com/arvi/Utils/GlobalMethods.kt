@@ -1,28 +1,19 @@
 package com.arvi.Utils
 
+import android.Manifest
 import android.R
-import android.app.Dialog
 import android.content.Context
-import android.content.DialogInterface
-import android.content.Intent
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
-import android.content.res.Configuration
-import android.content.res.Resources
 import android.location.Address
 import android.location.Geocoder
+import android.location.Location
+import android.location.LocationManager
 import android.net.ConnectivityManager
 import android.util.Base64
-import android.util.DisplayMetrics
 import android.util.Log
-import android.view.ContextThemeWrapper
-import android.view.Gravity
-import android.view.Window
-import android.view.WindowManager
-import android.widget.ImageView
-import android.widget.RelativeLayout
-import android.widget.TextView
 import androidx.appcompat.app.AlertDialog
+import androidx.core.app.ActivityCompat
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 import java.text.DateFormat
@@ -30,12 +21,12 @@ import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.regex.Pattern
-import kotlin.jvm.Throws
 
 class GlobalMethods {
 
     //Todo: Create Global Method as per using all project
     companion object {
+
 
         fun isInternetAvailable(context: Context): Boolean {
             val connectivityManager =
@@ -173,16 +164,17 @@ class GlobalMethods {
 
         fun convertUTCDateTimeformate(sendDate: String): String {
             var format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.s'Z'")
+            format.timeZone = TimeZone.getTimeZone("UTC")
             val newsDate = sendDate
             var formatedDate: String? = ""
             if (newsDate != null) {
                 val newDate = format.parse(newsDate)
                 format = SimpleDateFormat("MMM dd, hh:mm a")
+                format.timeZone = TimeZone.getTimeZone("Asia/Kolkata")
                 formatedDate = format.format(newDate)
             }
             return formatedDate!!
         }
-
 
 
         fun convertUTCDateformate(sendDate: String): String {

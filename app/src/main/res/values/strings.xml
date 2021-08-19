@@ -212,6 +212,8 @@
     <string name="no_internet_connection">No Internet Connection</string>
     <string name="reload">Reload</string>
     <string name="no_mobile_data">You don\'t have mobile data</string>
+    <string name="capture_the_face_in_the_border">Capture the face in the border</string>
+    <string name="capture">Capture</string>
 
     <string-array name="period_array">
         <item>@string/this_month</item>

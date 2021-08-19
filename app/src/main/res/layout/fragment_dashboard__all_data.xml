@@ -83,7 +83,14 @@
 
                </RelativeLayout>
 
-
+                <ImageView
+                    android:id="@+id/imgVwRefreshAll"
+                    android:layout_width="@dimen/_30sdp"
+                    android:layout_height="@dimen/_30sdp"
+                    android:layout_gravity="bottom"
+                    android:layout_marginStart="@dimen/_3sdp"
+                    android:src="@drawable/ic_refresh"
+                    />
            </LinearLayout>
            <RelativeLayout
                android:id="@+id/rlFilter2DADF"

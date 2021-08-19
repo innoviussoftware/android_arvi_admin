@@ -127,6 +127,7 @@ class SettingActivity : AppCompatActivity(), View.OnClickListener {
 
             etDefaultMinWidthSA!!.setText(Config.defaultMinFaceWidth.toString())
             etDetectMinFaceWidthSA!!.setText(Config.detectMinFaceWidth.toString())
+            etRestartAppSA!!.setText(SessionManager.getSelectedRestartAt(context))
         } catch (e: Exception) {
             e.printStackTrace()
         }
